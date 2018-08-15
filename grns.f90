@@ -74,20 +74,21 @@ do et=1,etmax    ! evolutionary time
     end do
    end do
 
-     !!!! MUTATION IN THE FOUR MATRICES !!!!!!!
+     !!!! MUTATION IN THE FOUR MATRICES !!!!!!!     
      
      call random_number(x)  ; call random_number(y)     
-     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)           ! permito mutar un gen mas ...
-     call random_number(z) ; z=1.0-2*z ; z=z*0.2
-     ind(1)%w(i,j)= ind(1)%w(i,j)+z 
-     !if((ind(1)%w(i,j).gt.1.0).or.(ind(1)%w(i,j).lt.-1.0))then ; goto 747 ; end if   capped ??
+     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! which element of W will mutate
+     747 call random_number(x)  ; call random_number(y)       ! random new value for the mutation
+     z=sdev*sqrt(-2*log(x))*cos(2*pi*y)                       ! Box-Muller algotithm. Normal distribtion N(0,sdev)   
+     ind(1)%w(i,j)= ind(1)%w(i,j)+z                           ! adding the new random value to the previous one
+     if((capped.eq.1).and.((ind(1)%w(i,j).gt.1.0).or.(ind(1)%w(i,j).lt.-1.0)))then ; goto 747 ; end if   ! capped ??
      
      call random_number(x)  ; call random_number(y)     
-     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)           ! permito mutar un gen mas ...
+     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! permito mutar un gen mas ...
      if(ind(1)%ww(i,j).eq.0)then ; ind(1)%ww(i,j)=1 ; else ;  ind(1)%ww(i,j)=1 ; end if ! topological change
      
    !  call random_number(x)  ; call random_number(y)     
-   !  i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)             ! permito mutar un gen mas ...
+   !  i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
    !  call random_number(z) ; z=1.0-2*z ; z=z*0.2
    !  ind(1)%MZ(i,j)= ind(1)%MZ(i,j)+z 
      

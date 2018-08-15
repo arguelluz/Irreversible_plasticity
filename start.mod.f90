@@ -2,9 +2,9 @@ module start
 
 implicit none
 
-integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p,t,et,tmax,etmax
-integer :: ncels,replica,PD                ! PD=phenotypic dimensionality (number of traits)
-real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg,fmax
+integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p,t,et,tmax,etmax,capped
+integer :: ncels,replica,PD                    ! PD=phenotypic dimensionality (number of traits)
+real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg,fmax,sdev
 integer, parameter  ::  replicas=1 , EF=2      ! EF=Number of environmental factors (inputs)
 real*4, allocatable ::  prepattern(:,:),block(:,:)
 real*4, parameter   ::  pi=3.1415926535 
@@ -43,6 +43,8 @@ etmax=10000                                               ! evolutionary time
 n=2                                                       ! number of different environments
 ng=9                                                      ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
+sdev=0.1                                                  ! standard deviation for the mutator algorithm
+capped=1                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 
 if(allocated(ind))then    ; deallocate(ind)   ; deallocate(indt)  ; deallocate(gen)
 deallocate(prepattern)    ; deallocate(block) ; end if
