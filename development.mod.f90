@@ -9,7 +9,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)    ! it runs development for the individual i 
 integer :: i,ii,j,jj,k,jjj,ret,satur(ind(i)%ncels),saturado
-real*4  :: r1,r2,u,q,y,z,fi,maxx,minn,xx ! fi=final increment
+real*4  :: r1,r2,u,q,y,z,fi,xx ! fi=final increment
   
   saturado=0 ; ind(i)%sat=0	   
   do t=1,tmax        ! developmental time
