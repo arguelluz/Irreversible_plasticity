@@ -53,45 +53,56 @@ do et=1,etmax    ! evolutionary time
          ind(pp)%fitness=0.0
      
         do i=1,pd                                                               ! individual absolute fitness calculation  
-          write(*,*)'pheno',ind(i)%phen
+          !write(*,*)'phenotypes',ind(i)%phen
           do jjj=1,ind(pp)%ncels                
 	        ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*block(i,jjj)    ! scalar product (P*S)-based fitness (from the paper)       
 	      end do
 	    end do 
          
    end do  ! for each individual    
-
-   !!!!!! natural selection for Hill-climber
-   !if(ind(1)%fitness.ge.ind(2)%fitness)then ! reproduction (the fittest individual is copied) 
-   !  ind(2)=ind(1) ; whois=1
-   !  do jjj=1,PD ; write(20068,*)et,ind(1)%phen(jjj,:) ; end do
-   !else 
-   !  ind(1)=ind(2) ; whois=2
-   !  do jjj=1,PD ; write(20068,*)et,ind(1)%phen(jjj,:) ; end do
-   !end if
+   
+   !!!!!!
    !!!!!! natural selection for population-based (non-optimized)
-   write(*,*)et,'fitnesses',ind(:)%fitness   
-   
-   do i=2,p                                  ! scaled sumation of fitnesses
-     ind(i)%fitness=ind(i)%fitness+ind(i-1)%fitness
-   end do  
-   fmax=maxval(ind(:)%fitness)                  ! first relative fitness (0-1)
-   do i=1,p 
-     ind(i)%fitness=ind(i)%fitness/fmax 
-   end do
-   
-   
-   write(*,*)et,'fitnESFIN',ind(:)%fitness
-   
+    fmaxabs=maxval(ind(:)%fitness)
+    indt(:)%fitness=0.0
+    ind(:)%fitness=ind(:)%fitness-minval(ind(:)%fitness)+delta          ! negative fitness may 
+    do i=2,p
+      ind(i)%fitness=ind(i)%fitness+ind(i-1)%fitness                    ! ordered sumation
+    end do
+    fmax=maxval(ind(:)%fitness)                                         ! scaling fitness (0-1)
+    do i=1,p 
+      ind(i)%fitness=ind(i)%fitness/fmax 
+    end do
+    do i=1,p														    ! super-optimized screening
+      if(fmax.le.real(p)*delta)then ; whois=i ; goto 642 ; end if       ! all individuals are equal
+      call random_number(x)												! non-deterministic selection
+      kk=p/2 ; k=p/2
+      do j=1,logp
+        k=k/2   
+        if(j.eq.logp-1)then;k=1;end if                                  ! allows for p non congruent log2(p)
+        if(x.le.ind(kk)%fitness)then                
+          if(j.eq.logp)then;whois=kk;end if
+          kk=kk-k    
+          if(kk.le.0)then ; whois=1 ; goto 642 ; end if  
+        else if(x.gt.ind(kk)%fitness)then
+          if(j.eq.logp)then;whois=kk+1;end if
+          kk=kk+k     
+          if(kk.gt.p)then ; whois=p ; goto 642 ; end if
+        end if         
+      end do        
+      642 indt(i)=ind(whois)                                            ! it fills up next generation 
+    end do      
+    ind=indt
+   !!!!!!!!!!!!!!!!!!!!!!!!
    !!!!!!!!!!!!!!!!!!!!!!!!
    
-   if(fmax.gt.fmaxx)then   ! data racording (re-check)
-     fmaxx=fmax 
+   if(fmaxabs.gt.fmaxx)then   ! data racording (re-check)
+     fmaxx=fmaxabs 
    end if
    if(mod(et,lapso).eq.0)then
      averagew(et/lapso,replica)=fmaxx/real(n)
    end if
-   write(20067,*)et,fmax ; call flush(20067) 
+   write(20067,*)et,fmaxabs ; call flush(20067) 
    !!!!!!!!!!!!!!!!!!!!!!!
    
    if(et.eq.etmax)then                       ! writting datafile with final matrix before mutation      
