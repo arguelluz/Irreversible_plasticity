@@ -3,27 +3,17 @@ program startodo  ! just the main program boosting the system ...
 use start
 use development
 
- integer             :: ret,pp,ios   
- integer             :: lapso,whois        ! lapso=intervals for data recording, whois=fittest individual            
- real*4,allocatable  :: averagew(:,:) 
+ integer             :: whois              ! whois=fittest individual            
+ real*4,allocatable  :: averagew(:,:)      ! a matrix for average data
  
- integer, allocatable :: seed(:)           ! setting the seed for random number generator
+ integer, allocatable :: seed(:)           ! setting the seed for random number generator (not accessible)
  integer size                              ! this way all replicates give the same result
  call random_seed(size=size)               ! 
  allocate(seed(size))                      !
  call random_seed(put=seed)                ! 
 
- lapso=10
+ lapso=10                                  ! every "lapso"
  call inicial                              ! just to get etmax
- 
- if(training.eq.0)then                     ! Set replicate as number of datafiles in Test set.
-   pp=0
-   open(369,file='GRNames.dat',action='read',iostat=ios)
-   do while (ios.eq.0)
-     read(369,*,iostat=ios)arxiv ; pp=pp+1
-   end do
-   replicas=pp-1 ; rewind(369)
- end if
  
  allocate(averagew(etmax/lapso+1,replicas))
  averagew=0 
@@ -35,34 +25,31 @@ do replica=1,replicas!4
 
 call inicial                               ! it allocates and inicializes everything ...
 
-open(20067,file='Fitnessfile.dat',status='unknown',action='write')     ! okflush
-open(20068,file='Phenotyfile.dat',status='unknown',action='write')     ! okflush
+open(20067,file='Fitnessfile.dat',status='unknown',action='write')     ! okflush  !! WITHIN REPLICATEE !!*****
+open(20068,file='Phenotyfile.dat',status='unknown',action='write')     ! okflush !*********************
 
 fmax=0  ! records maximum fitness over evol time
 
 do et=1,etmax    ! evolutionary time
    
-   do pp=1,p
-           
-   !do replica=1,replicas!4
+   do pp=1,p           
           
          ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do   
          ind(pp)%sat=0 ; call dev(pp)     
     
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION        
-         ind(pp)%fitness=0.0
-     
-        do i=1,pd                                                               ! individual absolute fitness calculation  
-          !write(*,*)'phenotypes',ind(i)%phen
+        ind(pp)%fitness=0.0     
+        do i=1,pd                                                                  ! individual absolute fitness calculation            
           do jjj=1,ind(pp)%ncels                
-	        ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*block(i,jjj)    ! scalar product (P*S)-based fitness (from the paper)       
+	        !ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*block(i,jjj)      ! scalar product (P*S)-based fitness (from the paper)       
+	        ind(pp)%fitness=ind(pp)%fitness+(ind(pp)%phen(i,jjj)-block(i,jjj))**2  ! Euclidean-distance based (Used for exponential)
 	      end do
 	    end do 
-         
+	    ind(pp)%fitness=sqrt(ind(pp)%fitness)/(2.0*ss)                             ! Exponential fitness function
+        ind(pp)%fitness=e**(ind(pp)%fitness)                                       ! Exponential fitness function
    end do  ! for each individual    
-   
-   !!!!!!
-   !!!!!! natural selection for population-based (non-optimized)
+    
+   !!!!!!                                                                natural selection for population-based (super-optimized)
     fmaxabs=maxval(ind(:)%fitness)
     indt(:)%fitness=0.0
     ind(:)%fitness=ind(:)%fitness-minval(ind(:)%fitness)+delta          ! negative fitness may 
@@ -94,62 +81,84 @@ do et=1,etmax    ! evolutionary time
     end do      
     ind=indt
    !!!!!!!!!!!!!!!!!!!!!!!!
-   !!!!!!!!!!!!!!!!!!!!!!!!
-   
-   if(fmaxabs.gt.fmaxx)then   ! data racording (re-check)
+
+   if(fmaxabs.gt.fmaxx)then                                             ! data racording (re-check)
      fmaxx=fmaxabs 
    end if
    if(mod(et,lapso).eq.0)then
      averagew(et/lapso,replica)=fmaxx/real(n)
    end if
    write(20067,*)et,fmaxabs ; call flush(20067) 
-   !!!!!!!!!!!!!!!!!!!!!!!
    
-   if(et.eq.etmax)then                       ! writting datafile with final matrix before mutation      
-     write(arxifin,"(A3,I1,A16)")'GRN',replica,'____________.dat'
-     open(7000+replica,file=arxifin,action='write')
-     do i=1,ind(1)%ngs
-       write(7000+replica,*)ind(whois)%w(i,:)
+   !!!!!!!!!!!!!!!!!!!!!!!   
+   if(mod(et,lapso).eq.0)then                                           ! writting datafile with final matrix before mutation      
+     write(arxaux,"(A4,I1,I1,I1,I1,A2,I2,A2,I4)")'GRN_',(int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&
+     (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,'_R',replica,'_T',int(et/lapso)            
+     if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename
+     do im=15,18 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
+     arxifin(1:18)=arxiv(19:36)                                         ! composing filename
+     arxifin(19:36)=arxaux(1:18) ; arxifin(37:40)='.dat'                ! composing filename
+     do im=1,40 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename   
+     WRITE(*,*)'arxifin es:       ',7000,arxifin       
+     open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile 
+     write(7000,*)'TARGETS (E1T1,E1T2,E2T1,E2T2)',block(1:2,1), block(1:2,2)  ! 1
+     write(7000,*)'POPULATON SIZE...............',p                           ! 2
+     write(7000,*)'STRENGHT OF SELECTION........',ss                          ! 3
+     write(7000,*)'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 4
+     write(7000,*)'TRAINING (1) vs TEST (0) SET ',training                    ! 5
+     write(7000,*)'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 6
+     write(7000,*)'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 7
+     write(7000,*)'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 8
+     write(7000,*)'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 9
+     write(7000,*)'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 10   
+     write(7000,*)'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 11
+     !!!!!!!!!!!!!!!!!!!!
+     do pp=1,p
+       do i=1,ind(1)%ngs
+         write(7000,*)ind(pp)%w(i,:)
+       end do  
+       do i=1,ind(1)%ngs
+         write(7000,*)ind(pp)%ww(i,:)
+       end do       
      end do
-     close(7000+replica)    
+     do i=1,ind(1)%ngs
+       write(7000,*)ind(1)%MZ(i,:)
+     end do
+     do i=1,ind(1)%ngs
+       write(7000,*)ind(1)%MZZ(i,:)
+     end do
+     close(7000)    
    end if  
-  
-   do pp=1,1!p      pq solo hay que actualizar el primeroooo ! conserved prepattern, genotype resetting
-    ind(pp)%g(:,:)=0.0
-    do i=1,ind(1)%ngs                                  
-      ind(pp)%g(1:n,i)=prepattern(1:n,i)
-    end do
-   end do
 
-     !!!! MUTATION IN THE FOUR MATRICES !!!!!!!     
-     
+   !!!! MUTATION IN THE FOUR MATRICES !!!!!!!     
+   do pp=1,p
      call random_number(x)  ; call random_number(y)     
      i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! which element of W will mutate
      747 call random_number(x)  ; call random_number(y)       ! random new value for the mutation
-     z=sdev*sqrt(-2*log(x))*cos(2*pi*y)                       ! Box-Muller algotithm. Normal distribtion N(0,sdev)   
-     ind(1)%w(i,j)= ind(1)%w(i,j)+z                           ! adding the new random value to the previous one
-     if((capped.eq.1).and.((ind(1)%w(i,j).gt.1.0).or.(ind(1)%w(i,j).lt.-1.0)))then ; goto 747 ; end if   ! capped ??
+     z=sdev*sqrt(-2*log(x))*cos(2*pi*y)                       ! Box-Muller algotithm. Normal distribtion N(0,sdev) 
+     ind(pp)%w(i,j)= ind(pp)%w(i,j)+z                         ! adding the new random value to the previous one
+     if((capped.eq.1).and.((ind(pp)%w(i,j).gt.1.0).or.(ind(pp)%w(i,j).lt.-1.0)))then ; goto 747 ; end if   ! capped ??
      
      call random_number(x)  ; call random_number(y)     
      i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! permito mutar un gen mas ...
-     if(ind(1)%ww(i,j).eq.0)then ; ind(1)%ww(i,j)=1 ; else ;  ind(1)%ww(i,j)=1 ; end if ! topological change
+     if(ind(pp)%ww(i,j).eq.0)then ; ind(pp)%ww(i,j)=1 ; else ;  ind(pp)%ww(i,j)=1 ; end if ! topological change
      
-   !  call random_number(x)  ; call random_number(y)     
-   !  i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
-   !  call random_number(z) ; z=1.0-2*z ; z=z*0.2
-   !  ind(1)%MZ(i,j)= ind(1)%MZ(i,j)+z 
+     !call random_number(x)  ; call random_number(y)     
+     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
+     !call random_number(z) ; z=1.0-2*z ; z=z*0.2
+     !ind(1)%MZ(i,j)= ind(1)%MZ(i,j)+z 
      
-   !  call random_number(x)  ; call random_number(y)     
-   !  i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
-   !  if(ind(1)%MZZ(i,j).eq.0)then ; ind(1)%MZZ(i,j)=1 ; else ;  ind(1)%MZZ(i,j)=1 ; end if ! topological change      
-     
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !call random_number(x)  ; call random_number(y)     
+     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
+     !if(ind(1)%MZZ(i,j).eq.0)then ; ind(1)%MZZ(i,j)=1 ; else ;  ind(1)%MZZ(i,j)=1 ; end if ! topological change      
+   end do
  
 end do     ! evolutionary time 
 end do     ! replicates
 
-close(20067) ; close(20068)
-
+close(20067) ; close(20068)     ! closes files
+ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
+ret=SYSTEM('mv GRN_* files/')   ! replaces files into a folder
 
 end program startodo
 
