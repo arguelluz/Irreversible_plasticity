@@ -5,6 +5,7 @@ use development
 
  integer             :: whois              ! whois=fittest individual            
  real*4,allocatable  :: averagew(:,:)      ! a matrix for average data
+ character(len=17)   :: phenfile           ! name of the file storing fitness and phenotypes over time
  
  integer, allocatable :: seed(:)           ! setting the seed for random number generator (not accessible)
  integer size                              ! this way all replicates give the same result
@@ -23,10 +24,15 @@ ret=SYSTEM('pkill gnuplot')                ! ret=SYSTEM('rm dynamic.dat')
 
 do replica=1,replicas!4
 
+  write(phenfile,"(A5,I1,I1,I1,I1,A2,I2)")'PHEN_',&                     ! creating datafile for phenotypes and fitnesses over time
+  (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
+  (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,'_R',replica              ! creating datafile for phenotypes and fitnesses over time
+  phenfile(14:17)='.dat'                                                ! composing filename
+  do im=1,17 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do   ! composing filename
+  !write(*,*)'phenfile   ',phenfile 
+  open(20067,file=phenfile,status='unknown',action='write')    ! composing filename
+  
 call inicial                               ! it allocates and inicializes everything ...
-
-open(20067,file='Fitnessfile.dat',status='unknown',action='write')     ! okflush  !! WITHIN REPLICATEE !!*****
-open(20068,file='Phenotyfile.dat',status='unknown',action='write')     ! okflush !*********************
 
 fmax=0  ! records maximum fitness over evol time
 
@@ -87,8 +93,7 @@ do et=1,etmax    ! evolutionary time
    end if
    if(mod(et,lapso).eq.0)then
      averagew(et/lapso,replica)=fmaxx/real(n)
-   end if
-   write(20067,*)et,fmaxabs ; call flush(20067) 
+   end if  
    
    !!!!!!!!!!!!!!!!!!!!!!!   
    if(mod(et,lapso).eq.0)then                                           ! writting datafile with final matrix before mutation      
@@ -120,6 +125,10 @@ do et=1,etmax    ! evolutionary time
        do i=1,ind(1)%ngs
          write(7000,*)ind(pp)%ww(i,:)
        end do       
+       do i=1,PD                                                              ! PD,ind(i)%ncels)
+         write(20067,*)replica,et,pp,i,ind(pp)%phen(i,:),ind(pp)%fitness    ! Fitnesses and phenotypes in the general file ...    
+         call flush(20067)                                                    ! Fitnesses and phenotypes in the general file ...    
+       end do  
      end do
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZ(i,:)
@@ -154,11 +163,12 @@ do et=1,etmax    ! evolutionary time
    end do
  
 end do     ! evolutionary time 
+ close(20067)                    ! closes file
 end do     ! replicates
 
-close(20067) ; close(20068)     ! closes files
-ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
-ret=SYSTEM('mv GRN_* files/')   ! replaces files into a folder
+ret=SYSTEM('rm fort.*')          ! removes spurious stuffs
+ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
+ret=SYSTEM('mv PHEN_* files/')   ! replaces files into a folder
 
 end program startodo
 
