@@ -141,7 +141,7 @@ do et=1,etmax    ! evolutionary time
      
      call random_number(x)  ; call random_number(y)     
      i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! Allow multiple mutations
-     if(ind(pp)%ww(i,j).eq.0)then ; ind(pp)%ww(i,j)=1 ; else ;  ind(pp)%ww(i,j)=1 ; end if ! topological change
+     if(ind(pp)%ww(i,j).eq.0)then ; ind(pp)%ww(i,j)=1 ; else ;  ind(pp)%ww(i,j)=0 ; end if ! topological change
      
      !call random_number(x)  ; call random_number(y)     
      !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! Allow multiple mutations

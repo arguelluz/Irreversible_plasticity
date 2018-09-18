@@ -71,8 +71,8 @@ allocate(prepattern(n,ng))
 allocate(block(PD,2))                                     ! target dimensionality
 block=0.0                                   
 
-block(1:2,1)= (/-1.0,-1.0/)                               ! target in Environment 1
-block(1:2,2)= (/ 1.0,-1.0/)                               ! target in Environment 2
+block(1:2,1)= (/-1.0,-1.0/)                               ! target in Environment 1 (/trait1, trait2/)
+block(1:2,2)= (/ 1.0,-1.0/)                               ! target in Environment 2 (/trait1, trait2/)
 
 if((training.eq.0).and.(replica.lt.1))then ; return ; end if
 
