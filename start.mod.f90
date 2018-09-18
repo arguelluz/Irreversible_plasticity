@@ -57,8 +57,8 @@ reco=0                                                    ! recombination; 1=yes
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
 replicas=2                                                ! Number of replicates 
-conWW=1.0                                                 ! Connectivity WW  matrix (0,1) 
-conMZZ=1.0                                                ! Connectivity MZZ matrix (0,1)  
+conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1) 
+conMZZ=1.0                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
 intervals=4                                               ! Number of intervals for data recording. 
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if

@@ -140,16 +140,16 @@ do et=1,etmax    ! evolutionary time
      if((capped.eq.1).and.((ind(pp)%w(i,j).gt.1.0).or.(ind(pp)%w(i,j).lt.-1.0)))then ; goto 747 ; end if   ! capped ??
      
      call random_number(x)  ; call random_number(y)     
-     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! permito mutar un gen mas ...
+     i=int(x*real(ng)+1) ;  j=int(y*real(ng)+1)               ! Allow multiple mutations
      if(ind(pp)%ww(i,j).eq.0)then ; ind(pp)%ww(i,j)=1 ; else ;  ind(pp)%ww(i,j)=1 ; end if ! topological change
      
      !call random_number(x)  ; call random_number(y)     
-     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
+     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! Allow multiple mutations
      !call random_number(z) ; z=1.0-2*z ; z=z*0.2
      !ind(1)%MZ(i,j)= ind(1)%MZ(i,j)+z 
      
      !call random_number(x)  ; call random_number(y)     
-     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! permito mutar un gen mas ...
+     !i=int(x*real(ng)+1) ;  j=int(y*real(PD)+1)              ! Allow multiple mutations
      !if(ind(1)%MZZ(i,j).eq.0)then ; ind(1)%MZZ(i,j)=1 ; else ;  ind(1)%MZZ(i,j)=1 ; end if ! topological change      
    end do
  
