@@ -28,21 +28,21 @@ REPLICATE is an integer which denotes the unique ID of the random replicates (ra
 The latter part of the string contains the name of the file which we load the initial population from, or BLANK in case the simulation is initiated from empty networks  
 
 Content is formatted as a ascii file with commented header which records the following simulation parameters:  
-     'TARGETS (E1T1,E1T2,E2T1,E2T2)',block(1:2,1), block(1:2,2)  ! 1
-     'POPULATON SIZE...............',p                           ! 2
-     'STRENGHT OF SELECTION........',ss                          ! 3
-     'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 4
-     'TRAINING (1) vs TEST (0) SET ',training                    ! 5
-     'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 6
-     'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 7
-     'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 8
-     'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 9
-     'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 10   
-     'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 11
-
-Following the header the file records, for each individual, the W and WW matrices, encoding the connection weights of the GRN and the binary matrix detremining the GRN non-zero connections.
+     'TARGETS (E1T1,E1T2,E2T1,E2T2)',block(1:2,1), block(1:2,2)  ! 1  
+     'POPULATON SIZE...............',p                           ! 2  
+     'STRENGHT OF SELECTION........',ss                          ! 3  
+     'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 4  
+     'TRAINING (1) vs TEST (0) SET ',training                    ! 5  
+     'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 6  
+     'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 7  
+     'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 8  
+     'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 9  
+     'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 10     
+     'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 11  
+     
+Following the header the file records, for each individual, the W and WW matrices, encoding the connection weights of the GRN and the binary matrix detremining the GRN non-zero connections.  
 Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
-At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all indivisuals.
+At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
 Every matrix written is tab separated.
 
 ## File storing.
