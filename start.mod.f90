@@ -11,7 +11,7 @@ integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (n
 integer,allocatable :: thresholdsN(:)          ! thresholds in the N environments (for target switchings)
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
 real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg           ! Real auxiliar numbers 
-real*4 :: fmax,sdev,ss                         ! Real numbers variables
+real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
 real*4 :: conWW,conMZZ                         ! Connectivity arameters for binary matrices
 real*4, allocatable ::  prepattern(:,:),block(:,:)
 real*4 ,allocatable ::  thresholds(:)          ! thresholds in concentration of EFs (for target switchings)
@@ -23,7 +23,7 @@ character(len=22)   ::  arxaux                 ! for writting and reading datafi
 
 type,public :: inds   
   integer              :: ncels, ngs, sat      ! number of cells, number of genes and per cel and active genes, saturation time
-  real*4               :: fitness              ! individual fitness in t=0
+  real*4               :: fitness(2)           ! individual fitness in t=0, absolute and normalized
   real*4 ,allocatable  :: w(:,:)               ! interaction strenghts
   real*4, allocatable  :: MZ(:,:)              ! determines importance of node for determining final trait(s), continuous (can be negative)
   integer,allocatable  :: ww(:,:)              ! interaction strenghts discreteee (connected or not?)
@@ -46,24 +46,24 @@ subroutine arxivpublic ; end subroutine arxivpublic       ! just to acess this m
 
 subroutine inicial                                        ! allocate the matrices for cells and individuals
                                                
-p=8                                                       ! number of individuals (must be an EVEN NUMBER !!!)
+p=32                                                      ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1000                                                ! evolutionary time      
+etmax=10000                                               ! evolutionary time      
 EF=1                                                      ! EF=Number of environmental factors (inputs)    
-n=4                                                       ! number of different environments
+n=2                                                       ! number of different environments
 ng=6                                                      ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.1                                                  ! standard deviation for the mutator algorithm
-ss=1.0                                                    ! selection strenght
+ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=3                                                ! Number of replicates 
+replicas=1                                                ! Number of replicates 
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1) 
 conMZZ=1.0                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
-intervals=4                                               ! Number of intervals for data recording. 
+intervals=2 ! prueba                                               ! Number of intervals for data recording. 
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 
@@ -124,6 +124,7 @@ do i=1,p                                                  ! for all individuals 
   allocate(indT(i)%phen(PD,ind(i)%ncels))                 ! phenotype
   
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
+
   !ind(i)%epigen(1:2,1)=(/-1.0, 1.0/)                     ! ENVIRONMENTAL FACTORS IN ENVIRONMENT 1
   !ind(i)%epigen(1:2,2)=(/ 1.0,-1.0/)                     ! ENVIRONMENTAL FACTORS IN ENVIRONMENT 2
   thresholds(1)=0.0 ; thresholdsN(1)=0                    ! Re-do for EF>1 !!! WARNING !!!!
@@ -136,8 +137,8 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!! 
   end do                                                  ! 
   if(i.eq.1)then
-    block(1:2,1)= (/-1.0,-1.0/)                           ! target in Environment 1 (/trait1, trait2/)
-    block(1:2,n)= (/ 1.0,-1.0/)                           ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
+    block(1:2,1)=(/-1.0,-1.0/)                            ! target in Environment 1 (/trait1, trait2/)
+    block(1:2,n)=(/ 1.0,-1.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
     do ii=1,n                                             ! for each environment from 1 to n ...
       if(ii.lt.thresholdsN(1))then                        ! CHECK BEFORE UPLOADING !!!!!********************
         block(1:2,ii)=block(1:2,1)
@@ -152,7 +153,7 @@ do i=1,p                                                  ! for all individuals 
     ind(i)%g(ii,:)=0.0   
     do iii=1,ind(i)%ngs                                   ! setting initial gene concentrations in each cell
        call random_number(x) 
-       ind(i)%g(ii,iii)=0.01!*x                           ! small or small noisy initial gene expression     
+       ind(i)%g(ii,iii)=0.01!*x   prueba                        ! small or small noisy initial gene expression     
        prepattern(ii,iii)=ind(i)%g(ii,iii)
     end do
   end do

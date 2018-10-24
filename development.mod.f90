@@ -73,7 +73,6 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
       end do
     end do
   end do
-
 end subroutine
 
 !!!!!!!!!!!!!!!!!! !!!! MUTATION IN THE FOUR MATRICES !!!!!!!   
