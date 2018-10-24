@@ -46,11 +46,11 @@ subroutine arxivpublic ; end subroutine arxivpublic       ! just to acess this m
 
 subroutine inicial                                        ! allocate the matrices for cells and individuals
                                                
-p=32                                                      ! number of individuals (must be an EVEN NUMBER !!!)
+p=64                                                      ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=10000                                               ! evolutionary time      
+etmax=1000                                               ! evolutionary time      
 EF=1                                                      ! EF=Number of environmental factors (inputs)    
 n=2                                                       ! number of different environments
 ng=6                                                      ! initial number of genes
@@ -60,10 +60,10 @@ ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=1                                                ! Number of replicates 
+replicas=9                                                ! Number of replicates 
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1) 
-conMZZ=1.0                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
-intervals=2 ! prueba                                               ! Number of intervals for data recording. 
+conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
+intervals=2                                               ! Number of intervals for data recording. 
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 
@@ -137,8 +137,8 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!! 
   end do                                                  ! 
   if(i.eq.1)then
-    block(1:2,1)=(/-1.0,-1.0/)                            ! target in Environment 1 (/trait1, trait2/)
-    block(1:2,n)=(/ 1.0,-1.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
+    block(1:2,1)=(/4.0,4.0/)                            ! target in Environment 1 (/trait1, trait2/)
+    block(1:2,n)=(/4.0,4.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
     do ii=1,n                                             ! for each environment from 1 to n ...
       if(ii.lt.thresholdsN(1))then                        ! CHECK BEFORE UPLOADING !!!!!********************
         block(1:2,ii)=block(1:2,1)
@@ -153,7 +153,7 @@ do i=1,p                                                  ! for all individuals 
     ind(i)%g(ii,:)=0.0   
     do iii=1,ind(i)%ngs                                   ! setting initial gene concentrations in each cell
        call random_number(x) 
-       ind(i)%g(ii,iii)=0.01!*x   prueba                        ! small or small noisy initial gene expression     
+       ind(i)%g(ii,iii)=0.01!*x                           ! small or small noisy initial gene expression     
        prepattern(ii,iii)=ind(i)%g(ii,iii)
     end do
   end do

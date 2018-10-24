@@ -66,7 +66,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels 
     do t=1,pd 
-      do j=1,ind(i)%ngs
+      do j=EF,ind(i)%ngs                                          ! Excluding environmentally-sensitive genes
         if(ind(i)%MZZ(j,t).ne.0)then
           ind(i)%phen(t,jjj)=ind(i)%phen(t,jjj)+ind(i)%g(jjj,j)*ind(i)%MZ(j,t)
         end if
@@ -94,14 +94,14 @@ real*4  :: Mx,My,Mz
      i=int(Mx*real(ng)+1) ;  j=int(My*real(ng)+1)                  ! Allow multiple mutations
      if(ind(pp)%ww(Mi,Mj).eq.0)then ; ind(pp)%ww(Mi,Mj)=1 ; else ;  ind(pp)%ww(Mi,Mj)=0 ; end if ! topological change
      
-     !call random_number(Mx)  ; call random_number(My)     
-     !Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
-     !call random_number(Mz) ; Mz=1.0-2*Mz ; Mz=Mz*0.2
-     !ind(1)%MZ(Mi,Mj)= ind(1)%MZ(Mi,Mj)+Mz 
+     call random_number(Mx)  ; call random_number(My)     
+     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+     call random_number(Mz) ; Mz=1.0-2*Mz ; Mz=Mz*0.2
+     ind(pp)%MZ(Mi,Mj)=ind(pp)%MZ(Mi,Mj)+Mz 
      
-     !call random_number(Mx)  ; call random_number(My)     
-     !Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
-     !if(ind(1)%MZZ(Mi,Mj).eq.0)then ; ind(1)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change    
+     call random_number(Mx)  ; call random_number(My)     
+     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+     if(ind(pp)%MZZ(Mi,Mj).eq.0)then ; ind(pp)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change    
      
 end subroutine
 
