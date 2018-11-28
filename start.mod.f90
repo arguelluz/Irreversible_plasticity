@@ -97,7 +97,7 @@ if((training.eq.0).and.(replica.lt.1))then ; return ; end if
     open(9000,file='files/'//arxiv,action='read',iostat=ios) 
     do i=1,12 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
-    arxiv(23:25)='GRN' ; arxiv(26:40)='_'  
+    arxiv(23:25)='GRN' ; arxiv(26:44)='_'  
   end if      
 !!!!!!!!!!!!!!!!!!!!!!!
 
