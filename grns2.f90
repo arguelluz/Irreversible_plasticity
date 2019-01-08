@@ -4,7 +4,7 @@ use start
 use development
 
  integer             :: whois              ! whois=fittest individual
- character(len=21)   :: phenfile           ! name of the file storing fitness and phenotypes over time
+ character(len=24)   :: phenfile           ! name of the file storing fitness and phenotypes over time
 
  integer, allocatable :: seed(:)           ! setting the seed for random number generator (not accessible)
  integer size                              ! this way all replicates give the same result
@@ -18,14 +18,22 @@ use development
  ret=SYSTEM('pkill gnuplot')               ! ret=SYSTEM('rm dynamic.dat')
 
 do replica=1,replicas!4
+ 
+    if(training.eq.1)then
+    write(phenfile,"(A8,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&            ! PHEN_TR for training
+    (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
+    (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time  
+    '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
+     phenfile(21:24)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time   
+   else
+    write(phenfile,"(A8,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&            ! PHEN_TE for test
+    (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
+    (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time  
+    '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
+     phenfile(21:24)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time   
+   end if                                                 
 
-  write(phenfile,"(A5,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_',&               ! creating datafile for phenotypes and fitnesses over time
-  (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
-  (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,&
-  '_C',thresholdsN(1),'_R',replica 
-   phenfile(18:21)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time                                                 
-
-  do im=1,21 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do   ! composing filename
+  do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do   ! composing filename
   open(20067,file=phenfile,status='unknown',action='write')             ! composing filename
 
 call inicial                                                            ! it allocates and inicializes everything ...
@@ -97,7 +105,7 @@ do et=1,etmax                                                           ! evolut
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
      if(arxaux(15:15)==" ") arxaux(15:15)="0"                           ! composing filename replicate
      do im=19,22 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
-     arxifin(1:22)=arxiv(23:40)                                         ! composing filename
+     arxifin(1:22)=arxiv(23:44)                                         ! composing filename
      arxifin(23:44)=arxaux(1:22) ; arxifin(45:48)='.dat'                ! composing filename
 
      do im=1,44 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename   
@@ -123,24 +131,15 @@ do et=1,etmax                                                           ! evolut
        end do
        do i=1,ind(1)%ngs
          write(7000,*)ind(pp)%ww(i,:)
-<<<<<<< HEAD
        end do
        do j=1,n
             do i=1,PD                                                                 ! PD, ind(i)%ncels)
                write(20067,*)replica,et,pp,j,i,ind(pp)%phen(i,j),ind(pp)%fitness(1)   ! Fitnesses and phenotypes in the general file ...
                call flush(20067)                                                      ! Fitnesses and phenotypes in the general file ...
             end do
-         end do
-=======
-       end do       
-       do j=1,n  
-         do i=1,PD                                                                ! PD,ind(i)%ncels)         
-           write(20067,*)replica,et,pp,j,i,ind(pp)%phen(1:2,j),ind(pp)%fitness(1) ! Fitnesses and phenotypes in the general file ...    
-           call flush(20067)                                                      ! Fitnesses and phenotypes in the general file ... 
-         end do     
-       end do  
->>>>>>> 55baed62da8cfd39c78ae723203532e30f8134dd
+       end do
      end do
+     
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZ(i,:)
      end do
