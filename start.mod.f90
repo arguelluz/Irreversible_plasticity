@@ -56,10 +56,10 @@ n=2                                                       ! number of different 
 ng=5                                                      ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.1                                                  ! standard deviation for the mutator algorithm
-ss=0.2                                                    ! selection strenght
+ss=0.000001                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=1                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
-training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
+training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
 replicas=9                                                ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
@@ -137,8 +137,8 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
   end do                                                  !
   if(i.eq.1)then
-    block(1:2,1)=(/1.0,1.0/)                            ! target in Environment 1 (/trait1, trait2/)
-    block(1:2,n)=(/1.0,1.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
+    block(1:2,1)=(/-2.0,2.0/)                            ! target in Environment 1 (/trait1, trait2/)
+    block(1:2,n)=(/2.0,2.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
     do ii=1,n                                             ! for each environment from 1 to n ...
       if(ii.lt.thresholdsN(1))then                        ! CHECK BEFORE UPLOADING !!!!!********************
         block(1:2,ii)=block(1:2,1)
