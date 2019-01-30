@@ -3,7 +3,8 @@ module start
 implicit none
 
 integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p! general counters
-integer :: ios,logp,t,et,tmax,etmax,capped,reco! general counters
+integer :: ios,logp,t,et,tmax,etmax            ! more general counters
+integer :: mzadhoc,capped,reco                 ! Some switchers
 integer :: training,replicas                   ! If training=1 -> Training set, starting from W=0. Otherwise W from file
 integer :: ret,pp,im                           ! integers for calling external functions or modifyind datafiles. 
 integer :: lapso,intervals                     ! Intervals=number of intervals for data recording. Lapso: Generations in an interval.
@@ -65,6 +66,8 @@ conWW=1.0                                                 ! Probability of havin
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
 intervals=2                                               ! Number of intervals for data recording. 
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
+mzadhoc=0                                                 ! If 0: Mz and Mzz matrices read/generated normally.
+                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 
 if(allocated(ind))then    
@@ -89,7 +92,7 @@ if((training.eq.0).and.(replica.lt.1))then ; return ; end if
 !!!!!!!!!!!!!!!!!!!!!!                                    ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                   ! Introducing manually the filename from where the system uploads the population
            !GRN_1234_R12_T1234                            ! Follow this template
-    arxaux='GRN_0010_C06_R01_T0001' 
+    arxaux='GRN_2222_C02_R01_T0002' 
            !123456789012345678
     arxiv(1:3)='GRN' ; arxiv(4:22)='_' ; arxiv(23:44)=arxaux(1:22) 
     arxiv(45:48)='.dat'                                             ! composing filename
@@ -208,13 +211,28 @@ if(training.ne.1)then                                                   ! Test s
   close(9000)
 end if 
 
- indt=ind                                                 ! just initializing all the matrices for time steps
-
+ indt=ind                                                               ! just initializing all the matrices for time steps
+ 
+ if(mzadhoc.eq.1)then                                                   ! Uploading Mz and Mzz matrices from external file IFF Mzadhoc==1.
+   open(1133,file='files/mzadhoc.dat',action='read',iostat=ios)         ! Uploading Mz and Mzz matrices from external file IFF Mzadhoc==1.
+   do iii=1,ind(1)%ngs
+     read(1133,*) ind(1)%MZ(iii,1:pd)                                    ! uploading MZ  for the whole population from file
+   end do    
+   do iii=1,ind(1)%ngs
+     read(1133,*) ind(1)%MZZ(iii,1:pd)                                   ! uploading MZZ for the whole population from file
+   end do       
+   do iii=1,p
+     ind(iii)%MZ=ind(1)%MZ	    								 		! homogeneous MZ matrix for all individuals
+     ind(iii)%MZZ=ind(1)%MZZ                                            ! homogeneous MZ matrix for all individuals 
+   end do
+   close(1133)
+ end if 
+ 
  do i=1,p
    do ii=1,n                                              ! (ncels)! all individuals must have identical prepatterns
      ind(i)%g(ii,1:ng)=ind(1)%g(ii,1:ng)
      prepattern(ii,1:ng)=ind(1)%g(ii,1:ng)
-   end do 
+   end do                                    
  end do 
 
 end subroutine inicial

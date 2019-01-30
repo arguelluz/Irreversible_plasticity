@@ -93,16 +93,17 @@ real*4  :: Mx,My,Mz
      call random_number(Mx)  ; call random_number(My)
      i=int(Mx*real(ng)+1) ;  j=int(My*real(ng)+1)                  ! Allow multiple mutations
      if(ind(pp)%ww(Mi,Mj).eq.0)then ; ind(pp)%ww(Mi,Mj)=1 ; else ;  ind(pp)%ww(Mi,Mj)=0 ; end if ! topological change
-
-     call random_number(Mx)  ; call random_number(My)
-     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
-     call random_number(Mz) ; Mz=1.0-2*Mz ; Mz=Mz*0.2
-     ind(pp)%MZ(Mi,Mj)=ind(pp)%MZ(Mi,Mj)+Mz
-
-     call random_number(Mx)  ; call random_number(My)
-     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
-     if(ind(pp)%MZZ(Mi,Mj).eq.0)then ; ind(pp)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change
-
+     
+     if(mzadhoc.ne.1)then                                           ! If Mz and Mzz are pre-specified they do not mutate
+       call random_number(Mx)  ; call random_number(My)     
+       Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+       call random_number(Mz) ; Mz=1.0-2*Mz ; Mz=Mz*0.2
+       ind(pp)%MZ(Mi,Mj)=ind(pp)%MZ(Mi,Mj)+Mz 
+     
+       call random_number(Mx)  ; call random_number(My)     
+       Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+       if(ind(pp)%MZZ(Mi,Mj).eq.0)then ; ind(pp)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change    
+     end if
 end subroutine
 
 
