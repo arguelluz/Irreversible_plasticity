@@ -54,7 +54,7 @@ tmax=20                                                   ! developmental time
 etmax=1000                                                ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=2                                                       ! number of different environments
-ng=5                                                      ! initial number of genes
+ng=2                                                      ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.1                                                  ! standard deviation for the mutator algorithm
 ss=0.000001                                                    ! selection strenght
@@ -66,8 +66,8 @@ conWW=1.0                                                 ! Probability of havin
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=20                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
-mzadhoc=0                                                 ! If 0: Mz and Mzz matrices read/generated normally.
-                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
+                                                          ! If 1: Mz and Mzz matrices uploaded from external file named mzadhoc.dat in folder ./files. For all P and Training.
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 
 if(allocated(ind))then

@@ -1,0 +1,19 @@
+
+    In start.mod.f90 there is a new variable mzadhoc (line 69).
+    If mz is set to 1, the program takes MZ and MZZ Matrices from an external file called mzadhoc.dat.
+    The file  must be located in the folder files/.
+    The data structure within the file is: rows-> genes; columns->traits.
+    First is the MZ matrix and then the binary MZZ.
+    All individuals will have the same matrices.
+    MZ and MZZ won't mutate.
+    E.g for a population with 4 genes and 2 traits the file could be:
+
+            0.5  -0.5
+            0.7   0.1
+            1.0  -1.2
+           -1.4   0.3
+
+               1      1
+               1      1
+               0      1
+               1      0
