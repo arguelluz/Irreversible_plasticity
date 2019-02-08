@@ -140,8 +140,8 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!! 
   end do                                                  ! 
   if(i.eq.1)then
-    block(1:2,1)=(/1.3,1.2/)                            ! target in Environment 1 (/trait1, trait2/)
-    block(1:2,n)=(/-1.1,-1.4/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
+    block(1:2,1)=(/1.3,-1.2/)                            ! target in Environment 1 (/trait1, trait2/)
+    block(1:2,n)=(/1.3,-1.2/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
     do ii=1,n                                             ! for each environment from 1 to n ...
       if(ii.lt.thresholdsN(1))then                        ! CHECK BEFORE UPLOADING !!!!!********************
         block(1:2,ii)=block(1:2,1)
