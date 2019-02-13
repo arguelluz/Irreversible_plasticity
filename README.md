@@ -27,6 +27,11 @@ If option mzadhoc = 1, loads manually specified hidden to phenotype matrices fro
 Matrix format is rows = genes, columns = traits. The first rows specify the continuous connection weights, followed by the discrete presence/absence connection data.  
 
 ## Output file format
+The program produces 2 types of files:  
+Population files contain the machine-readable simulation parameters and the matrices necessary to re-load populations.  
+Phenotype files contain the simulation results for every generation.
+
+# Population files
 Running GRN2 generates files in the following format:  
 GRN_TARGET_THRESHOLD_REPLICATE_TIME_TARGET1_REPLICATE1_TIME1.dat  
 Where GRN is the file identifier  
@@ -53,6 +58,18 @@ Content is formatted as a ascii file with commented header which records the fol
 Following the header the file records, for each individual, the W (weights) and WW (discrete connection) matrices for the hidden layer. Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
 Every matrix written is tab separated.
+
+# Phenotype files
+Phenotype files are tab separated annotations of the phenotype of every individual of the population, at each time step and in every environment.  
+Each row represents an individual of a population at a given time step in a given environment.  
+Columns are annotated as follows:  
+* "Replicate"      Integer, ID of the simulation replicate.  
+* "Generation"     Integer, Number of generations since the simulation start.  
+* "Individual"     Integer, ID of the individual in the population. Note that individuals change between generations.  
+* "Environment"    Integer, ID of the environment the organism is exposed to.  
+* "Trait"          Integer, ID of the trait whose value is shown in column "Phenotype"  
+* "Phenotype"      Continuous real, numeric value of the trait annotated in column "Trait"  
+* "Fitness"        Continuous real, fitness value of the individual across ALL environments
 
 ## File storing.
 
