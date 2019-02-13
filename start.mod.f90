@@ -6,6 +6,7 @@ integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p! general counters
 integer :: ios,logp,t,et,tmax,etmax            ! more general counters
 integer :: mzadhoc,capped,reco                 ! Some switchers
 integer :: training,replicas                   ! If training=1 -> Training set, starting from W=0. Otherwise W from file
+integer :: hillclimber                         ! If set to 1-> Strict hill-climber, deterministic selection. 
 integer :: ret,pp,im                           ! integers for calling external functions or modifyind datafiles. 
 integer :: lapso,intervals                     ! Intervals=number of intervals for data recording. Lapso: Generations in an interval.
 integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (number of traits),EF=Environmental factors
@@ -13,7 +14,7 @@ integer,allocatable :: thresholdsN(:)          ! thresholds in the N environment
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
 real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg           ! Real auxiliar numbers 
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
-real*4 :: conWW,conMZZ                         ! Connectivity arameters for binary matrices
+real*4 :: conWW,conMZZ,maxepigen               ! Connectivity arameters for binary matrices. Maximum absolute value for env. cue
 real*4, allocatable ::  prepattern(:,:),block(:,:)
 real*4 ,allocatable ::  thresholds(:)          ! thresholds in concentration of EFs (for target switchings)
 real*4,allocatable  ::  premutW(:,:)           ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -47,28 +48,33 @@ subroutine arxivpublic ; end subroutine arxivpublic       ! just to acess this m
 
 subroutine inicial                                        ! allocate the matrices for cells and individuals
                                                
-p=2                                                      ! number of individuals (must be an EVEN NUMBER !!!)
+p=16                                                       ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1000                                                ! evolutionary time      
+etmax=100!0                                               ! evolutionary time      
 EF=1                                                      ! EF=Number of environmental factors (inputs)    
 n=2                                                       ! number of different environments
-ng=2                                                      ! initial number of genes
+ng=2!6                                                    ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.1                                                  ! standard deviation for the mutator algorithm
-ss=0.000002                                                   ! selection strenght
+ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=20                                                ! Number of replicates 
+replicas=9                                                ! Number of replicates 
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1) 
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)  
 intervals=2                                               ! Number of intervals for data recording. 
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
+hillclimber=0                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS. 
+maxepigen=1.0                                             ! Maximum absolute value for env. cue
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
-                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.                                                          
+                                                          
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
+if ((hillclimber.eq.1).and.(p.gt.2))then 
+write(*,*)'WARNING! You are using large (p>2) populations with a hill-climber NS !'; end if
 
 if(allocated(ind))then    
   deallocate(ind) ; deallocate(indt) ; deallocate(gen)    ! Allocating variables
@@ -134,14 +140,15 @@ do i=1,p                                                  ! for all individuals 
   do ii=1,n                                               ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
     ind(i)%epigen(1,ii)=2.0*(1.0-(real(ii-1)/real(n-1)))  ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
     ind(i)%epigen(1,ii)=ind(i)%epigen(1,ii)-1.0           ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
+    ind(i)%epigen(1,ii)=maxepigen*ind(i)%epigen(1,ii)     ! Maximum absolute value for env. cue
     if(ind(i)%epigen(1,ii).le.thresholds(1))then          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       if(thresholdsN(1).eq.0)then                         ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!  
       thresholdsN(1)=ii ; end if                          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!! 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!! 
   end do                                                  ! 
   if(i.eq.1)then
-    block(1:2,1)=(/1.3,-1.2/)                            ! target in Environment 1 (/trait1, trait2/)
-    block(1:2,n)=(/1.3,-1.2/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
+    block(1:2,1)=(/4.0,4.0/)                            ! target in Environment 1 (/trait1, trait2/)
+    block(1:2,n)=(/4.0,4.0/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
     do ii=1,n                                             ! for each environment from 1 to n ...
       if(ii.lt.thresholdsN(1))then                        ! CHECK BEFORE UPLOADING !!!!!********************
         block(1:2,ii)=block(1:2,1)
