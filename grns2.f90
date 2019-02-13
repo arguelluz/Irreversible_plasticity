@@ -77,26 +77,35 @@ do et=1,etmax                                                           ! evolut
     do i=1,p 
       ind(i)%fitness(2)=ind(i)%fitness(2)/fmax 
     end do
-    do i=1,p														    ! super-optimized screening
-      if(fmax.le.real(p)*delta)then ; whois=i ; goto 642 ; end if       ! all individuals are equal
-      call random_number(x)												! non-deterministic selection
-      kk=p/2 ; k=p/2
-      do j=1,logp
-        k=k/2
-        if(j.eq.logp-1)then;k=1;end if                                  ! allows for p non congruent log2(p)
-        if(x.le.ind(kk)%fitness(2))then                
-          if(j.eq.logp)then;whois=kk;end if
-          kk=kk-k    
-          if(kk.le.0)then ; whois=1 ; goto 642 ; end if  
-        else if(x.gt.ind(kk)%fitness(2))then
-          if(j.eq.logp)then;whois=kk+1;end if
-          kk=kk+k
-          if(kk.gt.p)then ; whois=p ; goto 642 ; end if
-        end if
+    if(hillclimber.ne.1)then                                            ! Probabilistic selection
+      do i=1,p														    ! super-optimized screening
+        if(fmax.le.real(p)*delta)then ; whois=i ; goto 642 ; end if     ! all individuals are equal
+        call random_number(x)											! non-deterministic selection
+        kk=p/2 ; k=p/2
+        do j=1,logp
+          k=k/2
+          if(j.eq.logp-1)then;k=1;end if                                ! allows for p non congruent log2(p)
+          if(x.le.ind(kk)%fitness(2))then                
+            if(j.eq.logp)then;whois=kk;end if
+            kk=kk-k    
+            if(kk.le.0)then ; whois=1 ; goto 642 ; end if  
+          else if(x.gt.ind(kk)%fitness(2))then
+            if(j.eq.logp)then;whois=kk+1;end if
+            kk=kk+k
+            if(kk.gt.p)then ; whois=p ; goto 642 ; end if
+          end if
+        end do
+        642 indt(i)=ind(whois)                                          ! it fills up next generation
       end do
-      642 indt(i)=ind(whois)                                            ! it fills up next generation
-    end do
-    ind=indt
+      ind=indt
+    else
+      do i=1,p                                                          ! Strict hill-climber 
+        if(ind(i)%fitness(2).eq.maxval(ind(:)%fitness(2)))then          ! Strict hill-climber 
+          whois=i ; exit                                                ! Strict hill-climber
+        end if                                                          ! Strict hill-climber
+      end do 
+      ind=indt(whois)
+    end if
    !!!!!!!!!!!!!!!!!!!!!!!!
 
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation  
