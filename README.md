@@ -1,5 +1,6 @@
 ﻿# Irreversible_plasticity
-Irreversible_plasticity project A.Rago and M.Brun-Usan
+Irreversible_plasticity project  
+A. Rago and M. Brun-Usan
 
 ## Compiling files
 Uses f90 FORTRAN compiler, available by default on most LINUX distributions.  
@@ -31,7 +32,7 @@ The program produces 2 types of files:
 Population files contain the machine-readable simulation parameters and the matrices necessary to re-load populations.  
 Phenotype files contain the simulation results for every generation.
 
-# Population files
+### Population files
 Running GRN2 generates files in the following format:  
 GRN_TARGET_THRESHOLD_REPLICATE_TIME_TARGET1_REPLICATE1_TIME1.dat  
 Where GRN is the file identifier  
@@ -59,7 +60,7 @@ Following the header the file records, for each individual, the W (weights) and 
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
 Every matrix written is tab separated.
 
-# Phenotype files
+### Phenotype files
 Phenotype files are tab separated annotations of the phenotype of every individual of the population, at each time step and in every environment.  
 Each row represents an individual of a population at a given time step in a given environment.  
 Columns are annotated as follows:  
