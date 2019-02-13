@@ -19,6 +19,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
   do jjj=1,ng                                         ! REVERSE
     ind(i)%w (jjj,1:ng)=premutW (jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
+    ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019
+    !write(*,*)'unstable'
   end do
 
   pp=i                                                     ! Mutation in the generative matrices for each individual
@@ -27,18 +29,18 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
   ind(i)%sat=0
   indt(i)%g=0.0
   do t=1,tmax                                              ! developmental time
+      !write(*,*)'i,t',et,i,t     
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
           q=0.0	                                           ! REACTION
-          do jjj=1,ind(i)%ngs
-              if(ind(i)%ww(k,jjj).ne.0)then                ! for all active gene interaction
+          do jjj=1,ind(i)%ngs                                   
+            if(ind(i)%ww(k,jjj).ne.0)then                ! for all active gene interaction  
               q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)
             end if
-          end do
-          q=0.5*q+ind(i)%epigen(k,j)                       ! EPIGENESIS
-          y=gen(k)%deg*x                                   ! DEGRADATION
-
+          end do 
+          q=0.5*q+ind(i)%epigen(k,j)*0.5                   ! EPIGENESIS (environmental and genetic effects are balanced)        
+          y=gen(k)%deg*x                                   ! DEGRADATION                     
           indt(i)%g(j,k)=x+tanh(q)-y                       ! t+1      ! iterative developmental function Kostas
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium
@@ -64,9 +66,9 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
   end do                                                   ! end loop developmental time
 
   ind(i)%phen=0.0                                          ! phenotyping
-  do jjj=1,ind(i)%ncels
-    do t=1,pd
-      do j=EF,ind(i)%ngs                                          ! Excluding environmentally-sensitive genes
+  do jjj=1,ind(i)%ncels 
+    do t=1,pd 
+      do j=1,ind(i)%ngs                                    ! Set 1 to EF to exclude environmentally-sensitive genes.
         if(ind(i)%MZZ(j,t).ne.0)then
           ind(i)%phen(t,jjj)=ind(i)%phen(t,jjj)+ind(i)%g(jjj,j)*ind(i)%MZ(j,t)
         end if
