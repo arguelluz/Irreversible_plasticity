@@ -65,17 +65,17 @@ Every matrix written is tab separated.
 
 ### Phenotype files
 Phenotype files are tab separated annotations of the phenotype of every individual of the population, at each time step and in every environment.  
-Each row represents an individual of a population at a given time step in a given environment.  
+Each row represents an individual of a population at a given time step in a given environment. NOTE: Individuals change between generations: individual IDs are only used to distinguish between individuals of the same generation.   
 Columns are annotated as follows:  
 
 ```
-* "Replicate"      Integer, ID of the simulation replicate  
-* "Generation"     Integer, Number of generations since the simulation start  
-* "Individual"     Integer, ID of the individual in the population. Note that individuals change between generations  
-* "Environment"    Integer, ID of the environment the organism is exposed to  
-* "Trait"          Integer, ID of the trait whose value is shown in column "Phenotype"  
-* "Phenotype"      Continuous real, numeric value of the trait annotated in column "Trait"  
-* "Fitness"        Continuous real, fitness value of the individual across ALL environments
+"Replicate"      Integer, ID of the simulation replicate  
+"Generation"     Integer, Number of generations since the simulation start  
+"Individual"     Integer, ID of the individual in the population.  
+"Environment"    Integer, ID of the environment the organism is exposed to  
+"Trait"          Integer, ID of the trait whose value is shown in column "Phenotype"  
+"Phenotype"      Continuous real, numeric value of the trait annotated in column "Trait"  
+"Fitness"        Continuous real, average fitness value of the individual across ALL environments
 ```
 
 ## File storing.
