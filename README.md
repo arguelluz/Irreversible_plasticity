@@ -43,6 +43,8 @@ REPLICATE is an integer which denotes the unique ID of the random replicates (ra
 The latter part of the string contains the name of the file which we load the initial population from, or BLANK in case the simulation is initiated from empty networks  
 
 Content is formatted as a ascii file with commented header which records the following simulation parameters:  
+
+```
      'TARGETS (E1T1,E1T2,ENT1,ENT2)',block(1:2,1), block(1:2,n)  ! 1  
      'THRESHOLDS(CELL).............',thresholds(1)               ! 2  
      'POPULATON SIZE...............',p                           ! 3  
@@ -55,6 +57,7 @@ Content is formatted as a ascii file with commented header which records the fol
      'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10  
      'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11   
      'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 12   
+```
 
 Following the header the file records, for each individual, the W (weights) and WW (discrete connection) matrices for the hidden layer. Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
@@ -64,13 +67,16 @@ Every matrix written is tab separated.
 Phenotype files are tab separated annotations of the phenotype of every individual of the population, at each time step and in every environment.  
 Each row represents an individual of a population at a given time step in a given environment.  
 Columns are annotated as follows:  
-* "Replicate"      Integer, ID of the simulation replicate.  
-* "Generation"     Integer, Number of generations since the simulation start.  
-* "Individual"     Integer, ID of the individual in the population. Note that individuals change between generations.  
-* "Environment"    Integer, ID of the environment the organism is exposed to.  
+
+```
+* "Replicate"      Integer, ID of the simulation replicate  
+* "Generation"     Integer, Number of generations since the simulation start  
+* "Individual"     Integer, ID of the individual in the population. Note that individuals change between generations  
+* "Environment"    Integer, ID of the environment the organism is exposed to  
 * "Trait"          Integer, ID of the trait whose value is shown in column "Phenotype"  
 * "Phenotype"      Continuous real, numeric value of the trait annotated in column "Trait"  
 * "Fitness"        Continuous real, fitness value of the individual across ALL environments
+```
 
 ## File storing.
 
