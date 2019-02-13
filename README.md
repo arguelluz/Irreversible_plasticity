@@ -43,18 +43,18 @@ REPLICATE is an integer which denotes the unique ID of the random replicates (ra
 The latter part of the string contains the name of the file which we load the initial population from, or BLANK in case the simulation is initiated from empty networks  
 
 Content is formatted as a ascii file with commented header which records the following simulation parameters:  
-     write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',block(1:2,1), block(1:2,n)  ! 1  
-     write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2  
-     write(7000,*)'POPULATON SIZE...............',p                           ! 3  
-     write(7000,*)'STRENGHT OF SELECTION........',ss                          ! 4  
-     write(7000,*)'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 5  
-     write(7000,*)'TRAINING (1) vs TEST (0) SET ',training                    ! 6  
-     write(7000,*)'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 7  
-     write(7000,*)'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 8  
-     write(7000,*)'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 9  
-     write(7000,*)'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10  
-     write(7000,*)'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11   
-     write(7000,*)'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 12   
+     'TARGETS (E1T1,E1T2,ENT1,ENT2)',block(1:2,1), block(1:2,n)  ! 1  
+     'THRESHOLDS(CELL).............',thresholds(1)               ! 2  
+     'POPULATON SIZE...............',p                           ! 3  
+     'STRENGHT OF SELECTION........',ss                          ! 4  
+     'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 5  
+     'TRAINING (1) vs TEST (0) SET ',training                    ! 6  
+     'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 7  
+     'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 8  
+     'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 9  
+     'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10  
+     'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11   
+     'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 12   
 
 Following the header the file records, for each individual, the W (weights) and WW (discrete connection) matrices for the hidden layer. Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
