@@ -7,22 +7,30 @@ All commands for compiling are in grns.sh
 grns.sh also includes routines to check correct syntax  
 
 ## Workflow
-Change parameters in file "start"  
-Run models from file "grns2"  
+Change parameters in file start.mod.90  
+recompile program by running grns.sh
+Run models using program grns.e  
 
+## Program structure
 Requires 3 main files:  
 
-* start: Declares most variables used in simuations
+* start: Declares most variables used in simulation
 * development: Contains developmental loop for each individual
 * grns2: Contains evolutionary loop (fitness evaluation, mutation etc)
-Calls start for global parameters and development for each individual
-Loads pre-trained networks named in the GRNames.dat file (for now, working to include it as a parameter in "start")
+
+Calls start for global parameters and development for each individual.
+
+## Manual input options
+
+If option training = 0, loads pre-trained networks specified by name in start file (lines 92+).
+If option mzadhoc = 1, loads manually specified hidden to phenotype matrices from /files/mzadhoc.dat
+Matrix format is rows = genes, columns = traits. The first rows specify the continuous connection weights, followed by the discrete presence/absence connection data.
 
 ## Output file format
 Running GRN2 generates files in the following format:  
 GRN_TARGET_THRESHOLD_REPLICATE_TIME_TARGET1_REPLICATE1_TIME1.dat  
 Where GRN is the file identifier  
-TARGET is a string of integers which identifies the multivariate targets in format E1T1E1T2ENT1ENT2 
+TARGET is a string of integers which identifies the multivariate targets in format E1T1E1T2ENT1ENT2
 THRESHOLD is an integer stating in which cell the target E1T1E1T2 switches to ENT1ENT2
 TIME is an integer describing which simulation checkpoint is recored  
 REPLICATE is an integer which denotes the unique ID of the random replicates (random seed)  
@@ -41,12 +49,11 @@ Content is formatted as a ascii file with commented header which records the fol
      write(7000,*)'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10
      write(7000,*)'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11   
      write(7000,*)'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 12   
-Following the header the file records, for each individual, the W and WW matrices, encoding the connection weights of the GRN and the binary matrix detremining the GRN non-zero connections.
 
-Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
+Following the header the file records, for each individual, the W (weights) and WW (discrete connection) matrices for the hidden layer. Connection matrices are stacked across all individuals recorded in the simulation (rbind).  
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
 Every matrix written is tab separated.
 
 ## File storing.
- 
+
 The program uses/requires a folder called "files" located in the same directory. It places there automatically the generated files and takes them from there in the test set.
