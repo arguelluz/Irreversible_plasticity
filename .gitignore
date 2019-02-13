@@ -1,3 +1,6 @@
+# Binaries
 *.mod
+# Results files
 *.dat
+# Pre-specified output layer file
 !mzadhoc.dat
