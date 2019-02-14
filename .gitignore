@@ -1,5 +1,8 @@
 # Binaries
 *.mod
+*.exe
+*.e
+
 # Results files
 *.dat
 # Pre-specified output layer file
