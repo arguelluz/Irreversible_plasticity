@@ -48,7 +48,7 @@ subroutine arxivpublic ; end subroutine arxivpublic       ! just to acess this m
 
 subroutine inicial                                        ! allocate the matrices for cells and individuals
 
-p=2                                                       ! number of individuals (must be an EVEN NUMBER !!!)
+p=2000                                                       ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
@@ -60,14 +60,14 @@ PD=2                                                      ! phenotypic dimension
 sdev=0.1                                                  ! standard deviation for the mutator algorithm
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
-capped=1                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
+capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=20                                               ! Number of replicates
+replicas=5                                                ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=4                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)               						      ! Lapso: Generations in an interval.
-hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
+hillclimber=0                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 maxepigen=0.6                                             ! Maximum absolute value for env. cue
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
                                                           ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
