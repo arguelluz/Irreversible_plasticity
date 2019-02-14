@@ -13,7 +13,7 @@ integer,allocatable :: thresholdsN(:)          ! thresholds in the N environment
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
 real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg           ! Real auxiliar numbers
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
-real*4 :: conWW,conMZZ                         ! Connectivity arameters for binary matrices
+real*4 :: conWW,conMZZ,maxepigen               ! Connectivity arameters for binary matrices. Maximum absolute value for env. cue
 real*4, allocatable ::  prepattern(:,:),block(:,:)
 real*4 ,allocatable ::  thresholds(:)          ! thresholds in concentration of EFs (for target switchings)
 real*4,allocatable  ::  premutW(:,:)           ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -66,8 +66,10 @@ conWW=1.0                                                 ! Probability of havin
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=3                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
+maxepigen=1.0                                             ! Maximum absolute value for env. cue
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
-                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.                                                          
+                                                          
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 
 if(allocated(ind))then
@@ -134,6 +136,7 @@ do i=1,p                                                  ! for all individuals 
   do ii=1,n                                               ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
     ind(i)%epigen(1,ii)=2.0*(1.0-(real(ii-1)/real(n-1)))  ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
     ind(i)%epigen(1,ii)=ind(i)%epigen(1,ii)-1.0           ! lineal dacaying function [1,-1](equivalent to any non-linear function with a threshold)
+    ind(i)%epigen(1,ii)=maxepigen*ind(i)%epigen(1,ii)     ! Maximum absolute value for env. cue
     if(ind(i)%epigen(1,ii).le.thresholds(1))then          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       if(thresholdsN(1).eq.0)then                         ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       thresholdsN(1)=ii ; end if                          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
