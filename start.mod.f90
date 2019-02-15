@@ -14,7 +14,7 @@ integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutatio
 real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg           ! Real auxiliar numbers
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
 real*4 :: conWW,conMZZ,maxepigen               ! Connectivity parameters for binary matrices. Maximum absolute value for env. cue
-real*4 :: ginitial, winitial                   ! Initial gene concentration and W matrix weights
+real*4 :: ginitial_det, ginitial_rand, winitial! Initial gene concentration (deterministic and stochastic) and W matrix weights
 real*4, allocatable ::  prepattern(:,:),block(:,:)
 real*4 ,allocatable ::  thresholds(:)          ! thresholds in concentration of EFs (for target switchings)
 real*4,allocatable  ::  premutW(:,:)           ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -67,9 +67,10 @@ conWW=1.0                                                 ! Probability of havin
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=10                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  						      ! Lapso: Generations in an interval.
-winitial=1.0E-3                                           ! Connection weights at the start of the simulation
-ginitial=1.0E-4                                           ! Gene concentrations at the start of development
-maxepigen=0.001                                             ! Maximum absolute value for env. cue
+winitial=5.0E-1                                           ! Connection weights at the start of the simulation
+ginitial_det=1.0E-3                                       ! Gene concentrations at the start of development, deterministic value
+ginitial_rand=1.0E-3                                      ! Gene concentrations at the start of development, randomized value
+maxepigen=1.0E-1                                          ! Maximum absolute value for env. cue
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
                                                           ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
 
@@ -162,7 +163,7 @@ do i=1,p                                                  ! for all individuals 
     ind(i)%g(ii,:)=0.0
     do iii=1,ind(i)%ngs                                   ! setting initial gene concentrations in each cell
        call random_number(x)
-       ind(i)%g(ii,iii)=ginitial*x                           ! small or small noisy initial gene expression
+       ind(i)%g(ii,iii)=ginitial_det + ginitial_rand*x    ! small or small noisy initial gene expression
        prepattern(ii,iii)=ind(i)%g(ii,iii)
     end do
   end do
