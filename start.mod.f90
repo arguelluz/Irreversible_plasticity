@@ -174,9 +174,10 @@ do i=1,p                                                  ! for all individuals 
     do iii=1,ind(i)%ngs
       do iiii=1,ind(i)%ngs
         call random_number(x)                                           ! Random W matrix in t=0
-        call random_number(x)
-        if(x.le.conWW)then ; jjj=1 ; else ; jjj=0 ; end if
         ind(i)%w(iii,iiii)=(1.0-(2.0*x))*1.0E-4                         ! Small starting connection weights
+        jjj=1                                                           ! Fully connected WW matrix
+!        call random_number(x)
+!        if(x.le.conWW)then ; jjj=1 ; else ; jjj=0 ; end if
        ind(i)%ww(iii,iiii)=jjj                                          ! Random WW matrix in t=0
       end do
       if(i.eq.1)then
