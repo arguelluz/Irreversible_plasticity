@@ -71,8 +71,6 @@ mzadhoc=1                                                 ! If 0: Mz and Mzz mat
                                                           ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
 
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
-if ((hillclimber.eq.1).and.(p.gt.2))then
-write(*,*)'WARNING! You are using large (p>2) populations with a hill-climber NS !'; end if
 
 if(allocated(ind))then
   deallocate(ind) ; deallocate(indt) ; deallocate(gen)    ! Allocating variables
