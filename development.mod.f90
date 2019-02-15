@@ -86,15 +86,20 @@ subroutine mutation(pp)
 
 integer :: pp,Mi,Mj,Mk
 real*4  :: Mx,My,Mz
-     
-   call random_number(Mx)  ; call random_number(My)     
+
+   call random_number(Mx)  ; call random_number(My)
      Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
-     747 call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
-     Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev) 
+     call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
+     Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
-     if((capped.eq.1).and.((ind(pp)%w(Mi,Mj).gt.1.0).or.(ind(pp)%w(Mi,Mj).lt.-1.0)))then 
-     goto 747 ; end if   ! capped ??
-     
+     if(capped.eq.1) then
+       if(ind(pp)%w(Mi,Mj).gt.1.0) then
+       ind(pp)%w(Mi,Mj)=1.0
+     else if (ind(pp)%w(Mi,Mj).lt.-1.0) then
+       ind(pp)%w(Mi,Mj)=-1.0
+     end if
+   end if        ! Capped now just returns the limit instead of mutating again and again
+
 !     call random_number(Mx)  ; call random_number(My)
 !     i=int(Mx*real(ng)+1) ;  j=int(My*real(ng)+1)                  ! Allow multiple mutations
 !     if(ind(pp)%ww(Mi,Mj).eq.0)then ; ind(pp)%ww(Mi,Mj)=1 ; else ;  ind(pp)%ww(Mi,Mj)=0 ; end if ! topological change
