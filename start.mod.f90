@@ -161,7 +161,7 @@ do i=1,p                                                  ! for all individuals 
     ind(i)%g(ii,:)=0.0
     do iii=1,ind(i)%ngs                                   ! setting initial gene concentrations in each cell
        call random_number(x)
-       ind(i)%g(ii,iii)=0.01!*x                           ! small or small noisy initial gene expression
+       ind(i)%g(ii,iii)=1.0E-4*x                           ! small or small noisy initial gene expression
        prepattern(ii,iii)=ind(i)%g(ii,iii)
     end do
   end do
