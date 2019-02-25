@@ -10,21 +10,29 @@ contains
 subroutine dev(i)                                          ! it runs development for the individual i 
 integer :: i,ii,j,jj,pp,k,jjj,ret
 real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
-                  
+              
+  !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)                 
   do jjj=1,ng 
-    premutW (jjj,1:ng)=ind(i)%w (jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
+    premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
+    !WRITE(*,*)i,jjj,'indi',ind(i)%w(jjj,1:ng)  
     premutWW(jjj,1:ng)=ind(i)%ww(jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
   end do
   
   8881 do jjj=1,ng                                         ! REVERSE
     ind(i)%w (jjj,1:ng)=premutW (jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
-    ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019
-    !write(*,*)'unstable'
+    ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019   
   end do
+  !write(*,*)'WDEV2',ind(I)%w(1,:),ind(I)%w(2,:)  
   
   pp=i                                                     ! Mutation in the generative matrices for each individual  
-  call mutation(pp)                                        ! independent subroutine (for stability criteria)  
+  if(hillclimber.ne.1)then
+    call mutation(pp)                                      ! independent subroutine (for stability criteria)  
+  else
+    if(pp.gt.1)then
+       call mutation(pp)                                   ! only one individual mutates in hill climber
+    end if    
+  end if
   
   ind(i)%sat=0	  
   indt(i)%g=0.0
@@ -35,7 +43,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
           q=0.0	                                           ! REACTION
           do jjj=1,ind(i)%ngs                                   
-            if(ind(i)%ww(k,jjj).ne.0)then                ! for all active gene interaction  
+            if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction  
               q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)
             end if
           end do 
@@ -58,16 +66,14 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
           end do
         end do
         if(sqrt(stable).gt.0.1)then                        ! stability criterium (Same as Dragui) ! THRESHOLD CAN BE CHANGED MANUALLY !  
-          goto 8881
+          goto 8881 ; write(*,*)'unstable'
         end if                                             ! stability criterium (Same as Dragui)  
       end if   
       
       ind(i)%g=indt(i)%g ; indt(i)%g=0.0                   ! "valid" individuals are updated and the loop closed                             
                                                                                                                                                                      
   end do                                                   ! end loop developmental time  
-  
-  
-  
+    
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels 
     do t=1,pd 
@@ -78,6 +84,11 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
       end do
     end do
   end do
+  
+  !do jjj=1,ng
+  ! WRITE(*,*)i,jjj,' indiP',ind(i)%w(jjj,1:ng) 
+  !end do
+   
 end subroutine
 
 !!!!!!!!!!!!!!!!!! !!!! MUTATION IN THE FOUR MATRICES !!!!!!!   
@@ -91,12 +102,14 @@ real*4  :: Mx,My,Mz
      Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
      747 call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
      Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev) 
-     ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
+     !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
+     ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one     
      if((capped.eq.1).and.((ind(pp)%w(Mi,Mj).gt.1.0).or.(ind(pp)%w(Mi,Mj).lt.-1.0)))then 
      goto 747 ; end if   ! capped ??
+     !WRITE(*,*)pp,'    POSTMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      
      call random_number(Mx)  ; call random_number(My)     
-     i=int(Mx*real(ng)+1) ;  j=int(My*real(ng)+1)                  ! Allow multiple mutations
+     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                  ! Allow multiple mutations
      if(ind(pp)%ww(Mi,Mj).eq.0)then ; ind(pp)%ww(Mi,Mj)=1 ; else ;  ind(pp)%ww(Mi,Mj)=0 ; end if ! topological change
      
      if(mzadhoc.ne.1)then                                           ! If Mz and Mzz are pre-specified they do not mutate
@@ -110,7 +123,5 @@ real*4  :: Mx,My,Mz
        if(ind(pp)%MZZ(Mi,Mj).eq.0)then ; ind(pp)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change    
      end if
 end subroutine
-
-
 
 end module development
