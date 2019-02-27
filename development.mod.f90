@@ -44,12 +44,13 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
           q=0.0	                                           ! REACTION
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
-              q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)
+              q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)          ! q=0 plus gene concentration multiplied by its effect (from w matrix)
             end if
           end do
-          q=0.5*q+ind(i)%epigen(k,j)*0.5                   ! EPIGENESIS (environmental and genetic effects are balanced)
-          y=gen(k)%deg*x                                   ! DEGRADATION
-          indt(i)%g(j,k)=x+tanh(q)-y                       ! t+1      ! iterative developmental function Kostas
+          q=(q+ind(i)%epigen(k,j))*0.5                     ! EPIGENESIS (environmental and genetic effects added and averaged)
+          y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
+          ! in this loop x=concentration for the gene of interest, q=change in concentration from reactions and env, y=loss from degradation
+          indt(i)%g(j,k)=tanh(x-y+q)                       ! t+1      ! iterative developmental function Kostas, AKA activation function
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium
             stab(j,k)=indt(i)%g(j,k)                       !stability criterium

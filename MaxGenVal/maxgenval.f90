@@ -24,7 +24,7 @@ close(1)
           end do
           q=(q+env)*0.5                                    ! max environmental input=1.0
           y=0.2*x                                          ! DEGRADATION
-          gt(k)=x+tanh(q)-y                                ! t+1      ! iterative developmental function Kostas
+          gt(k)=tanh(x-y+q)                                ! t+1      ! iterative developmental function Kostas
           if(gt(k).le.0.0)then ; gt(k)=0.0 ; end if        ! POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
       end do
 
