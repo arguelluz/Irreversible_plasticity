@@ -21,14 +21,14 @@ do replica=1,replicas!4
  
     if(training.eq.1)then
     write(phenfile,"(A8,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&            ! PHEN_TR for training
-    (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
-    (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time  
+    (int(blocke(1,1))+1)/2,(int(blocke(2,1))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
+    (int(blocke(1,2))+1)/2,(int(blocke(2,2))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time  
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(21:24)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time   
    else
     write(phenfile,"(A8,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&            ! PHEN_TE for test
-    (int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time
-    (int(block(1,2))+1)/2,(int(block(2,2))+1)/2,&                         ! creating datafile for phenotypes and fitnesses over time  
+    (int(blocke(1,1))+1)/2,(int(blocke(2,1))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
+    (int(blocke(1,2))+1)/2,(int(blocke(2,2))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time  
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(21:24)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time   
    end if                                                 
@@ -41,33 +41,34 @@ fmax=0                                                                  ! record
 fmaxabs=0.0                                                             ! absolute maximum fitness attained over simulation time (initializing)  
 !open(666,file='debug.dat',status='unknown',action='write')             ! records maximum fitness over evol time
 
-do et=1,etmax                                                           ! evolutionary time (Main Loop)    
+do et=1,etmax                                                           ! evolutionary time (Main Loop)  
+
    do pp=1,p                 
         ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do   
         ind(pp)%sat=0 ; call dev(pp)     
     
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION        
         ind(pp)%fitness=0.0     
-        do i=1,pd                                                                  ! individual absolute fitness calculation            
+        do i=1,pd                                                                         ! individual absolute fitness calculation            
           do jjj=1,ind(pp)%ncels                
-	        !ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*block(i,jjj)      ! scalar product (P*S)-based fitness (from the paper)       
-	        ind(pp)%fitness=ind(pp)%fitness+(ind(pp)%phen(i,jjj)-block(i,jjj))**2  ! Euclidean-distance based (Used for exponential)
+	        !ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*blocke(i,jjj)            ! scalar product (P*S)-based fitness (from the paper)       
+	        ind(pp)%fitness(1)=ind(pp)%fitness(1)+(ind(pp)%phen(i,jjj)-blocke(i,jjj))**2  ! Euclidean-distance based (Used for exponential)
 	      end do
 	    end do 
-	    ind(pp)%fitness=-1.0*ind(pp)%fitness/(2.0*ss)                              ! Exponential fitness function
-        ind(pp)%fitness=e**(ind(pp)%fitness)                                       ! Exponential fitness function
-        !write(*,*)'PHENS',pp,ind(pp)%phen(:,1),ind(pp)%phen(:,2),ind(pp)%fitness
-   end do  ! for each individual    
-    
+	    ind(pp)%fitness(1)=sqrt(ind(pp)%fitness(1))                                        ! Euclidean (**2 in Dragui)
+	    ind(pp)%fitness(1)=-1.0*ind(pp)%fitness(1)/(2.0*ss)                                ! Exponential fitness function
+        ind(pp)%fitness(1)=e**(ind(pp)%fitness(1))                                         ! Exponential fitness function
+       
+        !write(*,*)replica,et,'FIT',pp,ind(pp)%fitness(1),'PHEN',ind(pp)%phen(:,1),ind(pp)%phen(:,2)   
+       
+   end do                                                                                  ! for each individual       
    !!!!!!                                                                natural selection for population-based (super-optimized)   
-    !write(*,*)ind(:)%fitness(1)
+  
     fmaxval=maxval(ind(:)%fitness(1))
     if(fmaxval.gt.fmaxabs)then ; fmaxabs=fmaxval ; end if               ! records absolute maximum fitness attained over simulation time
-    !write(*,*)et,sum(ind(:)%fitness(1))/real(p),fmaxval,fmaxabs
-    !write(666,*)et,sum(ind(:)%fitness(1))/real(p),fmaxval,fmaxabs
-    
+  
     indt(:)%fitness(1)=0.0 ; indt(:)%fitness(2)=0.0
-    ind(:)%fitness(2)=ind(:)%fitness(1)-minval(ind(:)%fitness(1))+delta ! negative fitness may 
+    ind(:)%fitness(2)=ind(:)%fitness(1)-abs(minval(ind(:)%fitness(1))) ! negative fitness may 
 
     do i=2,p
       ind(i)%fitness(2)=ind(i)%fitness(2)+ind(i-1)%fitness(2)           ! ordered sumation
@@ -100,17 +101,19 @@ do et=1,etmax                                                           ! evolut
       ind=indt
     else
       do i=1,p                                                          ! Strict hill-climber 
-        if(ind(i)%fitness(2).eq.maxval(ind(:)%fitness(2)))then          ! Strict hill-climber 
+        if(ind(i)%fitness(1).eq.maxval(ind(:)%fitness(1)))then          ! Strict hill-climber 
           whois=i ; exit                                                ! Strict hill-climber
         end if                                                          ! Strict hill-climber
       end do 
-      ind=indt(whois)
+      do i=1,p
+        ind(i)=ind(whois) 
+      end do
     end if
    !!!!!!!!!!!!!!!!!!!!!!!!
 
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation  
-     write(arxaux,"(A4,I1,I1,I1,I1,A2,I2,A2,I2,A2,I4)")'GRN_',(int(block(1,1))+1)/2,(int(block(2,1))+1)/2,&
-     (int(block(1,n))+1)/2,(int(block(2,n))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
+     write(arxaux,"(A4,I1,I1,I1,I1,A2,I2,A2,I2,A2,I4)")'GRN_',(int(blocke(1,1))+1)/2,(int(blocke(2,1))+1)/2,&
+     (int(blocke(1,n))+1)/2,(int(blocke(2,n))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
      if(arxaux(15:15)==" ") arxaux(15:15)="0"                           ! composing filename replicate
      do im=19,22 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
@@ -121,7 +124,7 @@ do et=1,etmax                                                           ! evolut
      !WRITE(*,*)'output filename is:       ',arxifin       
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile 
 
-     write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',block(1:2,1), block(1:2,n)  ! 1
+     write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1:2,1), blocke(1:2,n)  ! 1
      write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2
      write(7000,*)'POPULATON SIZE...............',p                           ! 3
      write(7000,*)'STRENGHT OF SELECTION........',ss                          ! 4
@@ -167,7 +170,7 @@ end do     ! evolutionary time
  close(20067)                    ! closes file
 end do     ! replicates
 
-ret=SYSTEM('rm fort.*')          ! removes spurious stuffs
+!ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
 ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
 ret=SYSTEM('mv PHEN_* files/')   ! replaces files into a folder
 

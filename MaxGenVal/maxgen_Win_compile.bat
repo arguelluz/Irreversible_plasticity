@@ -1,0 +1,1 @@
+gfortran maxgenval.f90 -o maxgeneval.exe
