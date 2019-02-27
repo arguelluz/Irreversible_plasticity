@@ -104,8 +104,16 @@ real*4  :: Mx,My,Mz
      Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev) 
      !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one     
-     if((capped.eq.1).and.((ind(pp)%w(Mi,Mj).gt.1.0).or.(ind(pp)%w(Mi,Mj).lt.-1.0)))then 
-     goto 747 ; end if   ! capped ??
+     if(capped.eq.1) then                                          ! If we are using capped weights
+       if(ind(pp)%w(Mi,Mj).gt.1.0) then                            ! and if the mutation makes weights greater than 1
+         ind(pp)%w(Mi,Mj)=1.0                                      ! Then set them to 1
+       else if (ind(pp)%w(Mi,Mj).lt.-1.0) then                     ! if the mutation makes weights lesser than -1
+         ind(pp)%w(Mi,Mj)=-1.0                                     ! Then set them to -1
+       end if
+     end if
+
+     !if((capped.eq.1).and.((ind(pp)%w(Mi,Mj).gt.1.0).or.(ind(pp)%w(Mi,Mj).lt.-1.0)))then
+     !goto 747 ; end if   ! capped ??
      !WRITE(*,*)pp,'    POSTMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      
      call random_number(Mx)  ; call random_number(My)     
