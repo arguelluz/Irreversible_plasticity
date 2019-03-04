@@ -41,15 +41,14 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
-          q=0.0	                                           ! REACTION
+          q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
           call random_number(eps)                          ! sample random noise
           q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
-              q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)          ! q=0 plus gene concentration multiplied by its effect (from w matrix)
+              q=ind(i)%w(k,jjj)*(ind(i)%g(j,jjj)+q)*0.5    ! environment plus gene concentration multiplied by its effect (from w matrix), then averaged
             end if
           end do
-          q=(q+ind(i)%epigen(k,j))*0.5                     ! EPIGENESIS (environmental and genetic effects added and averaged)
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest, q=change in concentration from reactions and env, y=loss from degradation
           indt(i)%g(j,k)=tanh(q)+0.5                       ! t+1      ! activation function, tanh+0.5 rescales to logistic
