@@ -46,7 +46,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
-              q=ind(i)%w(k,jjj)*(ind(i)%g(j,jjj)+q)*0.5    ! environment plus gene concentration multiplied by its effect (from w matrix), then averaged
+              q=(q+ind(i)%g(j,jjj))*0.5                    ! Average gene concentrations and environmental inputs
+              q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
             end if
           end do
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
