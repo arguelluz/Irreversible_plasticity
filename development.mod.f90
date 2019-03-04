@@ -9,7 +9,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)                                          ! it runs development for the individual i
 integer :: i,ii,j,jj,pp,k,jjj,ret
-real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
+real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
 
   !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)
   do jjj=1,ng
@@ -42,6 +42,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
           q=0.0	                                           ! REACTION
+          call random_number(eps)                          ! sample random noise
+          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
               q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)          ! q=0 plus gene concentration multiplied by its effect (from w matrix)
