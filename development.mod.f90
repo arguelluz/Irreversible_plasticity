@@ -50,7 +50,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
             end if
           end do
           q=(q+ind(i)%epigen(k,j))*0.5                     ! EPIGENESIS (environmental and genetic effects added and averaged)
-          y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
+          !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest, q=change in concentration from reactions and env, y=loss from degradation
           indt(i)%g(j,k)=tanh(q)+0.5                       ! t+1      ! activation function, tanh+0.5 rescales to logistic
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
