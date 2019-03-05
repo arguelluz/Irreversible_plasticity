@@ -42,8 +42,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
           q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
-!          call random_number(eps)                          ! sample random noise
-!          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
+          call random_number(eps)                          ! sample random noise
+          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
               q=(q+ind(i)%g(j,jjj))*0.5                    ! Average gene concentrations and environmental inputs
