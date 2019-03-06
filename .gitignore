@@ -5,5 +5,7 @@
 
 # Results files
 *.dat
+*.tsv
+
 # Pre-specified output layer file
 !mzadhoc.dat
