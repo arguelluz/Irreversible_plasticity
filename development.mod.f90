@@ -47,8 +47,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
               q=ind(i)%g(j,jjj)                            ! Set gene concentration to same value as t-1
-              q=(q+ind(i)%epigen(k,j))*0.5                 ! add and average with environmental component
               q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
+              q=(q+ind(i)%epigen(k,j))*0.5                 ! add and average with environmental component
             end if
           end do
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
