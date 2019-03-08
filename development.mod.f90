@@ -9,7 +9,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)                                          ! it runs development for the individual i
 integer :: i,ii,j,jj,pp,k,jjj,ret
-real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
+real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
 
   !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)
   do jjj=1,ng
@@ -41,15 +41,21 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
-          q=0.0	                                           ! REACTION
+!          q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
+!          call random_number(eps)                          ! sample random noise
+!          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
-              q=q+ind(i)%w(k,jjj)*ind(i)%g(j,jjj)
+              q=ind(i)%g(j,jjj)                            ! Set gene concentration to same value as t-1
+              q=(q+ind(i)%epigen(k,j))*0.5                 ! add and average with environmental component
+              !q=(q+maxepigen)*0.5                          ! add and average maximum env input (for invariable environments)
+              q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
             end if
           end do
-          q=0.5*q+ind(i)%epigen(k,j)*0.5                   ! EPIGENESIS (environmental and genetic effects are balanced)
-          y=gen(k)%deg*x                                   ! DEGRADATION
-          indt(i)%g(j,k)=x+tanh(q)-y                       ! t+1      ! iterative developmental function Kostas
+          !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
+          ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
+          q=tanh(q)                             ! t+1      ! activation function
+          indt(i)%g(j,k)=(q+1)*0.5                         ! rescale tanh output to logistic and store as gene value
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium
             stab(j,k)=indt(i)%g(j,k)                       !stability criterium
@@ -75,11 +81,11 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable                      ! fi=final increment
   end do                                                   ! end loop developmental time
 
   ind(i)%phen=0.0                                          ! phenotyping
-  do jjj=1,ind(i)%ncels
-    do t=1,pd
-      do j=1,ind(i)%ngs                                    ! Set 1 to EF to exclude environmentally-sensitive genes.
+  do jjj=1,ind(i)%ncels                                    ! For each environment
+    do t=1,pd                                              ! For each trait
+      do j=1,ind(i)%ngs                                    ! For each gene ! Set 1 to EF to exclude environmentally-sensitive genes.
         if(ind(i)%MZZ(j,t).ne.0)then
-          ind(i)%phen(t,jjj)=ind(i)%phen(t,jjj)+ind(i)%g(jjj,j)*ind(i)%MZ(j,t)
+          ind(i)%phen(t,jjj)=ind(i)%phen(t,jjj)+ind(i)%g(jjj,j)*ind(i)%MZ(j,t) ! Calculate new phenotype by adding all gene value by MZ matrix
         end if
       end do
     end do
@@ -100,7 +106,7 @@ real*4  :: Mx,My,Mz
 
    call random_number(Mx)  ; call random_number(My)
      Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
-     747 call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
+     call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
      Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
@@ -111,11 +117,7 @@ real*4  :: Mx,My,Mz
          ind(pp)%w(Mi,Mj)=-1.0                                     ! Then set them to -1
        end if
      end if
-
-     !if((capped.eq.1).and.((ind(pp)%w(Mi,Mj).gt.1.0).or.(ind(pp)%w(Mi,Mj).lt.-1.0)))then
-     !goto 747 ; end if   ! capped ??
-     !WRITE(*,*)pp,'    POSTMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
-
+     
      if(mzadhoc.ne.1)then                                           ! If Mz and Mzz are pre-specified they do not mutate
        call random_number(Mx)  ; call random_number(My)
        Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
