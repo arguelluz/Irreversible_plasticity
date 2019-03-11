@@ -47,15 +47,16 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           do jjj=1,ind(i)%ngs
             if(ind(i)%ww(k,jjj).ne.0)then                  ! for all active gene interaction
               q=ind(i)%g(j,jjj)                            ! Set gene concentration to same value as t-1
-              q=(q+ind(i)%epigen(k,j))*0.5                 ! add and average with environmental component
+              q=(q+ind(i)%epigen(k,jjj))*0.5                 ! add and average with environmental component
               !q=(q+maxepigen)*0.5                          ! add and average maximum env input (for invariable environments)
               q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
+              x=x+q                                        ! add activation to gene concentration
             end if
           end do
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
-          q=tanh(q)                             ! t+1      ! activation function
-          indt(i)%g(j,k)=(q+1)*0.5                         ! rescale tanh output to logistic and store as gene value
+          x=tanh(x)                             ! t+1      ! activation function
+          indt(i)%g(j,k)=(x+1)*0.5                         ! rescale tanh output to logistic and store as gene value
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium
             stab(j,k)=indt(i)%g(j,k)                       !stability criterium
@@ -117,7 +118,7 @@ real*4  :: Mx,My,Mz
          ind(pp)%w(Mi,Mj)=-1.0                                     ! Then set them to -1
        end if
      end if
-     
+
      if(mzadhoc.ne.1)then                                           ! If Mz and Mzz are pre-specified they do not mutate
        call random_number(Mx)  ; call random_number(My)
        Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
