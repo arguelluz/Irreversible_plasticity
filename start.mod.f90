@@ -7,6 +7,7 @@ integer :: ios,logp,t,et,tmax,etmax            ! more general counters
 integer :: mzadhoc,capped,reco                 ! Some switchers
 integer :: training,replicas                   ! If training=1 -> Training set, starting from W=0. Otherwise W from file
 integer :: hillclimber                         ! If set to 1-> Strict hill-climber, deterministic selection.
+integer :: positivecues                        ! If set to 1 cues are in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 integer :: ret,pp,im                           ! integers for calling external functions or modifyind datafiles.
 integer :: lapso,intervals                     ! Intervals=number of intervals for data recording. Lapso: Generations in an interval.
 integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (number of traits),EF=Environmental factors
@@ -72,6 +73,7 @@ hillclimber=1                                             ! If set to 1-> Strict
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
 ginitial_rand=0.0                                           ! Gene concentrations at the start of development, randomized value
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
+positivecues=1                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
                                                           ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
@@ -143,7 +145,9 @@ do i=1,p                                                  ! for all individuals 
   thresholds(1)=0.0 ; thresholdsN(1)=0                    ! Re-do for EF>1 !!! WARNING !!!!
   do ii=1,n                                               ! Linear dacaying function [1,-1](equivalent to any non-linear function with a threshold)
     ind(i)%epigen(1:ng,ii)=1.0-(real(ii-1)/real(n-1))     ! Create linear input in range 1:0
-    ind(i)%epigen(1:ng,ii)=(2.0*ind(i)%epigen(1,ii))-1.0  ! Rescale input to range 1:-1
+    if(positivecues.eq.1)then
+      ind(i)%epigen(1:ng,ii)=(2.0*ind(i)%epigen(1,ii))-1.0  ! Rescale input to range 1:-1
+    end if
     ind(i)%epigen(1:ng,ii)=maxepigen*ind(i)%epigen(1,ii)  ! Rescale input to maxepigen value
     if(ind(i)%epigen(1,ii).le.thresholds(1))then          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       if(thresholdsN(1).eq.0)then                         ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
