@@ -48,7 +48,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
             if(ind(i)%ww(k,jjj).ne.0)then                  ! if the interaction is active
               q=ind(i)%g(j,jjj)                            ! Set concentration of interacting gene (jjj) in same cell (j)
               q=(q+ind(i)%epigen(jjj,j))*0.5               ! add and average with environmental component for interacting gene (jjj) in same cell (j)
-              !q=(q+maxepigen)*0.5                          ! add and average maximum env input (for invariable environments)
+              !q=(q+maxepigen)*0.5                         ! add and average maximum env input (for invariable environments)
+              if (q.lt.0.0) then ; q=0; end if            ! ensure that the concentration plus env is positive or zero
               q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
               x=x+q                                        ! add activation to gene concentration
             end if
