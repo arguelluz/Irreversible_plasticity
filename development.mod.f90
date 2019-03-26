@@ -9,7 +9,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)                                          ! it runs development for the individual i
 integer :: i,ii,j,jj,pp,k,jjj,ret
-real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
+real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps,dx                  ! fi=final increment
 
   !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)
   do jjj=1,ng
@@ -41,6 +41,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
+          dx=0.0
 !          q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
 !          call random_number(eps)                          ! sample random noise
 !          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
@@ -49,17 +50,18 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
               q=ind(i)%g(j,jjj)                            ! Set concentration of interacting gene (jjj) in same cell (j)
               q=(q+ind(i)%epigen(jjj,j))*0.5               ! add and average with environmental component for interacting gene (jjj) in same cell (j)
               !q=(q+maxepigen)*0.5                         ! add and average maximum env input (for invariable environments)
-              if (q.lt.0.0) then ; q=0; end if            ! ensure that the concentration plus env is positive or zero
+              !if (q.lt.0.0) then ; q=0.0; end if            ! ensure that the concentration plus env is positive or zero
               q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
-              x=x+q                                        ! add activation to gene concentration
+              dx=dx+q                                       ! increase delta value
             end if
           end do
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
-          x=tanh(x)                                        ! activation function
-          x=(x+1)*0.5                                      ! rescale tanh output to logistic and store as gene value
+          dx=dx*(x/(x+1.0))                                ! rescale delta to small values if target gene is close to zero (avoids negative gradient at 0 values)
+          dx=dx*(1.0-x)                                    ! logistic rescaling of delta to max concentration of 1
+          x=dx+x                                           ! apply delta to old gene concentration
           indt(i)%g(j,k)=x                                 ! concentration of target gene k in cell j at t+1
-          if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
+          !if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium
             stab(j,k)=indt(i)%g(j,k)                       !stability criterium
           end if
