@@ -144,11 +144,11 @@ do i=1,p                                                  ! for all individuals 
   !ind(i)%epigen(1:2,2)=(/ 1.0,-1.0/)                     ! ENVIRONMENTAL FACTORS IN ENVIRONMENT 2
   thresholds(1)=0.0 ; thresholdsN(1)=0                    ! Re-do for EF>1 !!! WARNING !!!!
   do ii=1,n                                               ! Linear dacaying function [1,-1](equivalent to any non-linear function with a threshold)
-    ind(i)%epigen(1:ng,ii)=1.0-(real(ii-1)/real(n-1))     ! Create linear input in range 1:0
-    if(positivecues.eq.1)then
-      ind(i)%epigen(1:ng,ii)=(2.0*ind(i)%epigen(1,ii))-1.0  ! Rescale input to range 1:-1
+    ind(i)%epigen(1,ii)=1.0-(real(ii-1)/real(n-1))     ! Create linear input in range 1:0
+    if(positivecues.eq.0)then
+      ind(i)%epigen(1,ii)=(2.0*ind(i)%epigen(1,ii))-1.0  ! Rescale input to range 1:-1
     end if
-    ind(i)%epigen(1:ng,ii)=maxepigen*ind(i)%epigen(1,ii)  ! Rescale input to maxepigen value
+    ind(i)%epigen(1,ii)=maxepigen*ind(i)%epigen(1,ii)  ! Rescale input to maxepigen value (maxepigen:-maxepigen or maxepigen:0)
     if(ind(i)%epigen(1,ii).le.thresholds(1))then          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       if(thresholdsN(1).eq.0)then                         ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
       thresholdsN(1)=ii ; end if                          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
