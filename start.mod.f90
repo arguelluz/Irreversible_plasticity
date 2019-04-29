@@ -56,7 +56,7 @@ logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
 etmax=1.0E4                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
-n=2                                                       ! number of different environments
+n=6                                                       ! number of different environments
 ng=3                                                      ! initial number of genes
 PD=2                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.01                                                 ! standard deviation for the mutator algorithm
@@ -154,17 +154,11 @@ do i=1,p                                                  ! for all individuals 
       thresholdsN(1)=ii ; end if                          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
   end do                                                  !
-  if(i.eq.1)then
-    blocke(1:2,1)=(/1.3,1.3/)                            ! target in Environment 1 (/trait1, trait2/)
-    blocke(1:2,n)=(/1.3,1.3/)                            ! target in Environment 2 (/trait1, trait2/) ! Re-do for EF>1 !!! WARNING !!!!
-    do ii=1,n                                            ! for each environment from 1 to n ...
-      if(ii.lt.thresholdsN(1))then                       ! CHECK BEFORE UPLOADING !!!!!********************
-        blocke(1:2,ii)=blocke(1:2,1)
-      else
-        blocke(1:2,ii)=blocke(1:2,n)
-      end if
-    end do
-  end if
+! Input targets for each trait across all environments
+  blocke(1,1:n)=(/ 0.0, 0.2, 0.4, 0.8, 1.0, 1.2/)    ! enter manually the target trait 1 values for the n environments
+  blocke(2,1:n)=(/ 0.2, 1.0, 0.8, 0.4, 0.2, 1.2/)    ! enter manually the target trait 2 values for the n environments
+
+
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
 
   do ii=1,ind(i)%ncels                                    ! setting cell topology
