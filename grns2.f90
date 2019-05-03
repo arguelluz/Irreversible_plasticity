@@ -112,8 +112,9 @@ do et=1,etmax                                                           ! evolut
    !!!!!!!!!!!!!!!!!!!!!!!!
 
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
-     write(arxaux,"(A4,I1,I1,I1,I1,A2,I2,A2,I2,A2,I4)")'GRN_',(int(blocke(1,1))+1)/2,(int(blocke(2,1))+1)/2,&
-     (int(blocke(1,n))+1)/2,(int(blocke(2,n))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
+     write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I4)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
+     (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&
+     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
      if(arxaux(15:15)==" ") arxaux(15:15)="0"                           ! composing filename replicate
      do im=19,22 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
@@ -124,7 +125,7 @@ do et=1,etmax                                                           ! evolut
      !WRITE(*,*)'output filename is:       ',arxifin
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile
 
-     write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1:2,1), blocke(1:2,n)  ! 1
+     write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1,1:6)!, blocke(1:2,n)  ! 1
      write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2
      write(7000,*)'POPULATON SIZE...............',p                           ! 3
      write(7000,*)'STRENGHT OF SELECTION........',ss                          ! 4
@@ -136,6 +137,7 @@ do et=1,etmax                                                           ! evolut
      write(7000,*)'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10
      write(7000,*)'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11
      write(7000,*)'CONNECTIVITIES WW / MZZ .....',conWW,conMZZ                ! 12
+     write(7000,*)'INPUT VALUES ................',ind(1)%epigen(1,1:n)        ! 13
      !!!!!!!!!!!!!!!!!!!!
      do pp=1,p
        do i=1,ind(1)%ngs

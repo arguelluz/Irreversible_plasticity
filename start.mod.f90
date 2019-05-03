@@ -23,7 +23,7 @@ real*4,allocatable  ::  premutW(:,:)           ! Stores W matrix before mutation
 real*4,allocatable  ::  stab(:,:)              ! Stores the gene expresion during developmental time. To check stability.
 real*4, parameter   ::  pi=3.1415926535, delta=0.00001, e=2.7182818284 ! some constants
 character(len=48)   ::  arxiv,arxifin          ! for writting and reading datafiles
-character(len=22)   ::  arxaux                 ! for writting and reading datafiles
+character(len=24)   ::  arxaux                 ! for writting and reading datafiles
 
 type,public :: inds
   integer              :: ncels, ngs, sat      ! number of cells, number of genes and per cel and active genes, saturation time
@@ -58,7 +58,7 @@ etmax=1.0E4                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=3                                                      ! initial number of genes
-PD=2                                                      ! phenotypic dimensionality (number of traits)
+PD=1                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.01                                                 ! standard deviation for the mutator algorithm
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
@@ -110,7 +110,7 @@ if((training.eq.0).and.(replica.lt.1))then ; return ; end if
     arxiv(45:48)='.dat'                                             ! composing filename
     do im=1,44 ; if (arxiv(im:im)==" ") arxiv(im:im)="_" ; end do   ! composing filename
     open(9000,file='files/'//arxiv,action='read',iostat=ios)
-    do i=1,12 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
+    do i=1,13 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
     arxiv(23:25)='GRN' ; arxiv(26:44)='_'
   end if
@@ -156,7 +156,7 @@ do i=1,p                                                  ! for all individuals 
   end do                                                  !
 ! Input targets for each trait across all environments
   blocke(1,1:n)=(/ 0.0, 0.2, 0.4, 0.8, 1.0, 1.2/)    ! enter manually the target trait 1 values for the n environments
-  blocke(2,1:n)=(/ 0.2, 1.0, 0.8, 0.4, 0.2, 1.2/)    ! enter manually the target trait 2 values for the n environments
+  !blocke(2,1:n)=(/ 0.2, 1.0, 0.8, 0.4, 0.2, 1.2/)    ! enter manually the target trait 2 values for the n environments
 
 
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
