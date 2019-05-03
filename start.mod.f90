@@ -54,20 +54,20 @@ p=2                                                       ! number of individual
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E4                                               ! evolutionary time
+etmax=1.0E5                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
-ng=3                                                      ! initial number of genes
+ng=4                                                      ! initial number of genes
 PD=1                                                      ! phenotypic dimensionality (number of traits)
 sdev=0.01                                                 ! standard deviation for the mutator algorithm
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=10                                                ! Number of replicates
+replicas=4                                                ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
-intervals=4                                               ! Number of intervals for data recording.
+intervals=10                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  	            					      ! Lapso: Generations in an interval.
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
@@ -104,7 +104,7 @@ if((training.eq.0).and.(replica.lt.1))then ; return ; end if
 !!!!!!!!!!!!!!!!!!!!!!                                    ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                   ! Introducing manually the filename from where the system uploads the population
            !GRN_1234_R12_T1234                            ! Follow this template
-    arxaux='GRN_1111_C02_R02_T0004'
+    arxaux='GRN_4973_C06_R01_T0004'
            !123456789012345678
     arxiv(1:3)='GRN' ; arxiv(4:22)='_' ; arxiv(23:44)=arxaux(1:22)
     arxiv(45:48)='.dat'                                             ! composing filename
@@ -155,8 +155,8 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
   end do                                                  !
 ! Input targets for each trait across all environments
-  blocke(1,1:n)=(/ 0.0, 0.2, 0.4, 0.8, 1.0, 1.2/)    ! enter manually the target trait 1 values for the n environments
-  !blocke(2,1:n)=(/ 0.2, 1.0, 0.8, 0.4, 0.2, 1.2/)    ! enter manually the target trait 2 values for the n environments
+ blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! enter manually the target trait 1 values for the n environments
+! blocke(2,1:n)=(/ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5/)    ! enter manually the target trait 2 values for the n environments
 
 
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
