@@ -59,12 +59,12 @@ EF=1                                                      ! EF=Number of environ
 n=6                                                       ! number of different environments
 ng=4                                                      ! initial number of genes
 PD=1                                                      ! phenotypic dimensionality (number of traits)
-sdev=0.01                                                 ! standard deviation for the mutator algorithm
+sdev=0.005                                                 ! standard deviation for the mutator algorithm
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
-training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=4                                                ! Number of replicates
+training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
+replicas=10                                                ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=10                                               ! Number of intervals for data recording.
@@ -73,7 +73,7 @@ hillclimber=1                                             ! If set to 1-> Strict
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
 ginitial_rand=0.0                                           ! Gene concentrations at the start of development, randomized value
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
-positivecues=1                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
+positivecues=0                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
                                                           ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
@@ -104,7 +104,7 @@ if((training.eq.0).and.(replica.lt.1))then ; return ; end if
 !!!!!!!!!!!!!!!!!!!!!!                                    ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                   ! Introducing manually the filename from where the system uploads the population
            !GRN_1234_R12_T1234                            ! Follow this template
-    arxaux='GRN_4973_C06_R01_T0004'
+    arxaux='GRN_312452_C_4_R_1_T00'
            !123456789012345678
     arxiv(1:3)='GRN' ; arxiv(4:22)='_' ; arxiv(23:44)=arxaux(1:22)
     arxiv(45:48)='.dat'                                             ! composing filename
