@@ -61,7 +61,11 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
             x=(x+1)*0.5                                      ! rescale tanh output to logistic and store as gene value
           end if
           indt(i)%g(j,k)=x                                 ! concentration of target gene k in cell j at t+1
-          if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
+          if(linear.ne.1)then                              ! gene state variables can be negatives if we use linear activation function
+            if(indt(i)%g(j,k).le.0.0)then
+              indt(i)%g(j,k)=0.0
+            end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
+          end if
           if(t.eq.tmax-1)then                              !stability criterium
             stab(j,k)=indt(i)%g(j,k)                       !stability criterium
           end if
