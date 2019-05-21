@@ -56,8 +56,10 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           end do
           !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
-          x=tanh(x)                                        ! activation function
-          x=(x+1)*0.5                                      ! rescale tanh output to logistic and store as gene value
+          if(linear.ne.1)then
+            x=tanh(x)                                        ! activation function
+            x=(x+1)*0.5                                      ! rescale tanh output to logistic and store as gene value
+          end if
           indt(i)%g(j,k)=x                                 ! concentration of target gene k in cell j at t+1
           if(indt(i)%g(j,k).le.0.0)then ; indt(i)%g(j,k)=0.0 ; end if ! uncommented if POSITIVE STATE VARIABLE. CHOOSE YOURSELF :)
           if(t.eq.tmax-1)then                              !stability criterium

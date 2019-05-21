@@ -4,7 +4,7 @@ implicit none
 
 integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p! general counters
 integer :: ios,logp,t,et,tmax,etmax            ! more general counters
-integer :: mzadhoc,capped,reco                 ! Some switchers
+integer :: mzadhoc,capped,reco,linear          ! Some switchers
 integer :: training,replicas                   ! If training=1 -> Training set, starting from W=0. Otherwise W from file
 integer :: hillclimber                         ! If set to 1-> Strict hill-climber, deterministic selection.
 integer :: positivecues                        ! If set to 1 cues are in range 0:maxepigen, otherwise range -maxepigen,maxepigen
@@ -75,8 +75,8 @@ ginitial_rand=0.0                                           ! Gene concentration
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
 positivecues=0                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
-mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally.
-                                                          ! If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+linear=1                                                  ! If 1, use linear activation function. Otherwise, use logit
 
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 if ((hillclimber.eq.1).and.(p.gt.2))then
