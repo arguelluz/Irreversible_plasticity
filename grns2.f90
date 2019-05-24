@@ -112,7 +112,7 @@ do et=1,etmax                                                           ! evolut
    !!!!!!!!!!!!!!!!!!!!!!!!
 
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
-     write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I4)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
+     write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I2)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
      (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&
      (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
