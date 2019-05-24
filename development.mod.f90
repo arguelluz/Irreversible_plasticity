@@ -40,13 +40,14 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       !write(*,*)'i,t',et,i,t
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
-          x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind
+          x=ind(i)%g(j,k)*(1.0-deg)                        ! concentration of gene k in cell j of ind, minus degradation
 !          q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
 !          call random_number(eps)                          ! sample random noise
 !          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
           do jjj=1,ind(i)%ngs                              ! For all interacting genes jjj
             if(ind(i)%ww(k,jjj).ne.0)then                  ! if the interaction is active
               q=ind(i)%g(j,jjj)                            ! Set concentration of interacting gene (jjj) in same cell (j)
+              q=q*(1.0-deg)                                ! Degrade interacting gene concentration
               q=(q+ind(i)%epigen(jjj,j))*0.5               ! add and average with environmental component for interacting gene (jjj) in same cell (j)
               !q=(q+maxepigen)*0.5                         ! add and average maximum env input (for invariable environments)
               !if (q.lt.0.0) then ; q=0; end if            ! ensure that the concentration plus env is positive or zero
