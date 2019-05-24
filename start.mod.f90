@@ -155,8 +155,12 @@ do i=1,p                                                  ! for all individuals 
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
   end do                                                  !
 ! Input targets for each trait across all environments
- blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! enter manually the target trait 1 values for the n environments
-! blocke(2,1:n)=(/ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5/)    ! enter manually the target trait 2 values for the n environments
+!blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
+!blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
+!blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
+blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
+!blocke(1,1:n)=(/ 0.8, 0.7, 0.6, 0.5, 0.4, 0.3/)    ! Problem E (D reversed)
+!blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 3 steps)
 
 
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
