@@ -174,7 +174,7 @@ blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
     end do
   end do
 
-  ind(i)%w=0.0  ; ind(i)%ww=0 ; gen(:)%deg=0.2
+  ind(i)%w=0.0  ; ind(i)%ww=0 ; gen(:)%deg=0.0
   ind(i)%MZ=0.0 ; ind(i)%MZZ=0
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CREATING / READING POPULATIONS
