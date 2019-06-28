@@ -158,10 +158,18 @@ do i=1,p                                                  ! for all individuals 
 !blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
 !blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
 !blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
-blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
+!blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
 !blocke(1,1:n)=(/ 0.8, 0.7, 0.6, 0.5, 0.4, 0.3/)    ! Problem E (D reversed)
-!blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 3 steps)
-
+blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 3 steps)
+!blocke(1,1:n)=(/ 0.5, 0.5, 0.8, 0.8, 0.5, 0.5/)    ! Problem G (step funciton w 2 steps)
+!blocke(1,1:n)=(/ 0.8, 0.8, 0.5, 0.5, 0.8, 0.8/)    ! Problem H (step funciton w 2 steps, not working due to neg concentration)
+!blocke(1,1:n)=(/ 0.5, 0.5, 0.2, 0.2, 0.5, 0.5/)    ! Problem I (step funciton w 2 steps, lower phenotype)
+!blocke(1,1:n)=(/ 0.2, 0.2, 0.5, 0.5, 0.2, 0.2/)    ! Problem J (reverse of I)
+!blocke(1,1:n)=(/ 0.2, 0.2, 0.5, 0.5, 0.7, 0.7/)    ! Problem K (monotonic)
+!blocke(1,1:n)=(/ 0.7, 0.7, 0.5, 0.5, 0.2, 0.2/)    ! Problem L (reverse K)
+!blocke(1,1:n)=(/ 0.8, 0.4, 0.5, 0.6, 0.7, 0.3/)    ! Problem M (a with shifted intercept)
+!blocke(1,1:n)=(/ 0.95, 0.94, 0.93, 0.92, 0.91, 0.96/)    ! Problem N (nonplastic, high intercept)
+!blocke(1,1:n)=(/ 0.6, 0.6, 0.9, 0.9, 0.6, 0.6/)    ! Problem O (same shape as GI, different values)
 
 !!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!!!!!!!!!!!!!!!! WARNING. MANUAL IMPLEMENTATION !!!!!!!!
 
