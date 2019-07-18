@@ -4,7 +4,8 @@ use start
 use development
 
  integer             :: whois              ! whois=fittest individual
- character(len=26)   :: phenfile           ! name of the file storing fitness and phenotypes over time
+ character(len=26)   :: phenfile           ! name of the file storing fitness and phenotypes over time ! Short, auxiliar file
+ character(len=48)   :: phenfileL          ! name of the file storing fitness and phenotypes over time ! Long to know intial conditions in tests.
 
  integer, allocatable :: seed(:)           ! setting the seed for random number generator (not accessible)
  integer size                              ! this way all replicates give the same result
@@ -26,24 +27,27 @@ do replica=1,replicas!4
   
   call inicial                                                            ! it allocates and inicializes everything ...
   
-    if(training.eq.1)then
-    write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&            ! PHEN_TR for training
-    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
-    (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
+   if(training.eq.1)then
+    write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&      ! PHEN_TR for training
+    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
+    (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,&
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
+     do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
+     phenfileL(23:48)=phenfile(1:26) ; do im=1,22 ; phenfileL(im:im)='_' ; end do
    else
-    write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&            ! PHEN_TE for test
-    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(2,1))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
-    (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(2,4))+1)/2,&                       ! creating datafile for phenotypes and fitnesses over time
+    write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&      ! PHEN_TE for test
+    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(2,1))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
+    (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(2,4))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,&
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
-   end if
-
-  do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do   ! composing filename
-  open(20067,file=phenfile,status='unknown',action='write')             ! composing filename
+     do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
+     phenfileL(23:48)=phenfile(1:26) ; phenfileL(1:22)=arxiv(23:44)
+     phenfileL(1:3)='PHE'                                                 ! EASY TO GREP 
+   end if  
+   open(20067,file=phenfileL,status='unknown',action='write')             ! composing filename
 
 fmax=0                                                                  ! records maximum fitness over evol time
 fmaxabs=0.0                                                             ! absolute maximum fitness attained over simulation time (initializing)
@@ -184,7 +188,7 @@ end do     ! supereplicates
 
 !ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
 ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
-ret=SYSTEM('mv PHEN_* files/')   ! replaces files into a folder
+ret=SYSTEM('mv PHE* files/')   ! replaces files into a folder
 
 close(676) ; close(267)
 

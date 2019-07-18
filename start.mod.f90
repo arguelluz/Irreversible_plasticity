@@ -75,7 +75,7 @@ ginitial_rand=0.0                                           ! Gene concentration
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
 positivecues=0                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
-mzadhoc=0!1 MOFIFIES                                                 ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+mzadhoc=0!1 MOFIFIED                                                ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
 linear=1                                                  ! If 1, use linear activation function. Otherwise, use logit
 
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
@@ -104,7 +104,7 @@ if((training.eq.0).and.(replica.lt.1).and.(supereplica.lt.1))then               
   nfiles=0
   do while(ios.eq.0)
     read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1 
-    write(*,*)'arxivread',arxiv,nfiles
+    !write(*,*)'arxivread',arxiv,nfiles
   end do
   nfiles=nfiles-1
   !write(*,*)'NFILESfinal=',nfiles
