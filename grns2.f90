@@ -36,6 +36,7 @@ do replica=1,replicas!4
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
      do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
      phenfileL(23:48)=phenfile(1:26) ; do im=1,22 ; phenfileL(im:im)='_' ; end do
+     phenfileL(1:3)='PHE'
    else
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&      ! PHEN_TE for test
     (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(2,1))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
@@ -181,14 +182,14 @@ do et=1,etmax                                                           ! evolut
    !end do
 
 end do     ! evolutionary time
- !close(666)                      ! temporary file for debugging
+ !close(666)                     ! temporary file for debugging
  close(20067)                    ! closes file
 end do     ! replicates
 end do     ! supereplicates
 
 !ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
 ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
-ret=SYSTEM('mv PHE* files/')   ! replaces files into a folder
+ret=SYSTEM('mv *HE* files/')   ! replaces files into a folder
 
 close(676) ; close(267)
 

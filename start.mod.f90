@@ -67,7 +67,7 @@ training=0                                                ! If 1 -> Training set
 replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
-intervals=10                                               ! Number of intervals for data recording.
+intervals=4!10 MODIFIED                                               ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  	            					      ! Lapso: Generations in an interval.
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
@@ -104,7 +104,7 @@ if((training.eq.0).and.(replica.lt.1).and.(supereplica.lt.1))then               
   nfiles=0
   do while(ios.eq.0)
     read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1 
-    !write(*,*)'arxivread',arxiv,nfiles
+  !write(*,*)'arxivread',arxiv
   end do
   nfiles=nfiles-1
   !write(*,*)'NFILESfinal=',nfiles
@@ -115,8 +115,10 @@ if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs 
 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                    ! Introducing manually the filename from where the system uploads the population
-    rewind(676); 
-    do i=1,supereplica ; read(676,iostat=ios)arxiv ; end do! automatically reads filenames    
+    rewind(676)
+    do i=1,supereplica ; read(676,*,iostat=ios)arxiv 
+   ! WRITE(*,*)'eplicarxiv',supereplica,arxiv;
+    end do! automatically reads filenames    
   
    !        !GRN_1234_R12_T1234                            ! Follow this template
    ! arxaux='GRN_312452_C_4_R_1_T00'
