@@ -1,0 +1,10 @@
+Experiments:
+
+1) Reverse linear slope
+2) Plot naive RN
+3) check step function as new problem (find optimal solution for them)
+
+3a) rework problem so it's all about steps
+3b) check if findings hold with decay term
+3c) check if findings hold when disabling stability criterion
+

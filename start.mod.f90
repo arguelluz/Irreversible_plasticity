@@ -75,8 +75,8 @@ ginitial_rand=0.0                                           ! Gene concentration
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
 positivecues=0                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
-mzadhoc=0!1 MOFIFIED                                                ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
-linear=1                                                  ! If 1, use linear activation function. Otherwise, use logit
+mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
+linear=0                                                  ! If 1, use linear activation function. Otherwise, use logit
 
 if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 if ((hillclimber.eq.1).and.(p.gt.2))then
@@ -115,18 +115,8 @@ if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs 
 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                    ! Introducing manually the filename from where the system uploads the population
-    rewind(676)
-    do i=1,supereplica ; read(676,*,iostat=ios)arxiv 
-   ! WRITE(*,*)'eplicarxiv',supereplica,arxiv;
-    end do! automatically reads filenames    
-  
-   !        !GRN_1234_R12_T1234                            ! Follow this template
-   ! arxaux='GRN_312452_C_4_R_1_T00'
-   !        !123456789012345678
-   ! arxiv(1:3)='GRN' ; arxiv(4:22)='_' ; arxiv(23:44)=arxaux(1:22)
-   ! arxiv(45:48)='.dat'                                             ! composing filename
-   ! do im=1,44 ; if (arxiv(im:im)==" ") arxiv(im:im)="_" ; end do   ! composing filename
-   ! write(*,*)'supereplicarxiv',supereplica,arxiv
+    rewind(676); 
+    do i=1,supereplica ; read(676,iostat=ios)arxiv ; end do! automatically reads filenames    
     open(9000,file='files/'//arxiv,action='read',iostat=ios)
     do i=1,13 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
