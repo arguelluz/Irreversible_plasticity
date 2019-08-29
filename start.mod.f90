@@ -54,24 +54,24 @@ p=2                                                       ! number of individual
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E3!5   MODIFIED                                            ! evolutionary time
+etmax=1.0E5                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
-ng=2!!MODIFIED                                                      ! initial number of genes
+ng=4                                                      ! initial number of genes
 PD=1                                                      ! phenotypic dimensionality (number of traits)
-sdev=0.005                                                 ! standard deviation for the mutator algorithm
+sdev=0.005                                                ! standard deviation for the mutator algorithm
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
-training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
+training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
 replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
-intervals=4!10 MODIFIED                                               ! Number of intervals for data recording.
+intervals=10                                              ! Number of intervals for data recording.
 lapso=int(etmax/intervals)  	            					      ! Lapso: Generations in an interval.
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
-ginitial_rand=0.0                                           ! Gene concentrations at the start of development, randomized value
+ginitial_rand=0.0                                         ! Gene concentrations at the start of development, randomized value
 maxepigen=0.5                                             ! Maximum absolute value for env. cue
 positivecues=0                                            ! If 1 then cues in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 initialW=5.0E-4                                           ! Connection weights at the start of the simulation
@@ -100,23 +100,23 @@ blocke=0.0
 stab=0.0
 
 if((training.eq.0).and.(replica.lt.1).and.(supereplica.lt.1))then                 ! gets the number of GRN files
-  open(676,file='GRNfiles.txt',action='read',iostat=ios)   ! only for 1st replicate but gives always the same 
+  open(676,file='GRNfiles.txt',action='read',iostat=ios)   ! only for 1st replicate but gives always the same
   nfiles=0
   do while(ios.eq.0)
-    read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1 
+    read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1
   !write(*,*)'arxivread',arxiv
   end do
   nfiles=nfiles-1
   !write(*,*)'NFILESfinal=',nfiles
-  rewind(676) 
-  return 
+  rewind(676)
+  return
 end if
 if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs just once in the training simulations.
 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                    ! Introducing manually the filename from where the system uploads the population
-    rewind(676); 
-    do i=1,supereplica ; read(676,iostat=ios)arxiv ; end do! automatically reads filenames    
+    rewind(676);
+    do i=1,supereplica ; read(676,iostat=ios)arxiv ; end do! automatically reads filenames
     open(9000,file='files/'//arxiv,action='read',iostat=ios)
     do i=1,13 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
@@ -162,13 +162,14 @@ do i=1,p                                                  ! for all individuals 
       thresholdsN(1)=ii ; end if                          ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
     end if                                                ! Finding the "cell index" where the threshold is applied. Re-do for EF>1 !!! WARNING !!!
   end do                                                  !
+
 ! Input targets for each trait across all environments
-!blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
+blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
 !blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
 !blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
 !blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
 !blocke(1,1:n)=(/ 0.8, 0.7, 0.6, 0.5, 0.4, 0.3/)    ! Problem E (D reversed)
-blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 3 steps)
+!blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 3 steps)
 !blocke(1,1:n)=(/ 0.5, 0.5, 0.8, 0.8, 0.5, 0.5/)    ! Problem G (step funciton w 2 steps)
 !blocke(1,1:n)=(/ 0.8, 0.8, 0.5, 0.5, 0.8, 0.8/)    ! Problem H (step funciton w 2 steps, not working due to neg concentration)
 !blocke(1,1:n)=(/ 0.5, 0.5, 0.2, 0.2, 0.5, 0.5/)    ! Problem I (step funciton w 2 steps, lower phenotype)
