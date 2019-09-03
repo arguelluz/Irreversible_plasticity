@@ -53,8 +53,8 @@ subroutine inicial                                        ! allocate the matrice
 p=2                                                       ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
-tmax=20                                                   ! developmental time
-etmax=1.0E3!5   MODIFIED                                            ! evolutionary time
+tmax=2!20  ! MODIFIED                                                 ! developmental time
+etmax=1.0E2!3!5   MODIFIED                                            ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=2!!MODIFIED                                                      ! initial number of genes
@@ -100,17 +100,18 @@ blocke=0.0
 stab=0.0
 
 if((training.eq.0).and.(replica.lt.1).and.(supereplica.lt.1))then                 ! gets the number of GRN files
-  open(676,file='GRNfiles.txt',action='read',iostat=ios)   ! only for 1st replicate but gives always the same 
+  open(676,file='GRNfiles.txt',action='read',iostat=ios)                          ! only for 1st replicate but gives always the same 
   nfiles=0
   do while(ios.eq.0)
     read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1 
   !write(*,*)'arxivread',arxiv
   end do
   nfiles=nfiles-1
-  !write(*,*)'NFILESfinal=',nfiles
+  write(*,*)'NFILESfinal=',nfiles
   rewind(676) 
   return 
 end if
+
 if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs just once in the training simulations.
 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
