@@ -6,6 +6,10 @@ grn_path = expand("files/GRN___________________{base}.dat", base = trained_grns)
 modules = ("development.mod.f90", "grns2.f90")
 problems, = glob_wildcards("./start_{problems}.f90")
 
+# Rule all
+rule all:
+    input: expand("../Simulation_results/test/{problems}/done", problems = problems)
+
 # Run initial problem set on naive networks
 rule train:
     input:
