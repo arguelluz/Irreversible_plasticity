@@ -11,6 +11,8 @@ rule train:
     input:
         modules = modules,
         problem_files = expand("start_{problems}.f90", problems = problems)
+    output:
+        expand("../Simulation_results/test/{problems}/done", problems = problems)
     params:
         problem_name = problems
     shell:
@@ -26,12 +28,14 @@ rule train:
 
         ./grns.e &&
 
-        mkdir -p ../Simulation_results/test/$problem/
-        mv ./files/GRN*.dat ../Simulation_results/test/$problem/
-        mv ./files/PHE*.dat ../Simulation_results/test/$problem/
+        mkdir -p ../Simulation_results/test/$problem/ &&
+        mv ./files/GRN*.dat ../Simulation_results/test/$problem/ &&
+        mv ./files/PHE*.dat ../Simulation_results/test/$problem/ &&
 
-        rm start.mod.f90
-        rm grns.e
+        rm start.mod.f90 &&
+        rm grns.e &&
+
+        touch ../Simulation_results/test/$problem/done
 
         done
         '''
