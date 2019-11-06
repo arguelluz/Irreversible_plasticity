@@ -18,14 +18,20 @@ rule train:
         for problem in {params.problem_name}
         do
 
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start_$problem.f90 -o grns.e &&
+        echo start_$problem.f90
+
+        cp start_$problem.f90 start.mod.f90
+
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
 
         ./grns.e &&
 
+        mkdir -p ../Simulation_results/test/$problem/
         mv ./files/GRN*.dat ../Simulation_results/test/$problem/
         mv ./files/PHE*.dat ../Simulation_results/test/$problem/
 
-        rm *.mod
+        rm start.mod.f90
+        rm grns.e
 
         done
         '''
