@@ -28,7 +28,6 @@ rule train:
 
         ./grns.e &&
 
-        mkdir -p ../Simulation_results/test/$problem/ &&
         mv ./files/GRN*.dat ../Simulation_results/test/$problem/ &&
         mv ./files/PHE*.dat ../Simulation_results/test/$problem/ &&
 
