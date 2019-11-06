@@ -4,21 +4,22 @@ trained_grns, = glob_wildcards("files/GRN___________________{base}.dat")
 grn_path = expand("files/GRN___________________{base}.dat", base = trained_grns)
 
 modules = ("development.mod.f90", "grns2.f90")
-problems, = glob_wildcards("./start_{problems}.f90")
+problems_train, = glob_wildcards("./start_{problems, [a-z]_train}.f90")
+problems_test, = glob_wildcards("./start_{problems, [a-z]_test}.f90")
 
 # Rule all
 rule all:
-    input: expand("../Simulation_results/test/{problems}/done", problems = problems)
+    input: expand("../Simulation_results/test/{problems}/done", problems = problems_train)
 
 # Run initial problem set on naive networks
 rule train:
     input:
         modules = modules,
-        problem_files = expand("start_{problems}.f90", problems = problems)
+        problem_files = expand("start_{problems}.f90", problems = problems_train)
     output:
-        expand("../Simulation_results/test/{problems}/done", problems = problems)
+        expand("../Simulation_results/test/{problems}/done", problems = problems_train)
     params:
-        problem_name = problems
+        problem_name = problems_train
     shell:
         '''
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
