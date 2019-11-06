@@ -13,6 +13,5 @@ rule test:
     shell:
         '''
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input} -o grns.e &&
-        
-
+        ./grns.e
         '''
