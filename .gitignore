@@ -12,3 +12,9 @@
 
 # Pre-specified output layer file
 !mzadhoc.dat
+
+# Mac system files
+.DS_Store
+
+# snakemake logs
+.snakemake/log
