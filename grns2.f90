@@ -15,18 +15,18 @@ use development
 
  lapso=10                                  ! every "lapso"
  call inicial                              ! just to get etmax
-  
+
  call arxivpublic                          ! just to enter the inicial module and set the arxiv variable to public
  ret=SYSTEM('pkill gnuplot')               ! ret=SYSTEM('rm dynamic.dat')
- 
+
  open(267,file='GRNstatus.txt',status='unknown',action='write')           ! just to keep the track of the simulations running
- 
+
 do supereplica=1,nfiles                                                   ! runs the program once per filename
 
 do replica=1,replicas!4
-  
+
   call inicial                                                            ! it allocates and inicializes everything ...
-  
+
    if(training.eq.1)then
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&      ! PHEN_TR for training
     (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
@@ -46,8 +46,8 @@ do replica=1,replicas!4
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
      do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
      phenfileL(23:48)=phenfile(1:26) ; phenfileL(1:22)=arxiv(23:44)
-     phenfileL(1:3)='PHE'                                                 ! EASY TO GREP 
-   end if  
+     phenfileL(1:3)='PHE'                                                 ! EASY TO GREP
+   end if
    open(20067,file=phenfileL,status='unknown',action='write')             ! composing filename
 
 fmax=0                                                                  ! records maximum fitness over evol time
@@ -124,7 +124,7 @@ do et=1,etmax                                                           ! evolut
     end if
    !!!!!!!!!!!!!!!!!!!!!!!!
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
-       
+
      write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I2)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
      (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&
      (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
@@ -135,7 +135,7 @@ do et=1,etmax                                                           ! evolut
      arxifin(23:44)=arxaux(1:22) ; arxifin(45:48)='.dat'                ! composing filename
 
      do im=1,44 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename
-     
+
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile
 
      write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1,1:6)!, blocke(1:2,n)  ! 1
@@ -176,7 +176,7 @@ do et=1,etmax                                                           ! evolut
      close(7000)
      write(267,*)'supereplica',supereplica,'last created file',arxaux,'iteration',et  ! just to keep the track of the simulations running
    end if
-   
+
    !do pp=1,p                    ! Mutation in the generative matrices for each individual
    !  call mutation(pp)          ! independent subroutine (for stability criteria)
    !end do
