@@ -63,7 +63,7 @@ sdev=0.005                                                ! standard deviation f
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
-training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
+training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
 replicas=2                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)

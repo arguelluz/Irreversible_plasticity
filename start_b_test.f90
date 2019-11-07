@@ -63,7 +63,7 @@ sdev=0.005                                                ! standard deviation f
 ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
-training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
+training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
 replicas=2                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
@@ -164,8 +164,8 @@ do i=1,p                                                  ! for all individuals 
   end do                                                  !
 
 ! Input targets for each trait across all environments
-blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
-!blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
+!blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
+blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
 !blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
 !blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
 !blocke(1,1:n)=(/ 0.8, 0.7, 0.6, 0.5, 0.4, 0.3/)    ! Problem E (D reversed)
