@@ -24,6 +24,8 @@ rule train:
         problem_name = problems_train
     shell:
         '''
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
+
         for problem in {params.problem_name}
         do
 
