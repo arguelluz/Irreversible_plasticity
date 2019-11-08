@@ -74,6 +74,7 @@ rule test:
 
         mv ./files/GRN_[0-9]*.dat ../Simulation_results/test/$problem/ &&
         mv ./files/PHE_[0-9]*.dat ../Simulation_results/test/$problem/ &&
+        mv ./GRNstatus.txt ../Simulation_results/test/$problem/ &&
 
         rm grns.e start.mod.f90 development.mod start.mod &&
 
