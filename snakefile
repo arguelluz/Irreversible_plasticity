@@ -29,7 +29,7 @@ rule train:
 
         echo start_$problem.f90
 
-        cp start_$problem.f90 start.mod.f90
+        cp start_$problem.f90 start.mod.f90 &&
 
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start.mod.f90 {input.modules} -o grns.e &&
 
@@ -58,7 +58,7 @@ rule test:
     shell:
         '''
 
-        cp ../Simulation_results/test/*/GRN_* ./files &&
+        cp -u ../Simulation_results/test/*/GRN_* ./files &&
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
 
         for problem in {params.problem_name}
@@ -66,7 +66,7 @@ rule test:
 
         echo start_$problem.f90
 
-        cp start_$problem.f90 start.mod.f90
+        cp start_$problem.f90 start.mod.f90 &&
 
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start.mod.f90 {input.modules} -o grns.e &&
 
@@ -80,5 +80,7 @@ rule test:
         touch ../Simulation_results/test/$problem/done
 
         done
+
+        rm ./files/GRN*
 
         '''
