@@ -24,8 +24,6 @@ rule train:
         problem_name = problems_train
     shell:
         '''
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
-
         for problem in {params.problem_name}
         do
 
@@ -33,14 +31,14 @@ rule train:
 
         cp start_$problem.f90 start.mod.f90
 
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start.mod.f90 {input.modules} -o grns.e &&
 
         ./grns.e &&
 
         mv ./files/GRN*.dat ../Simulation_results/test/$problem/ &&
         mv ./files/PHE*.dat ../Simulation_results/test/$problem/ &&
 
-        rm grns.e &&
+        rm grns.e start.mod.f90 development.mod start.mod &&
 
         touch ../Simulation_results/test/$problem/done
 
@@ -63,8 +61,6 @@ rule test:
         cp ../Simulation_results/test/*/GRN_* ./files &&
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
 
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
-
         for problem in {params.problem_name}
         do
 
@@ -72,14 +68,14 @@ rule test:
 
         cp start_$problem.f90 start.mod.f90
 
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.modules} start.mod.f90 -o grns.e &&
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start.mod.f90 {input.modules} -o grns.e &&
 
         ./grns.e &&
 
         mv ./files/GRN_[0-9]*.dat ../Simulation_results/test/$problem/ &&
         mv ./files/PHE_[0-9]*.dat ../Simulation_results/test/$problem/ &&
 
-        rm grns.e &&
+        rm grns.e start.mod.f90 development.mod start.mod &&
 
         touch ../Simulation_results/test/$problem/done
 
