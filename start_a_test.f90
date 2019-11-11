@@ -116,7 +116,7 @@ if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                    ! Introducing manually the filename from where the system uploads the population
     rewind(676);
-    do i=1,supereplica ; read(676,iostat=ios)arxiv ; end do! automatically reads filenames
+    do i=1,supereplica ; read(676,*,iostat=ios)arxiv ; end do! automatically reads filenames
     open(9000,file='files/'//arxiv,action='read',iostat=ios)
     do i=1,13 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
