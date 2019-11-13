@@ -54,7 +54,7 @@ p=2                                                       ! number of individual
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E2                                               ! evolutionary time
+etmax=1.0E6                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=4                                                      ! initial number of genes
@@ -64,7 +64,7 @@ ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=0                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=2                                               ! Number of replicates
+replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=2                                              ! Number of intervals for data recording.
@@ -164,6 +164,7 @@ do i=1,p                                                  ! for all individuals 
   end do                                                  !
 
 ! Input targets for each trait across all environments
+!blocke(1,1:n)=(/ 0.1, 0.3, 0.4, 0.6, 0.7, 0.9/)    ! Problem N
 !blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
 blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
 !blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
