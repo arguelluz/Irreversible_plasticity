@@ -165,8 +165,8 @@ do i=1,p                                                  ! for all individuals 
 
 ! Input targets for each trait across all environments
 !blocke(1,1:n)=(/ 0.1, 0.3, 0.4, 0.6, 0.7, 0.9/)    ! Problem N
-blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
-!blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
+!blocke(1,1:n)=(/ 0.6, 0.1, 0.3, 0.7, 0.9, 0.4/)    ! Problem A
+blocke(1,1:n)=(/ 0.4, 0.9, 0.7, 0.3, 0.1, 0.6/)    ! Problem B (reverse order of A)
 !blocke(1,1:n)=(/ 0.3, 0.1, 0.2, 0.4, 0.5, 0.2/)    ! Problem C (A with phenotype/2)
 !blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
 !blocke(1,1:n)=(/ 0.8, 0.7, 0.6, 0.5, 0.4, 0.3/)    ! Problem E (D reversed)
