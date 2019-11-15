@@ -67,7 +67,7 @@ rule test_all_timepoints:
         done
 
 
-        for problem in {params.problem_name}_test
+        for problem in {params.problem_name}
         do
 
         echo start_$problem.f90
