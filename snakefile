@@ -52,13 +52,14 @@ rule test_all_timepoints:
     output:
         expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
     params:
-        problem_name = expand("{problems}_test", problems = problems_all_timepoints)
+        problem_name_train = expand("{problems}_train", problems = problems_all_timepoints),
+        problem_name_test = expand("{problems}_test", problems = problems_all_timepoints)
     shell:
         '''
 
         rm -f files/GRN* &&
 
-        for grn in {params.problem_name}
+        for grn in {params.problem_name_train}
         do
 
         cp -u ../Simulation_results/$grn/GRN_* ./files
@@ -67,7 +68,7 @@ rule test_all_timepoints:
 
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
-        for problem in {params.problem_name}
+        for problem in {params.problem_name_test}
         do
 
         echo start_$problem.f90
