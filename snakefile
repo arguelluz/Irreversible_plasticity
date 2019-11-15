@@ -58,8 +58,14 @@ rule test_all_timepoints:
 
         rm -f files/GRN* &&
 
-        cp -u ../Simulation_results/{params.problem_name}/GRN_* ./files &&
+        for grn in {params.problem_name}
+        do
+
+        cp -u ../Simulation_results/$grn/GRN_* ./files &&
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
+
+        done
+
 
         for problem in {params.problem_name}_test
         do
