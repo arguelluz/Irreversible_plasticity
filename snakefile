@@ -61,7 +61,7 @@ rule test_all_timepoints:
         for grn in {params.problem_name}
         do
 
-        cp -u ../Simulation_results/$grn/GRN_* ./files &&
+        cp -u ../Simulation_results/$grn/GRN_* ./files
 
         done
 
