@@ -52,7 +52,7 @@ rule test_all_timepoints:
     output:
         expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
     params:
-        problem_name = problems_all_timepoints
+        problem_name = expand("{problems}_test", problems = problems_all_timepoints)
     shell:
         '''
 
