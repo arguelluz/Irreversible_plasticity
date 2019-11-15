@@ -1,8 +1,5 @@
 
-# Define input trained GRNs
-trained_grns, = glob_wildcards("files/GRN___________________{base}.dat")
-grn_path = expand("files/GRN___________________{base}.dat", base = trained_grns)
-
+# Define input problems and modules
 modules = ("development.mod.f90", "grns2.f90")
 problems_train, = glob_wildcards("./start_{problems, [a-z]_train}.f90")
 problems_test, = glob_wildcards("./start_{problems, [a-z]_test}.f90")
