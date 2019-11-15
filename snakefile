@@ -62,10 +62,10 @@ rule test_all_timepoints:
         do
 
         cp -u ../Simulation_results/$grn/GRN_* ./files &&
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
 
         done
 
+        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
         for problem in {params.problem_name}
         do
