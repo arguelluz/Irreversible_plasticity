@@ -58,7 +58,7 @@ rule test_all_timepoints:
 
         rm -f files/GRN* &&
 
-        cp -u ../Simulation_results/{params.problem_name}_train/GRN_* ./files &&
+        cp -u ../Simulation_results/{params.problem_name}/GRN_* ./files &&
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
 
         for problem in {params.problem_name}_test
