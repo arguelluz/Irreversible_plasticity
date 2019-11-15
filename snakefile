@@ -4,11 +4,12 @@ modules = ("development.mod.f90", "grns2.f90")
 problems_train, = glob_wildcards("./start_{problems, [a-z]_train}.f90")
 problems_test, = glob_wildcards("./start_{problems, [a-z]_test}.f90")
 
+problems_all_timepoints = ("a", "b", "n")
 # Rule all
 rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/done", problems = problems_test)
+        expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
 
 # Run initial problem set on naive networks
 rule train:
@@ -42,23 +43,25 @@ rule train:
         done
         '''
 
-# Run trained networks on all problems
-rule test:
+# Run test simulations initiated from all timepoints of the test set
+rule test_all_timepoints:
     input:
         modules = modules,
-        problem_files = expand("start_{problems}.f90", problems = problems_test),
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        problem_files = expand("start_{problems}_test.f90", problems = problems_all_timepoints),
+        grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
-        expand("../Simulation_results/{problems}/done", problems = problems_test)
+        expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
     params:
-        problem_name = problems_test
+        problem_name = problems_all_timepoints
     shell:
         '''
 
-        cp -u ../Simulation_results/*/GRN_* ./files &&
+        rm -f files/GRN* &&
+
+        cp -u ../Simulation_results/{params.problem_name}_train/GRN_* ./files &&
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt &&
 
-        for problem in {params.problem_name}
+        for problem in {params.problem_name}_test
         do
 
         echo start_$problem.f90
