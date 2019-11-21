@@ -146,3 +146,34 @@ rule test_final_timepoints:
         rm ./files/GRN*
 
         '''
+
+rule mutational_bomb_test:
+    input:
+        expand("../Simulation_results/{problems}/done", problems = problems_test)
+
+    output:
+        expand("../Simulation_results/{problems}_bomb/done", problems = problems_test)
+
+    params:
+        problem_name = problem_test,
+        parallel_jobs = 10
+
+    shell:
+        '''
+        gfortran bomb.f90 -o bomb.e
+
+        # for each problem, grep all GRNs, move them into the files folder and run the parallel simulations
+
+        for problem in {params.problem_name}
+        do
+            rm files/GRN_*
+            cp -u ../Simulation_results/$problem/GRN_* files
+
+            parallel --jobs {params.parallel_jobs} \
+                ./bomb.e {{}}.dat ; \
+                mv files/{{}}*.dat ../Simulation_results/$problem_bomb/ ; \
+                touch ../Simulation_results/$problem_bomb/done \
+            ::: ls files/GRN_*
+
+        done
+        '''
