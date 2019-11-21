@@ -11,7 +11,8 @@ problems_final_timepoints = ("d", "e", "f")
 rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
+        expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints),
+        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints)
 
 # Run initial problem set on naive networks
 rule train:
