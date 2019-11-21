@@ -27,19 +27,23 @@ rule train:
         '''
         for problem in {params.problem_name}
         do
-
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o grns_$problem.e &&
+        done
 
-        ./grns_$problem.e &&
+        for problem in grns_$problem.e
+        do
+        ./$problem
+        rm $problem
+        done
+
 
         mv ./files/GRN*.dat ../Simulation_results/$problem/ &&
         mv ./files/PHE*.dat ../Simulation_results/$problem/ &&
 
-        rm grns_$problem.e start.mod.f90 development.mod start.mod &&
+        rm start.mod.f90 development.mod start.mod &&
 
         touch ../Simulation_results/$problem/done
 
-        done
         '''
 
 # Run test simulations initiated from all timepoints of the test set
