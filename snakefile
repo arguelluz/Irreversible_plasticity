@@ -7,6 +7,9 @@ problems_test, = glob_wildcards("./start_{problems, [a-z]_test}.f90")
 problems_all_timepoints = ("a", "b", "n")
 problems_final_timepoints = ("d", "e", "f")
 
+problem_names = ("n", "a", "b", "d", "e", "f")
+problem_codes = ("n", "a", "b", "d", "e", "f")
+
 # Rule all
 rule all:
     input:
@@ -36,13 +39,24 @@ rule train:
         rm $problem
         done
 
+        rm development.mod start.mod && # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
 
-        mv ./files/GRN*.dat ../Simulation_results/$problem/ &&
-        mv ./files/PHE*.dat ../Simulation_results/$problem/ &&
+        for problem in {params.problem_names}
+        do
 
-        rm start.mod.f90 development.mod start.mod &&
+        parallel --jobs 2 \
+        mv ./files/GRN*{{1}}*.dat ../Simulation_results/$problem_train/ \
+        ::: {params.problem_codes} &&
 
-        touch ../Simulation_results/$problem/done
+        parallel --jobs 2 \
+        mv ./files/PHE*{{1}}*.dat ../Simulation_results/$problem_train/ \
+        ::: {params.problem_codes} &&
+
+        touch ../Simulation_results/$problem_train/done
+
+        done
+
+
 
         '''
 
