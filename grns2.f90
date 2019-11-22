@@ -188,8 +188,8 @@ end do     ! replicates
 end do     ! supereplicates
 
 !ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
-ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
-ret=SYSTEM('mv *HE* files/')   ! replaces files into a folder
+!ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
+!ret=SYSTEM('mv *HE* files/')   ! replaces files into a folder
 
 close(676) ; close(267)
 
