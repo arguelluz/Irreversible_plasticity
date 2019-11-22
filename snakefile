@@ -28,7 +28,7 @@ rule train:
         problem_train = problems_train
     shell:
         '''
-        rm *.e
+        rm -f *.e
 
         # Compile executables for each problem
         for problem in {params.problem_train}
@@ -57,7 +57,7 @@ rule train_sort:
     shell:
         '''
         # Clean up binary files
-        rm development.mod start.mod
+        rm -f development.mod start.mod
 
         # Transfer all results in respective folders
         for problem in {params.problem_names}
