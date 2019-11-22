@@ -33,7 +33,7 @@ rule train:
         # Compile executables for each problem
         for problem in {params.problem_train}
         do
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_{$problem}.f90 {input.modules} -o {$problem}.e
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
         done
 
         # Run all problems in parallel
