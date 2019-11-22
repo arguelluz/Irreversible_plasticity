@@ -76,7 +76,7 @@ rule train_sort:
 
         for problem in {params.problems_train}
         do
-        touch   ../Simulation_results/{params.problems_train}/done
+        touch   ../Simulation_results/$problem/done
         done
         '''
 
