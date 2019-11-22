@@ -30,6 +30,8 @@ rule train:
         problem_codes = problem_codes
     shell:
         '''
+        rm *.e
+
         # Compile executables for each problem
         for problem in {params.problem_train}
         do
@@ -37,9 +39,7 @@ rule train:
         done
 
         # Run all problems in parallel
-        parallel \
-        ./{{}}.e \
-        ::: {params.problem_train}
+        ls *.e | parallel
 
         # Clean up binary files
         rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
