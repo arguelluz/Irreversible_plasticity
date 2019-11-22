@@ -124,50 +124,37 @@ rule test_final_timepoints:
         modules = modules,
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
-
     output:
-        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints)
-
+        "files/problems_tested_fin_timepoints"
     params:
-        problem_name_train = expand("{problems}_train", problems = problems_final_timepoints),
-        problem_name_test = expand("{problems}_test", problems = problems_final_timepoints)
-
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
+        problem_test = expand("{problems}_test", problems = problems_final_timepoints)
     shell:
         '''
+        # Clean any eventual extra GRNs in seed directory
         rm -f files/GRN* &&
 
-        for grn in {params.problem_name_train}
+        # Copy GRNs to use as source for testing
+        for grn in {params.problem_train}
         do
-
-        cp -u ../Simulation_results/$grn/GRN_*_T02.dat ./files
-
+            cp -u ../Simulation_results/$grn/GRN_*_T10.dat ./files
         done
 
+        # Create list of GRN sources
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
-        for problem in {params.problem_name_test}
+        # Compile executables for each problem
+        for problem in {params.problem_test}
         do
-
-        echo start_$problem.f90
-
-        cp start_$problem.f90 start.mod.f90 &&
-
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start.mod.f90 {input.modules} -o grns.e &&
-
-        ./grns.e &&
-
-        mv ./files/GRN_[0-9]*.dat ../Simulation_results/$problem/ &&
-        mv ./files/PHE_[0-9]*.dat ../Simulation_results/$problem/ &&
-        mv ./GRNstatus.txt ../Simulation_results/$problem/ &&
-
-        rm grns.e start.mod.f90 development.mod start.mod &&
-
-        touch ../Simulation_results/$problem/done
-
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
         done
 
-        rm ./files/GRN*
+        # Run all testing simulations in parallel
+        parallel --bar \
+            ./{{}}.e \
+        ::: {params.problem_test}
 
+        touch files/problems_tested_fin_timepoints
         '''
 
 rule test_sort:
