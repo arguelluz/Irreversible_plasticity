@@ -56,9 +56,6 @@ rule train_sort:
         problem_codes = problem_codes
     shell:
         '''
-        # Clean up binary files
-        rm -f development.mod start.mod
-
         # Transfer all results in respective folders
         parallel --jobs 2 --link \
         mv ./GRN*{{1}}*.dat \
