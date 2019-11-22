@@ -58,6 +58,7 @@ rule train_sort:
         '''
         # Clean up binary files
         rm -f development.mod start.mod
+        rm -f *.e
 
         # Transfer all results in respective folders
         parallel --jobs 2 --link \
