@@ -53,7 +53,8 @@ rule train_sort:
         expand("../Simulation_results/{problems}/done", problems = problems_train)
     params:
         problem_names = problem_names,
-        problem_codes = problem_codes
+        problem_codes = problem_codes,
+        problem_train = problem_train
     shell:
         '''
         # Clean up binary files
@@ -73,9 +74,9 @@ rule train_sort:
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        for problem in {params.problem_names}
+        for problem in {params.problems_train}
         do
-        touch   ../Simulation_results/{{$problem}}_train/done
+        touch   ../Simulation_results/{params.problems_train}/done
         done
         '''
 
