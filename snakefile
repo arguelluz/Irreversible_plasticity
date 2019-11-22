@@ -27,7 +27,7 @@ rule train:
     params:
         problem_train = problems_train,
         problem_names = problem_names,
-        problem_code = problem_codes
+        problem_codes = problem_codes
     shell:
         '''
         # Compile executables for each problem
