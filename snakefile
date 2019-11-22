@@ -60,20 +60,18 @@ rule train_sort:
         rm -f development.mod start.mod
 
         # Transfer all results in respective folders
-        for problem in {params.problem_names}
-        do
+        parallel --jobs 2 --link \
+        mv ./GRN*{{1}}*.dat \
+        ../Simulation_results/${{2}}_train/ \
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
 
-        parallel --jobs 2 \
-        mv ./GRN*{{1}}*.dat ../Simulation_results/${{problem}}_train/ \
-        ::: {params.problem_codes}
+        parallel --jobs 2 --link \
+        mv ./PHE*{{1}}*.dat \
+        ../Simulation_results/${{2}}_train/ \
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
 
-        parallel --jobs 2 \
-        mv ./PHE*{{1}}*.dat ../Simulation_results/${{problem}}_train/ \
-        ::: {params.problem_codes}
-
-        touch ../Simulation_results/${{problem}}_train/done
-
-        done
         '''
 
 # Run test simulations initiated from all timepoints of the test set
