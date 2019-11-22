@@ -175,7 +175,6 @@ rule mutational_bomb_test:
         expand("../Simulation_results/{problems}_bomb/done", problems = problems_test)
 
     params:
-        problem_name = problem_test,
         parallel_jobs = 10
 
     shell:
