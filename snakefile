@@ -59,13 +59,13 @@ rule train_sort:
         # Transfer all results in respective folders
         parallel --jobs 2 --link \
         mv ./GRN*{{1}}*.dat \
-        ../Simulation_results/${{2}}_train/ \
+        ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
         parallel --jobs 2 --link \
         mv ./PHE*{{1}}*.dat \
-        ../Simulation_results/${{2}}_train/ \
+        ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
