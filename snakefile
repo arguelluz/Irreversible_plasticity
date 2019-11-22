@@ -137,7 +137,7 @@ rule test_final_timepoints:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_*_T10.dat ./files
+            cp -u ../Simulation_results/$grn/GRN_*_T02.dat ./files
         done
 
         # Create list of GRN sources
