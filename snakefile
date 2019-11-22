@@ -73,7 +73,7 @@ rule train_sort:
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        for $problem in {params.problem_names}
+        for problem in {params.problem_names}
         do
         touch   ../Simulation_results/$problem_train/done
         done
