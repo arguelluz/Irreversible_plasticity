@@ -38,7 +38,7 @@ rule train:
 
         # Run all problems in parallel
         parallel --bar \
-            ./{{}}.e && wait \
+            ./{{}}.e \
         ::: {params.problem_train}
 
         touch files/problems_trained
@@ -58,7 +58,7 @@ rule train_sort:
         '''
         # Clean up binary files
         rm development.mod start.mod
-        
+
         # Transfer all results in respective folders
         for problem in {params.problem_names}
         do
