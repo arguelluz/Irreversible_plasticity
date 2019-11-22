@@ -8,7 +8,7 @@ problems_all_timepoints = ("a", "b", "n")
 problems_final_timepoints = ("d", "e", "f")
 
 problem_names = ("n", "a", "b", "d", "e", "f")
-problem_codes = ("n", "a", "b", "d", "e", "f")
+problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 
 # Rule all
 rule all:
