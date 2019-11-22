@@ -210,8 +210,8 @@ rule mutational_bomb_test:
 
 rule clean:
     shell:
-    '''
-    rm PHE*.dat
-    rm GRN*.dat
-    rm -r ../Simulation_results/*
-    '''
+        '''
+        rm PHE*.dat
+        rm GRN*.dat
+        rm -r ../Simulation_results/*
+        '''
