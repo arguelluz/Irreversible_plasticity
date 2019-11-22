@@ -42,7 +42,7 @@ rule train:
         ./grns_$problem.e
         done
 
-        wait
+        wait $(jobs -rp)
 
         # Clean up binary files
         rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
