@@ -48,7 +48,7 @@ rule train:
 # Move results from training into dedicated results folders
 rule train_sort:
     input:
-        "files/problmes_trained"
+        "files/problems_trained"
     output:
         expand("../Simulation_results/{problems}/done", problems = problems_train)
     params:
