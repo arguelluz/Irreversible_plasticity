@@ -87,7 +87,7 @@ rule test_all_timepoints:
         problem_files = expand("start_{problems}_test.f90", problems = problems_all_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
-        expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints)
+        "files/problems_tested_all_timepoints"
     params:
         problem_train = expand("{problems}_train", problems = problems_all_timepoints),
         problem_test = expand("{problems}_test", problems = problems_all_timepoints)
