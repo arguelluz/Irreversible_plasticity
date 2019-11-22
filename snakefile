@@ -181,6 +181,42 @@ rule test_final_timepoints:
 
         '''
 
+rule test_sort:
+    input:
+        "files/problems_tested_all_timepoints",
+        "files/problems_tested_fin_timepoints"
+    output:
+        expand("../Simulation_results/{problems}/done", problems = problems_test)
+    params:
+        problems_test = problems_test,
+        problem_codes = problem_codes,
+        problem_names = problem_names
+
+    shell:
+        '''
+        # Clean up binary files
+        rm -f development.mod start.mod
+        rm -f *.e
+
+        # Transfer all results in respective folders
+        parallel --jobs 2 --link \
+        mv ./GRN*GRN_{{1}}*.dat \
+        ../Simulation_results/{{2}}_train/ \
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
+
+        parallel --jobs 2 --link \
+        mv ./PHE*PHE_{{1}}*.dat \
+        ../Simulation_results/{{2}}_train/ \
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
+
+        for problem in {params.problems_test}
+        do
+        touch   ../Simulation_results/$problem/done
+        done
+        '''
+
 rule mutational_bomb_test:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_test)
