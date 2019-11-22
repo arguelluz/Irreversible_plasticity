@@ -25,17 +25,19 @@ rule train:
     output:
         expand("../Simulation_results/{problems}/done", problems = problems_train)
     params:
-        problem_name = problems_train
+        problem_train = problems_train,
+        problem_names = problem_names,
+        problem_code = problem_codes
     shell:
         '''
         # Compile executables for each problem
-        for problem in {params.problem_name}
+        for problem in {params.problem_train}
         do
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o grns_$problem.e &&
         done &&
 
         # Run all problems in parallel
-        for problem in grns_$problem.e
+        for problem in grns_{params.problem_train}.e
         do
         ./$problem
         rm $problem
