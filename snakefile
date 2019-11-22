@@ -37,12 +37,9 @@ rule train:
         done
 
         # Run all problems in parallel
-        for problem in {params.problem_train}
-        do
-        ./grns_$problem.e
-        done
-
-        wait $(jobs -rp)
+        parallel \
+        ./{{}} \
+        ::: {{$problem}}.e
 
         # Clean up binary files
         rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
