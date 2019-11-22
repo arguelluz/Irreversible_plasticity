@@ -37,10 +37,10 @@ rule train:
         done
 
         # Run all problems in parallel
-        for problem in grns_{params.problem_train}.e
+        for problem in grns_{params.problem_train}
         do
-        ./$problem
-        rm $problem
+        ./$problem.e
+        rm $problem.e
         done
 
         # Clean up binary files
