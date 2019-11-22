@@ -176,13 +176,13 @@ rule test_sort:
 
         # Transfer all results in respective folders
         parallel --jobs 2 --link \
-        mv ./GRN*GRN_{{1}}*.dat \
+        mv ./GRN_{{1}}*.dat \
         ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
         parallel --jobs 2 --link \
-        mv ./PHE*PHE_{{1}}*.dat \
+        mv ./PHE_{{1}}*.dat \
         ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
