@@ -54,7 +54,7 @@ rule train_sort:
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
-        problem_train = problem_train
+        problems_train = problems_train
     shell:
         '''
         # Clean up binary files
