@@ -23,11 +23,9 @@ rule train:
         modules = modules,
         problem_files = expand("start_{problems}.f90", problems = problems_train)
     output:
-        expand("../Simulation_results/{problems}/done", problems = problems_train)
+        "files/problems_trained"
     params:
-        problem_train = problems_train,
-        problem_names = problem_names,
-        problem_codes = problem_codes
+        problem_train = problems_train
     shell:
         '''
         rm *.e
@@ -43,9 +41,24 @@ rule train:
             ./{{}}.e && wait \
         ::: {params.problem_train}
 
-        # Clean up binary files
-        rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
+        touch files/problems_trained
 
+        '''
+
+# Move results from training into dedicated results folders
+rule train_sort:
+    input:
+        "files/problmes_trained"
+    output:
+        expand("../Simulation_results/{problems}/done", problems = problems_train)
+    params:
+        problem_names = problem_names,
+        problem_codes = problem_codes
+    shell:
+        '''
+        # Clean up binary files
+        rm development.mod start.mod
+        
         # Transfer all results in respective folders
         for problem in {params.problem_names}
         do
