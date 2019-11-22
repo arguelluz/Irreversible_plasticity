@@ -33,18 +33,18 @@ rule train:
         # Compile executables for each problem
         for problem in {params.problem_train}
         do
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o grns_$problem.e &&
-        done &&
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o grns_$problem.e
+        done
 
         # Run all problems in parallel
         for problem in grns_{params.problem_train}.e
         do
         ./$problem
         rm $problem
-        done &&
+        done
 
         # Clean up binary files
-        rm development.mod start.mod && # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
+        rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
 
         # Transfer all results in respective folders
         for problem in {params.problem_names}
@@ -52,18 +52,15 @@ rule train:
 
         parallel --jobs 2 \
         mv ./files/GRN*{{1}}*.dat ../Simulation_results/$problem_train/ \
-        ::: {params.problem_codes} &&
+        ::: {params.problem_codes}
 
         parallel --jobs 2 \
         mv ./files/PHE*{{1}}*.dat ../Simulation_results/$problem_train/ \
-        ::: {params.problem_codes} &&
+        ::: {params.problem_codes}
 
         touch ../Simulation_results/$problem_train/done
 
         done
-
-
-
         '''
 
 # Run test simulations initiated from all timepoints of the test set
