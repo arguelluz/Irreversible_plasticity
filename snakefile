@@ -50,7 +50,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        directory(expand("../Simulation_results/{problems}", problems = problems_train))
+        expand("../Simulation_results/{problems}/done", problems = problems_train)
     params:
         problem_names = problem_names,
         problem_codes = problem_codes
