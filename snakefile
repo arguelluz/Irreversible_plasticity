@@ -28,19 +28,23 @@ rule train:
         problem_name = problems_train
     shell:
         '''
+        # Compile executables for each problem
         for problem in {params.problem_name}
         do
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o grns_$problem.e &&
-        done
+        done &&
 
+        # Run all problems in parallel
         for problem in grns_$problem.e
         do
         ./$problem
         rm $problem
-        done
+        done &&
 
+        # Clean up binary files
         rm development.mod start.mod && # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
 
+        # Transfer all results in respective folders
         for problem in {params.problem_names}
         do
 
