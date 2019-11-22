@@ -37,7 +37,7 @@ rule train:
         done
 
         # Run all problems in parallel
-        parallel --bar --nice 35 \
+        parallel --bar --nice 19 \
             ./{{}}.e \
         ::: {params.problem_train}
 
@@ -112,7 +112,7 @@ rule test_all_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --bar --nice 35 \
+        parallel --bar --nice 19 \
             ./{{}}.e \
         ::: {params.problem_test}
 
@@ -150,7 +150,7 @@ rule test_final_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --bar --nice 35 \
+        parallel --bar --nice 19 \
             ./{{}}.e \
         ::: {params.problem_test}
 
