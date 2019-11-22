@@ -39,9 +39,7 @@ rule train:
         done
 
         # Run all problems in parallel
-        parallel ./{{}}.e ::: {params.problem_train} 
-        wait
-
+        parallel --bar ./{{}}.e ::: {params.problem_train}
 
         # Clean up binary files
         rm development.mod start.mod # do the development.mod and start.mod files need to be compiled alongside the grns.mod file?
