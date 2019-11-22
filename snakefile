@@ -51,14 +51,14 @@ rule train:
         do
 
         parallel --jobs 2 \
-        mv ./files/GRN*{{1}}*.dat ../Simulation_results/$problem_train/ \
+        mv ./files/GRN*{{1}}*.dat ../Simulation_results/${{problem}}_train/ \
         ::: {params.problem_codes}
 
         parallel --jobs 2 \
-        mv ./files/PHE*{{1}}*.dat ../Simulation_results/$problem_train/ \
+        mv ./files/PHE*{{1}}*.dat ../Simulation_results/${{problem}}_train/ \
         ::: {params.problem_codes}
 
-        touch ../Simulation_results/$problem_train/done
+        touch ../Simulation_results/${{problem}}_train/done
 
         done
         '''
