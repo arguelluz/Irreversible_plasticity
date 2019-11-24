@@ -99,7 +99,8 @@ rule test_all_timepoints:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_* ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
         done
 
         # Create list of GRN sources
