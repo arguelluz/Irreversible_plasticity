@@ -15,7 +15,8 @@ rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
         expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints),
-        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints)
+        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints),
+        "files/done_bomb_train"
 
 # Run initial problem set on naive networks
 rule train:
@@ -194,16 +195,13 @@ rule test_sort:
         done
         '''
 
-rule bomb_train:
+rule train_bomb:
     input:
-        expand("../Simulation_results/{problems}/done", problems = problems_test)
-
+        expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
         "files/done_bomb_train"
-
     params:
         problem_name = problems_train
-
     shell:
         '''
         # Grep all GRNs and move them into the files folder
