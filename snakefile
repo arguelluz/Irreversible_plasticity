@@ -221,3 +221,31 @@ rule train_bomb:
         touch files/done_train_bomb &&
         rm bomb.e
         '''
+
+rule train_bomb_sort:
+    input:
+        "files/done_train_bomb"
+    output:
+        expand("../Simulation_results/{problems}/bomb/done", problems = problems_train)
+    params:
+        problem_names = problem_names,
+        problem_codes = problem_codes,
+        problems_train = problems_train
+    shell:
+        '''
+        # Clean up binary files
+        rm -f development.mod start.mod
+        rm -f *.e
+
+        # Transfer all results in respective folders
+        parallel --jobs 3 --link \
+        mv ./GRN*{{1}}*.dat \
+        ../Simulation_results/{{2}}_train/bomb/ \
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
+
+        for problem in {params.problems_train}
+        do
+        touch   ../Simulation_results/$problem/bomb/done
+        done
+        '''
