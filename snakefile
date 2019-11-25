@@ -16,7 +16,7 @@ rule all:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
         expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints),
         expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints),
-        "files/done_bomb_train"
+        "files/done_train_bomb"
 
 # Run initial problem set on naive networks
 rule train:
@@ -199,7 +199,7 @@ rule train_bomb:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "files/done_bomb_train"
+        "files/done_train_bomb"
     params:
         problem_name = problems_train
     shell:
@@ -218,6 +218,6 @@ rule train_bomb:
         # Compule and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
         ./bomb.e &&
-        touch files/done_bomb_test &&
+        touch files/done_train_bombß &&
         rm bomb.e
         '''
