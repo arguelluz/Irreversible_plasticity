@@ -199,10 +199,10 @@ rule bomb_train:
         expand("../Simulation_results/{problems}/done", problems = problems_test)
 
     output:
-        "files/done_bomb_test"
+        "files/done_bomb_train"
 
     params:
-        problem_name = problems_test
+        problem_name = problems_train
 
     shell:
         '''
