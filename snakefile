@@ -14,9 +14,9 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
+        expand("../Simulation_results/{problems}/bomb/done", problems = problems_train),
         expand("../Simulation_results/{problems}_test/done", problems = problems_all_timepoints),
-        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints),
-        "files/done_train_bomb"
+        expand("../Simulation_results/{problems}_test/done", problems = problems_final_timepoints)
 
 # Run initial problem set on naive networks
 rule train:
