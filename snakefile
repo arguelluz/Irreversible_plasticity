@@ -37,7 +37,7 @@ rule train:
         done
 
         # Run all problems in parallel
-        parallel --bar --nice 19 \
+        parallel --nice 19 \
             ./{{}}.e \
         ::: {params.problem_train}
 
@@ -99,7 +99,8 @@ rule test_all_timepoints:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_* ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
         done
 
         # Create list of GRN sources
@@ -112,7 +113,7 @@ rule test_all_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --bar --nice 19 \
+        parallel --nice 19 \
             ./{{}}.e \
         ::: {params.problem_test}
 
@@ -150,7 +151,7 @@ rule test_final_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --bar --nice 19 \
+        parallel --nice 19 \
             ./{{}}.e \
         ::: {params.problem_test}
 
