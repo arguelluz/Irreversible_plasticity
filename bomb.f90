@@ -8,7 +8,7 @@ program bomb
 
 implicit none
 
-integer :: p,training,replica,replicas,et,ret
+integer :: p,training,replica,replicas,et,ret,nfiles,mcc
 integer :: etmax,lapso,EF,n,ng,PD,tmax,reco,capped,mutations,mutmz
 integer :: i,j,k,pp,Mi,Mj,Mk,im,ios,xi,xj,xk
 real*4  :: thresholds,x,y,z,Mx,My,M0,sdev,ss,conWW,conMZZ,pi,blocke(6)
@@ -21,15 +21,26 @@ character(len=44)arxco                                                ! auxiliar
 character(len=1)arxuno                                                ! auxiliar
 pi=3.1415926535
 
-mutations=105 ! How many mutant GRNs will be created ??
+mutations=5!105 ! How many mutant GRNs will be created ??
 mutmz=0       ! mutmz=0 -> MZ Matrix does not mutate ; mutmz=1 -> MZ Matrix mutates
 
-    arxfin='GRN_312452_C_4_R_3_T10GRN_224411_C_4_R10_T10.dat'                  ! Needs to be introduced manually .... (I can make it to be read from the command line if necessary)
-           !123456789012345678901234567890123456789012345678                   ! it must occupy 48 characters including extension.        
-           !         1         2         3         4    .dat                   ! it must occupy 48 characters including extension.
-           arxco(1:44)=arxfin(1:44)                                            ! this keeps all filename except the file extension 
-     
-     open(7000,file='files/'//arxfin,status='unknown',action='read',iostat=ios)! creating datafile
+  open(676,file='GRNfiles.txt',action='read',iostat=ios)                ! automatic reading from file
+  nfiles=0
+  do while(ios.eq.0)
+    read(676,*,iostat=ios)arxfin ; nfiles=nfiles+1
+  end do
+  nfiles=nfiles-1
+  rewind(676)
+
+do mcc=1,nfiles
+    read(676,*,iostat=ios)arxfin                                 ! AUTOMATIC          
+    !arxfin='GRN_312452_C_4_R_3_T10GRN_224411_C_4_R10_T10.dat'   ! MANUAL      ! Needs to be introduced manually .... (I can make it to be read from the command line if necessary)
+    !       !123456789012345678901234567890123456789012345678    ! MANUAL      ! it must occupy 48 characters including extension.        
+    !       !         1         2         3         4    .dat    ! MANUAL      ! it must occupy 48 characters including extension.
+        
+     arxco(1:44)=arxfin(1:44)                                                  ! this keeps all filename except the file extension 
+     open(7000,file='files/'//arxfin,status='unknown',action='read',iostat=ios)! reading input file from files/* directory 
+     !open(7000,file=arxfin,status='unknown',action='read',iostat=ios)         ! reading input file from the folder where bom.f90 is located 
 
      read(7000,*)arxkk,arxkk,arxkk,arxkk,arxkk,blocke(1:6)              ! 1
      read(7000,*)arxkk,thresholds                                       ! 2
@@ -46,6 +57,7 @@ mutmz=0       ! mutmz=0 -> MZ Matrix does not mutate ; mutmz=1 -> MZ Matrix muta
      read(7000,13)arxikk,ARXUNO,arxuno,arxuno,arxuno,conWW,conMZZ       ! 12 
      if((conww.gt.1.0) .or.(conww.lt.0.0))then  ; conww=1.0  ; write(*,*)'reading error, conWW  set to 1.0' ; end if
      if((conMZZ.gt.1.0).or.(conMZZ.lt.0.0))then ; conMZZ=1.0 ; write(*,*)'reading error, conMZZ set to 0.5' ; end if
+     if(allocated(epigen))then ; deallocate(epigen) ; end if
      allocate(epigen(n))
      read(7000,*)arxkk,arxkk,arxkk,epigen(1:n)                          ! 13
           
@@ -53,6 +65,10 @@ mutmz=0       ! mutmz=0 -> MZ Matrix does not mutate ; mutmz=1 -> MZ Matrix muta
      13 FORMAT(A29,4A1,F11.1,F19.1)                                     ! Some required formatting for reading issues     
      !!!!!!!!!!!!!!!!!!!!
      
+     if(allocated(w))then 
+        deallocate(w) ;deallocate(ww) ;deallocate(wm) ;deallocate(wwm)
+        deallocate(MZ);deallocate(MZZ);deallocate(mMZ);deallocate(mMZZ)
+     end if
      allocate(w(ng,ng),ww(ng,ng),wm(ng,ng),wwm(ng,ng))     ! ALLOCATING WILDTYPE AND MUTANT (M) MATRICES 
      allocate(MZ(ng,PD),MZZ(ng,PD),mMZ(ng,PD),mMZZ(ng,PD)) ! ALLOCATING WILDTYPE AND MUTANT (M) MATRICES 
      
@@ -91,7 +107,7 @@ do j=1,mutations                                                   ! Here the ne
          wm(Mi,Mj)=-1.0                                            ! Then set them to -1
        end if
      end if
-     write(*,*)'In the ',j,'th GRN, the element W(',Mi,Mj,') is changed from ',w(Mi,Mj),' to ',wm(Mi,Mj)
+     !write(*,*)'In the ',j,'th GRN, the element W(',Mi,Mj,') is changed from ',w(Mi,Mj),' to ',wm(Mi,Mj)
 
      ! MUTATING THE MZ MATRICES
      if(mutmz.eq.1)then                                            ! If mutmz=0, MZ and MZZ Matrices do not mutate
@@ -99,19 +115,19 @@ do j=1,mutations                                                   ! Here the ne
        Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)              
        call random_number(M0) ; M0=1.0-2*M0 ; M0=M0*0.2
        mMZ(Mi,Mj)=MZ(Mi,Mj)+M0
-       write(*,*)'In the ',j,'th GRN, the element MZ(',Mi,Mj,') is changed from ',MZ(Mi,Mj),' to ',MZ(Mi,Mj)
+       !write(*,*)'In the ',j,'th GRN, the element MZ(',Mi,Mj,') is changed from ',MZ(Mi,Mj),' to ',MZ(Mi,Mj)
 
        call random_number(Mx)  ; call random_number(My)
        Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)              
        if(MZZ(Mi,Mj).eq.0)then ; mMZZ(Mi,Mj)=1 ; else 
        mMZZ(Mi,Mj)=1 ; end if                                           ! topological change
-       write(*,*)'In the ',j,'th GRN, the element MZZ(',Mi,Mj,') is changed from ',MZZ(Mi,Mj),' to ',MZZ(Mi,Mj)
+       !write(*,*)'In the ',j,'th GRN, the element MZZ(',Mi,Mj,') is changed from ',MZZ(Mi,Mj),' to ',MZZ(Mi,Mj)
      end if
 
      !! WRITTING THE OUTPUT FILES  
      write(arxfin2,"(A44,A1,I4,A4)")arxco,'_',j,'.dat'                  ! composing filename 
      do im=1,53 ; if (arxfin2(im:im)==" ") arxfin2(im:im)="_" ; end do  ! composing filename
-     open(7001,file=arxfin2,status='unknown',action='write',iostat=ios) ! creating datafile
+     open(7001,file=arxfin2,status='unknown',action='write',iostat=ios)            ! creating datafile in the folder where bomb.f90 is located
      
      !!!!!!!!!!!!!!   writting the new mutant networks     
      write(7001,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1:6)                 ! 1
@@ -146,8 +162,11 @@ do j=1,mutations                                                   ! Here the ne
      close(7001)     
      !!!!!!!!!!!!!!
 
-end do     
+end do ! from mutations    
+end do ! from mcc (number of input files)
+
+      close(676)
       
-      ret=SYSTEM('mv *T??_*.dat files')      ! put the new files in the /files folder
+      !ret=SYSTEM('mv *T??_*.dat files')      ! put the new files in the /files folder
 
 end program
