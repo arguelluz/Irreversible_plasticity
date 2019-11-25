@@ -206,7 +206,7 @@ rule train_bomb:
         '''
         # Grep all GRNs and move them into the files folder
 
-        rm files/GRN_*
+        rm -f files/GRN_*
         for problem in {params.problem_name}
         do
             cp -u ../Simulation_results/$problem/GRN_* files
