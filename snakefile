@@ -63,13 +63,13 @@ rule train_sort:
         rm -f *.e
 
         # Transfer all results in respective folders
-        parallel --jobs 2 --link \
+        parallel --jobs 3 --link \
         mv ./GRN*{{1}}*.dat \
         ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        parallel --jobs 2 --link \
+        parallel --jobs 3 --link \
         mv ./PHE*{{1}}*.dat \
         ../Simulation_results/{{2}}_train/ \
         ::: {params.problem_codes} \
@@ -177,13 +177,13 @@ rule test_sort:
         rm -f *.e
 
         # Transfer all results in respective folders
-        parallel --jobs 2 --link \
+        parallel --jobs 3 --link \
         mv ./GRN_{{1}}*.dat \
         ../Simulation_results/{{2}}_test/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        parallel --jobs 2 --link \
+        parallel --jobs 3 --link \
         mv ./PHE_{{1}}*.dat \
         ../Simulation_results/{{2}}_test/ \
         ::: {params.problem_codes} \
