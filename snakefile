@@ -218,8 +218,7 @@ rule train_bomb:
         # Compule and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
         ./bomb.e &&
-        touch files/done_train_bomb &&
-        rm bomb.e
+        touch files/done_train_bomb
         '''
 
 rule train_bomb_sort:
