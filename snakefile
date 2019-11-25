@@ -224,11 +224,3 @@ rule mutational_bomb_test:
 
         done
         '''
-
-rule clean:
-    shell:
-        '''
-        rm PHE*.dat
-        rm GRN*.dat
-        rm -r ../Simulation_results/*
-        '''
