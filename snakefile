@@ -233,9 +233,10 @@ rule train_bomb_sort:
         problems_train = problems_train
     shell:
         '''
-        # Clean up binary files
+        # Clean up binary files and source GRNs
         rm -f development.mod start.mod
         rm -f *.e
+        rm files/GRN*
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
