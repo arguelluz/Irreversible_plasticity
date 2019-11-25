@@ -114,7 +114,7 @@ rule test_all_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --nice 19 \
+        parallel \
             ./{{}}.e \
         ::: {params.problem_test}
 
@@ -152,7 +152,7 @@ rule test_final_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel --nice 19 \
+        parallel \
             ./{{}}.e \
         ::: {params.problem_test}
 
