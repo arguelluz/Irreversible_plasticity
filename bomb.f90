@@ -21,7 +21,7 @@ character(len=44)arxco                                                ! auxiliar
 character(len=1)arxuno                                                ! auxiliar
 pi=3.1415926535
 
-mutations=1000 ! How many mutant GRNs will be created ??
+mutations=500 ! How many mutant GRNs will be created ??
 mutmz=0       ! mutmz=0 -> MZ Matrix does not mutate ; mutmz=1 -> MZ Matrix mutates
 
   open(676,file='GRNfiles.txt',action='read',iostat=ios)                ! automatic reading from file
