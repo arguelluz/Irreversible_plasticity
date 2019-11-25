@@ -194,33 +194,32 @@ rule test_sort:
         done
         '''
 
-rule mutational_bomb_test:
+rule bomb_train:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_test)
 
     output:
-        expand("../Simulation_results/{problems}_bomb/done", problems = problems_test)
+        "files/done_bomb_test"
 
     params:
-        problem_name = problems_test,
-        parallel_jobs = 10
+        problem_name = problems_test
 
     shell:
         '''
-        gfortran bomb.f90 -o bomb.e
+        # Grep all GRNs and move them into the files folder
 
-        # for each problem, grep all GRNs, move them into the files folder and run the parallel simulations
-
+        rm files/GRN_*
         for problem in {params.problem_name}
         do
-            rm files/GRN_*
             cp -u ../Simulation_results/$problem/GRN_* files
-
-            parallel --jobs {params.parallel_jobs} \
-                ./bomb.e {{}}.dat ; \
-                mv files/{{}}*.dat ../Simulation_results/$problem_bomb/ ; \
-                touch ../Simulation_results/$problem_bomb/done \
-            ::: ls files/GRN_*
-
         done
+
+        # Create list of GRN sources
+        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+
+        # Compule and run bomb script on all GRNs
+        gfortran bomb.f90 -o bomb.e
+        ./bomb.e &&
+        touch files/done_bomb_test &&
+        rm bomb.e
         '''
