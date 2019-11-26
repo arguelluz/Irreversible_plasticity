@@ -237,7 +237,7 @@ rule train_bomb_sort:
         # Clean up binary files and source GRNs
         rm -f development.mod start.mod
         rm -f *.e
-        rm files/GRN*
+        rm -f files/GRN*
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
