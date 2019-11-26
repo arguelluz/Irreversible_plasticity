@@ -122,7 +122,6 @@ if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs 
   else
     arxiv(23:25)='GRN' ; arxiv(26:44)='_'
   end if
-  write(*,*)'narxivread',supereplica,replica,arxiv ! printdebug
 !!!!!!!!!!!!!!!!!!!!!!!
 
 do i=1,p                                                  ! for all individuals in the population
@@ -222,11 +221,9 @@ blocke(1,1:n)=(/ 0.1, 0.3, 0.4, 0.6, 0.7, 0.9/)    ! Problem N
   else
     do iii=1,ind(i)%ngs
       read(9000,*) ind(i)%w(iii,1:ind(i)%ngs)                           ! uploading population W from file
-      write(*,*)supereplica,replica,i,iii,'nW', ind(i)%w(iii,1:ind(i)%ngs)  ! printdebug
     end do
     do iii=1,ind(i)%ngs
       read(9000,*) ind(i)%ww(iii,1:ind(i)%ngs)                           ! uploading population Ww from file
-      write(*,*)supereplica,replica,i,iii,'nWW',ind(i)%ww(iii,1:ind(i)%ngs)  ! printdebug
     end do
   end if
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -235,11 +232,9 @@ end do
 if(training.ne.1)then                                                   ! Test set.
   do iii=1,ind(1)%ngs
     read(9000,*) ind(1)%MZ(iii,1:pd)                                    ! uploading MZ  for the whole population from file
-    write(*,*)supereplica,replica,iii,'nMZ',ind(1)%MZ(iii,1:pd) ! printdebug
   end do
   do iii=1,ind(1)%ngs
     read(9000,*) ind(1)%MZZ(iii,1:pd)                                   ! uploading MZZ for the whole population from file
-    write(*,*)supereplica,replica,iii,'nMZZ',ind(1)%MZZ(iii,1:pd) ! printdebug
   end do
   do iii=1,p
     ind(iii)%MZ=ind(1)%MZ	    										! homogeneous MZ matrix for all individuals
