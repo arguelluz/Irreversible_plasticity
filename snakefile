@@ -175,7 +175,7 @@ rule test_sort:
         # Clean up binary files
         rm -f development.mod start.mod
         rm -f *.e
-        rm files/GRN*
+        rm -f files/GRN*
 
 
         # Transfer all results in respective folders
@@ -241,7 +241,7 @@ rule train_bomb_sort:
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
-        mv ./GRN*{{1}}*.dat \
+        rsync -avz --remove-source-files ./GRN*{{1}}*.dat \
         ../Simulation_results/{{2}}_train/bomb/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
