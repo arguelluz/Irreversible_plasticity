@@ -22,7 +22,6 @@ rule all:
 rule train:
     input:
         modules = modules,
-        problem_files = expand("start_{problems}.f90", problems = problems_train)
     output:
         "files/problems_trained"
     params:
@@ -85,7 +84,6 @@ rule train_sort:
 rule test_all_timepoints:
     input:
         modules = modules,
-        problem_files = expand("start_{problems}_test.f90", problems = problems_all_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
         "files/problems_tested_all_timepoints"
