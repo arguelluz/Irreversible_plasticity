@@ -241,8 +241,8 @@ rule train_bomb_sort:
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
-        rsync -avz --remove-source-files ./GRN*{{1}}*.dat \
-        ../Simulation_results/{{2}}_train/bomb/ \
+        find . -maxdepth 1 -name 'GRN*{{1}}*.dat' \
+        -exec mv '{}' ../Simulation_results/{{2}}_train/bomb/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
