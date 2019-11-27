@@ -252,6 +252,33 @@ rule train_bomb_sort:
         touch   ../Simulation_results/$problem/bomb/done
         done
         '''
+
+rule test_bomb:
+    input:
+        expand("../Simulation_results/{problems}/done", problems = problems_test)
+    output:
+        "files/done_test_bomb"
+    params:
+        problem_name = problems_test
+    shell:
+        '''
+        # Grep all GRNs and move them into the files folder
+
+        rm -f files/GRN_*
+        for problem in {params.problem_name}
+        do
+            cp -u ../Simulation_results/$problem/GRN_* files
+        done
+
+        # Create list of GRN sources
+        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+
+        # Compule and run bomb script on all GRNs
+        gfortran bomb.f90 -o bomb.e
+        ./bomb.e &&
+        touch files/done_test_bomb
+        '''
+
 rule test_bomb_sort:
     input:
         "files/done_test_fin_bomb",
