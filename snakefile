@@ -238,11 +238,14 @@ rule train_bomb_sort:
         rm -f files/GRN*
 
         # Transfer all results in respective folders
-        parallel --jobs 3 --link \
-        find . -maxdepth 1 -name 'GRN*{{1}}*.dat' \
-        -exec mv '{{}}' ../Simulation_results/{{2}}_train/bomb/ \; \
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        problem_codes={params.problem_codes}
+        problem_names={problem_names}
+
+        for codes names ({$problem_codes^problem_names})
+        do
+        echo 'GRN{{$codes}}.dat' \
+        '../Simulation_results/{{$names}}_train/bomb/'
+        done
 
         for problem in {params.problems_train}
         do
