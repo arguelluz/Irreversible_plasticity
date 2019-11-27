@@ -238,13 +238,12 @@ rule train_bomb_sort:
         rm -f files/GRN*
 
         # Transfer all results in respective folders
-        problem_codes={params.problem_codes}
-        problem_names={problem_names}
+        problem_codes=({params.problem_codes})
+        problem_names=({problem_names})
 
-        for codes names ({$problem_codes^problem_names})
+        for i ($(seq 1 6))
         do
-        echo 'GRN{{$codes}}.dat' \
-        '../Simulation_results/{{$names}}_train/bomb/'
+        echo 'GRN*$problem_codes[$i]*.dat' $problem_names[$i]_train/bomb/ \+'
         done
 
         for problem in {params.problems_train}
