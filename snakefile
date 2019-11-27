@@ -244,7 +244,7 @@ rule train_bomb_sort:
         for i in $(seq 0 5)
         do
         find . -maxdepth 1 -name 'GRN*'${{problem_codes[$i]}}'*.dat' \
-        -exec mv {{}} ../Simulation_results/${{problem_names[$i]}}_train/bomb/ \+
+        -exec mv -t ../Simulation_results/${{problem_names[$i]}}_train/bomb/ {{}} \+
         done
 
         for problem in {params.problems_train}
