@@ -252,3 +252,35 @@ rule train_bomb_sort:
         touch   ../Simulation_results/$problem/bomb/done
         done
         '''
+rule test_bomb_sort:
+    input:
+        "files/done_test_fin_bomb",
+        "files/done_test_all_bomb"
+    output:
+        expand("../Simulation_results/{problems}/bomb/done", problems = problems_test)
+    params:
+        problem_names = problem_names,
+        problem_codes = problem_codes,
+        problems_test = problems_test
+    shell:
+        '''
+        # Clean up binary files and source GRNs
+        rm -f development.mod start.mod
+        rm -f *.e
+        rm -f files/GRN*
+
+        # Transfer all results in respective folders
+        problem_codes=({params.problem_codes})
+        problem_names=({problem_names})
+
+        for i in $(seq 0 5)
+        do
+        find . -maxdepth 1 -name 'GRN*GRN*'${{problem_codes[$i]}}'*.dat' \
+        -exec mv -t ../Simulation_results/${{problem_names[$i]}}_test/bomb/ {{}} \+
+        done
+
+        for problem in {params.problems_test}
+        do
+        touch   ../Simulation_results/${{problem}}/bomb/done
+        done
+        '''
