@@ -241,9 +241,10 @@ rule train_bomb_sort:
         problem_codes=({params.problem_codes})
         problem_names=({problem_names})
 
-        for i ($(seq 1 6))
+        for i in $(seq 0 5)
         do
-        echo 'GRN*$problem_codes[$i]*.dat' $problem_names[$i]_train/bomb/ \+'
+        find . -maxdepth 1 -name 'GRN*'${{problem_codes[$i]}}'*.dat' \
+        -exec mv {{}} ../Simulation_results/${{problem_names[$i]}}_train/bomb/ \+
         done
 
         for problem in {params.problems_train}
