@@ -24,7 +24,7 @@ do supereplica=1,nfiles                                                   ! runs
 do replica=1,replicas!4
 
   call inicial                                                            ! it allocates and inicializes everything ...
-  write(*,*)supereplica,replica,'exit from initial OK'! printdebug
+
    if(training.eq.1)then
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&      ! PHEN_TR for training
     (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
@@ -46,9 +46,9 @@ do replica=1,replicas!4
      phenfileL(23:48)=phenfile(1:26) ; phenfileL(1:22)=arxiv(23:44)
      phenfileL(1:3)='PHE'                                                 ! EASY TO GREP
    end if
-   write(*,*)supereplica,replica,'PRE-OPEN1 OK',phenfileL! printdebug
+
    open(20067,file=phenfileL,status='unknown',action='write')             ! composing filename
-   write(*,*)supereplica,replica,'POS-OPEN1 OK'! printdebug
+
 
 fmax=0                                                                  ! records maximum fitness over evol time
 fmaxabs=0.0                                                             ! absolute maximum fitness attained over simulation time (initializing)
@@ -76,7 +76,7 @@ do et=1,etmax                                                           ! evolut
 
    end do                                                                                  ! for each individual
    !!!!!!                                                                natural selection for population-based (super-optimized)
-   write(*,*)supereplica,replica,'fitness OK',ind(1:2)%fitness(1)! printdebug
+
 
     fmaxval=maxval(ind(:)%fitness(1))
     if(fmaxval.gt.fmaxabs)then ; fmaxabs=fmaxval ; end if               ! records absolute maximum fitness attained over simulation time
@@ -123,7 +123,7 @@ do et=1,etmax                                                           ! evolut
         ind(i)=ind(whois)
       end do
     end if
-    write(*,*)supereplica,replica,'exit from SELECTION OK', whois! printdebug
+
    !!!!!!!!!!!!!!!!!!!!!!!!
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
 
@@ -138,9 +138,9 @@ do et=1,etmax                                                           ! evolut
 
      do im=1,44 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename
 
-     write(*,*)supereplica,replica,'PRE-OPEN2 OK',arxfin! printdebug
+
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile
-     write(*,*)supereplica,replica,'POS-OPEN2 OK'! printdebug
+
 
      write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1,1:6)!, blocke(1:2,n)  ! 1
      write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2
@@ -170,7 +170,7 @@ do et=1,etmax                                                           ! evolut
             end do
        end do
      end do
-     write(*,*)supereplica,replica,'FIRST WRITES OK'! printdebug
+
 
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZ(i,:)
@@ -178,7 +178,7 @@ do et=1,etmax                                                           ! evolut
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZZ(i,:)
      end do
-     write(*,*)supereplica,replica,'SECOND WRITES OK'! printdebug
+
      close(7000)
 
    end if

@@ -23,7 +23,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019
   end do
-  write(*,*)supereplica,replica,i,'WDEV2',ind(i)%w(1,:),ind(i)%w(2,:) ! printdebug
+
 
   pp=i                                                     ! Mutation in the generative matrices for each individual
   if(hillclimber.ne.1)then
@@ -88,7 +88,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       
       ind(i)%g=indt(i)%g ; indt(i)%g=0.0                   ! "valid" individuals are updated and the loop closed
       do j=1,ind(i)%ncels
-        write(*,*)supereplica,replica,i,'devfinal',ind(i)%g(j,1:ng) ! printdebug
+
       end do
 
   end do                                                   ! end loop developmental time
