@@ -108,20 +108,23 @@ if((training.eq.0).and.(replica.lt.1).and.(supereplica.lt.1))then               
   end do
   nfiles=nfiles-1
   !write(*,*)'NFILESfinal=',nfiles
-  rewind(676)
+  rewind(676) ; close(676)                                 ! now it only opens the file when necessary
   return
 end if
 if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs just once in the training simulations.
 
 !!!!!!!!!!!!!!!!!!!!!!                                     ! open file for seting a population if we are in TEST SET.
   if(training.ne.1)then                                    ! Introducing manually the filename from where the system uploads the population
-    rewind(676);
+    open(676,file='GRNfiles.txt',action='read',iostat=ios) ! now it only opens the file when necessary
+    !rewind(676);
     do i=1,supereplica ; read(676,*,iostat=ios)arxiv ; end do! automatically reads filenames
+    close(676)                                              ! now it only opens the file when necessary
     open(9000,file='files/'//arxiv,action='read',iostat=ios)
     do i=1,13 ;  read(9000,*)  ;  end do                    ! skip first human readable lines about parameters.
   else
     arxiv(23:25)='GRN' ; arxiv(26:44)='_'
   end if
+  write(*,*)'aarxivread',supereplica,replica,arxiv ! printdebug
 !!!!!!!!!!!!!!!!!!!!!!!
 
 do i=1,p                                                  ! for all individuals in the population
@@ -221,9 +224,11 @@ blocke(1,1:n)=(/ 0.3, 0.4, 0.5, 0.6, 0.7, 0.8/)    ! Problem D (linear1)
   else
     do iii=1,ind(i)%ngs
       read(9000,*) ind(i)%w(iii,1:ind(i)%ngs)                           ! uploading population W from file
+      write(*,*)supereplica,replica,i,iii,'dW', ind(i)%w(iii,1:ind(i)%ngs)  ! printdebug
     end do
     do iii=1,ind(i)%ngs
       read(9000,*) ind(i)%ww(iii,1:ind(i)%ngs)                           ! uploading population Ww from file
+      write(*,*)supereplica,replica,i,iii,'dWW',ind(i)%ww(iii,1:ind(i)%ngs)  ! printdebug
     end do
   end if
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -232,9 +237,11 @@ end do
 if(training.ne.1)then                                                   ! Test set.
   do iii=1,ind(1)%ngs
     read(9000,*) ind(1)%MZ(iii,1:pd)                                    ! uploading MZ  for the whole population from file
+    write(*,*)supereplica,replica,iii,'dMZ',ind(1)%MZ(iii,1:pd) ! printdebug
   end do
   do iii=1,ind(1)%ngs
     read(9000,*) ind(1)%MZZ(iii,1:pd)                                   ! uploading MZZ for the whole population from file
+    write(*,*)supereplica,replica,iii,'dMZZ',ind(1)%MZZ(iii,1:pd) ! printdebug
   end do
   do iii=1,p
     ind(iii)%MZ=ind(1)%MZ	    										! homogeneous MZ matrix for all individuals
