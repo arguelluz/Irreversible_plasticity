@@ -112,9 +112,10 @@ rule test_all_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel \
-            ./{{}}.e \
-        ::: {params.problem_test}
+        for problem in {params.problem_test}
+        do
+            ./$problem.e
+        done
 
         touch files/problems_tested_all_timepoints
         '''
@@ -150,9 +151,10 @@ rule test_final_timepoints:
         done
 
         # Run all testing simulations in parallel
-        parallel \
-            ./{{}}.e \
-        ::: {params.problem_test}
+        for problem in {params.problem_test}
+        do
+            ./$problem.e
+        done
 
         touch files/problems_tested_fin_timepoints
         '''
