@@ -21,11 +21,12 @@ rule all:
 # Run initial problem set on naive networks
 rule train:
     input:
-        modules = modules,
+
     output:
         "files/problems_trained"
     params:
-        problem_train = problems_train
+        problem_train = problems_train,
+        modules = modules
     shell:
         '''
         rm -f *.e
@@ -33,7 +34,7 @@ rule train:
         # Compile executables for each problem
         for problem in {params.problem_train}
         do
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
         done
 
         # Run all problems in parallel
@@ -83,11 +84,11 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_timepoints:
     input:
-        modules = modules,
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
         "files/problems_tested_all_timepoints"
     params:
+        modules = modules,
         problem_train = expand("{problems}_train", problems = problems_all_timepoints),
         problem_test = expand("{problems}_test", problems = problems_all_timepoints)
     shell:
@@ -108,7 +109,7 @@ rule test_all_timepoints:
         # Compile executables for each problem
         for problem in {params.problem_test}
         do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
         done
 
         # Run all testing simulations in parallel
@@ -122,12 +123,12 @@ rule test_all_timepoints:
 
 rule test_final_timepoints:
     input:
-        modules = modules,
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
         "files/problems_tested_fin_timepoints"
     params:
+        modules = modules,
         problem_train = expand("{problems}_train", problems = problems_final_timepoints),
         problem_test = expand("{problems}_test", problems = problems_final_timepoints)
     shell:
@@ -147,7 +148,7 @@ rule test_final_timepoints:
         # Compile executables for each problem
         for problem in {params.problem_test}
         do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
         done
 
         # Run all testing simulations in parallel
