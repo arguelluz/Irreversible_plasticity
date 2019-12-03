@@ -118,14 +118,13 @@ rule test_all_timepoints:
 
         touch files/problems_tested_all_timepoints
         '''
-
-rule test_final_timepoints:
+rule test_final_setup:
     input:
         modules = modules,
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
-        "files/problems_tested_fin_timepoints"
+        expand("{problems_test}.e", problems_test = problems_final_timepoints)
     params:
         problem_train = expand("{problems}_train", problems = problems_final_timepoints),
         problem_test = expand("{problems}_test", problems = problems_final_timepoints)
@@ -148,19 +147,43 @@ rule test_final_timepoints:
         do
             gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {input.modules} -o $problem.e
         done
+        '''
 
-        # Run all testing simulations in parallel
-        parallel \
-            ./{{}}.e \
-        ::: {params.problem_test}
-
-        touch files/problems_tested_fin_timepoints
+rule test_final_d:
+    input:
+        'd_test.e'
+    output:
+        'files/done_test_d'
+    shell:
+        '''
+        ./{input} &&
+         touch {output}
+        '''
+rule test_final_e:
+    input:
+        'e_test.e'
+    output:
+        'files/done_test_e'
+    shell:
+        '''
+        ./{input} &&
+         touch {output}
+        '''
+rule test_final_f:
+    input:
+        'f_test.e'
+    output:
+        'files/done_test_f'
+    shell:
+        '''
+        ./{input} &&
+         touch {output}
         '''
 
 rule test_sort:
     input:
         "files/problems_tested_all_timepoints",
-        "files/problems_tested_fin_timepoints"
+        expand("files/done_test_{problem}", problem = problems_final_timepoints)
     output:
         expand("../Simulation_results/{problems}/done", problems = problems_test)
     params:
