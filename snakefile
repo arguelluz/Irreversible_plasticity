@@ -82,7 +82,7 @@ rule train_sort:
         '''
 
 # Run test simulations initiated from all timepoints of the test set
-rule test_all_timepoints:
+rule test_all_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
@@ -111,14 +111,8 @@ rule test_all_timepoints:
         do
             gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
         done
-
-        # Run all testing simulations in parallel
-        parallel \
-            ./{{}}.e \
-        ::: {params.problem_test}
-
-        touch files/problems_tested_all_timepoints
         '''
+
 rule test_final_setup:
     input:
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
@@ -150,45 +144,22 @@ rule test_final_setup:
         done
         '''
 
-rule test_final_d:
+rule test:
+# insert problem wildcard as files/done_test_{a,b,n,d,e,f}
+# use -j 6 to run all simulations in parallel
     input:
-        'd_test.e'
+        '{problem_test}.e'
     output:
-        'files/done_test_d'
+        'files/done_{problem_test}'
     shell:
         '''
         ./{input} &&
          touch {output}
         '''
-rule test_final_e:
-    input:
-        'e_test.e'
-    output:
-        'files/done_test_e'
-    shell:
-        '''
-        ./{input} &&
-         touch {output}
-        '''
-rule test_final_f:
-    input:
-        'f_test.e'
-    output:
-        'files/done_test_f'
-    shell:
-        '''
-        ./{input} &&
-         touch {output}
-        '''
-
-rule test_final_all:
-    input:
-        expand('files/done_test_{problem}', problem = problems_final_timepoints)
 
 rule test_sort:
     input:
-        "files/problems_tested_all_timepoints",
-        expand("files/done_test_{problem}", problem = problems_final_timepoints)
+        "files/done_{problem_test}",
     output:
         expand("../Simulation_results/{problems}/done", problems = problems_test)
     params:
