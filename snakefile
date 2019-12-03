@@ -146,7 +146,7 @@ rule test_final_setup:
         # Compile executables for each problem
         for problem in {params.problem_test}
         do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o ${{problem}}_test.e
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o ${{problem}}.e
         done
         '''
 
