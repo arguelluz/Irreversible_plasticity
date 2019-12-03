@@ -124,7 +124,7 @@ rule test_final_setup:
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
-        expand("{problems_test}.e", problems_test = problems_final_timepoints)
+        expand("{problems_test}_test.e", problems_test = problems_final_timepoints)
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_final_timepoints),
@@ -146,7 +146,7 @@ rule test_final_setup:
         # Compile executables for each problem
         for problem in {params.problem_test}
         do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o ${{problem}}_test.e
         done
         '''
 
