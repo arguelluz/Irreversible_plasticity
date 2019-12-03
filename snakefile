@@ -181,6 +181,10 @@ rule test_final_f:
          touch {output}
         '''
 
+rule test_final_all:
+    input:
+        expand('files/done_test_{problem}', problem = problems_final_timepoints)
+
 rule test_sort:
     input:
         "files/problems_tested_all_timepoints",
