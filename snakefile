@@ -163,9 +163,9 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem_test}",
+        expand("files/done_{problem_test}", problem_test = problems_test)
     output:
-        expand("../Simulation_results/{problems}/done", problems = problems_test)
+        expand("../Simulation_results/{problems_test}/done", problems_test = problems_test)
     params:
         problems_test = problems_test,
         problem_codes = problem_codes,
