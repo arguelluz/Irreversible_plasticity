@@ -116,11 +116,9 @@ rule test_final_setup:
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
-        expand("{problems_test}_test.e", problems_test = problems_final_timepoints)
+        'GRNfiles.txt'
     params:
-        modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
-        problem_test = expand("{problems}_test", problems = problems_final_timepoints)
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints)
     shell:
         '''
         # Clean any eventual extra GRNs in seed directory
@@ -134,12 +132,19 @@ rule test_final_setup:
 
         # Create list of GRN sources
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        '''
 
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o ${{problem}}.e
-        done
+rule test_compile:
+    input:
+        GRNfiles = 'GRNfiles.txt',
+        problems = 'start_{problems}_test.f90'
+    output:
+        '{problems}_test.e'
+    params:
+        modules = modules
+    shell:
+        '''
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output}.e
         '''
 
 rule test:
