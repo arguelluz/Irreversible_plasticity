@@ -144,7 +144,7 @@ rule test_compile:
         modules = modules
     shell:
         '''
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output}.e
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output}
         '''
 
 rule test:
