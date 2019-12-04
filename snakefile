@@ -163,11 +163,10 @@ rule test:
 
 rule test_sort:
     input:
-        expand("files/done_{problem_test}", problem_test = problems_test)
+        expand("files/{problem_test}_done")
     output:
-        expand("../Simulation_results/{problems_test}/done", problems_test = problems_test)
+        touch("../Simulation_results/{problem_test}/done")
     params:
-        problems_test = problems_test,
         problem_codes = problem_codes,
         problem_names = problem_names
 
@@ -178,24 +177,19 @@ rule test_sort:
         rm -f *.e
         rm -f files/GRN*
 
-
         # Transfer all results in respective folders
-        parallel --jobs 3 --link \
+        parallel --jobs 6 --link \
         mv ./GRN_{{1}}*.dat \
         ../Simulation_results/{{2}}_test/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        parallel --jobs 3 --link \
+        parallel --jobs 6 --link \
         mv ./PHE_{{1}}*.dat \
         ../Simulation_results/{{2}}_test/ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        for problem in {params.problems_test}
-        do
-        touch   ../Simulation_results/$problem/done
-        done
         '''
 
 rule train_bomb:
