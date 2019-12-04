@@ -171,7 +171,7 @@ rule test:
 
 rule test_sort:
     input:
-        expand("files/{problem_test}_done")
+        "files/{problem_test}_done"
     output:
         touch("../Simulation_results/{problem_test}/done")
     params:
