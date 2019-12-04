@@ -149,7 +149,7 @@ rule test_compile:
     shell:
         '''
         cp {input.GRNfiles} GRNfiles
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output.executable}
+        gfortran -w -fexceptions -fno-underscoring -check=all -Wall -Wtabs {input.problems} {params.modules} -o {output.executable}
         cp -R {input.files} {output.problem_dir}
         cp files/mzadhoc.dat {output.problem_dir}/files
         '''
