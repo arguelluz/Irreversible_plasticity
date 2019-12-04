@@ -10,7 +10,7 @@ contains
 subroutine dev(i)                                          ! it runs development for the individual i
 integer :: i,ii,j,jj,pp,k,jjj,ret
 real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
-
+   write(462,*)supereplica,replica,i,'enterdevelopment'    ! printdebug
   !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)
   do jjj=1,ng
     premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -23,16 +23,19 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019
   end do
-  !write(*,*)'WDEV2',ind(I)%w(1,:),ind(I)%w(2,:)
+  write(462,*)supereplica,replica,i,'WDEV2',ind(i)%w(1,:),ind(i)%w(2,:) ! printdebug
 
   pp=i                                                     ! Mutation in the generative matrices for each individual
   if(hillclimber.ne.1)then
     call mutation(pp)                                      ! independent subroutine (for stability criteria)
+    write(462,*)supereplica,replica,i,   'mutationa'       ! printdebug
   else
     if(pp.gt.1)then
        call mutation(pp)                                   ! only one individual mutates in hill climber
+       write(462,*)supereplica,replica,i,'mutationb'       ! printdebug
     end if
   end if
+
 
   ind(i)%sat=0
   indt(i)%g=0.0
@@ -82,14 +85,16 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           end do
         end do
         if(sqrt(stable).gt.0.1)then                        ! stability criterium (Same as Dragui) ! THRESHOLD CAN BE CHANGED MANUALLY !
-          goto 8881 ; write(*,*)'unstable'
+          goto 8881 !; write(*,*)'unstable'
         end if                                             ! stability criterium (Same as Dragui)
       end if
-
+      
       ind(i)%g=indt(i)%g ; indt(i)%g=0.0                   ! "valid" individuals are updated and the loop closed
 
   end do                                                   ! end loop developmental time
 
+ write(462,*)supereplica,replica,i,'end of development'      ! printdebug
+ 
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels                                    ! For each environment
     do t=1,pd                                              ! For each trait
