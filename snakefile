@@ -83,13 +83,15 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
+        problem_files = expand("start_{problems}_test.f90", problems = problems_all_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
-        "files/problems_tested_all_timepoints"
+        GRNfiles = 'GRNfiles_all.txt',
+        files = directory('files_all')
     params:
-        modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_all_timepoints),
-        problem_test = expand("{problems}_test", problems = problems_all_timepoints)
+        problem_train = expand("{problems}_train", problems = problems_all_timepoints)
+    resources:
+        files = 1
     shell:
         '''
         # Clean any eventual extra GRNs in seed directory
@@ -98,18 +100,12 @@ rule test_all_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat ./files
-            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat {output.files}
+            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat {output.files}
         done
 
         # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
-
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
-        done
+        ls {output.files}/GRN* | grep -o "GRN.*" > {output}
         '''
 
 rule test_final_setup:
@@ -117,9 +113,12 @@ rule test_final_setup:
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
-        'GRNfiles.txt'
+        GRNfiles = 'GRNfiles_fin.txt',
+        files = directory('files_fin')
     params:
         problem_train = expand("{problems}_train", problems = problems_final_timepoints)
+    resources:
+        files = 1
     shell:
         '''
         # Clean any eventual extra GRNs in seed directory
@@ -128,37 +127,46 @@ rule test_final_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_*_T10.dat ./files
+            cp -u ../Simulation_results/$grn/GRN_*_T10.dat {output.files}
         done
 
         # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        ls {output.files}/GRN* | grep -o "GRN.*" > {output.GRNfiles}
         '''
 
 rule test_compile:
     input:
-        GRNfiles = 'GRNfiles.txt',
-        problems = 'start_{problems}_test.f90'
+        GRNfiles = expand('GRNfiles_{set}.txt', set = ['all', 'fin']),
+        files = expand('files_{set}', set = ['all', 'fin'])
+        problems = 'start_{problem}_test.f90'
     output:
-        '{problems}_test.e'
+        problem_dir = directory('{problem}_test'),
+        executable = '{problem}_test/{problem}_test.e'
     params:
         modules = modules
+    resources:
+        GRNfile = 1
     shell:
         '''
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output}
+        cp {input.GRNfiles} GRNfiles
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output.executable}
+        cp -R {input.files} {output.problem_dir}
+        cp files/mzadhoc.dat {output.problem_dir}/files
         '''
 
 rule test:
 # insert problem wildcard as files/done_test_{a,b,n,d,e,f}
 # use -j 6 to run all simulations in parallel
     input:
-        '{problem_test}.e'
+        '{problem_test}/{problem_test}.e'
     output:
-        'files/done_{problem_test}'
+        touch('files/{problem_test}_done')
+    params:
+        problem = '{problem_test}'
     shell:
         '''
-        ./{input} &&
-         touch {output}
+        cd ./{params.problem}
+        ./{params.problem}.e &&
         '''
 
 rule test_sort:
