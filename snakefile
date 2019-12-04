@@ -86,10 +86,10 @@ rule test_all_setup:
         problem_files = expand("start_{problems}_test.f90", problems = problems_all_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
     output:
-        GRNfiles = 'GRNfiles_all.txt',
-        files = directory('files_all')
+        GRNfiles = 'GRNfiles_all.txt'
     params:
-        problem_train = expand("{problems}_train", problems = problems_all_timepoints)
+        problem_train = expand("{problems}_train", problems = problems_all_timepoints),
+        files = directory('files_all')
     resources:
         files = 1
     shell:
@@ -100,12 +100,12 @@ rule test_all_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat {output.files}
-            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat {output.files}
+            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat {params.files}
+            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat {params.files}
         done
 
         # Create list of GRN sources
-        ls {output.files}/GRN* | grep -o "GRN.*" > {output}
+        ls {params.files}/GRN* | grep -o "GRN.*" > {output}
         '''
 
 rule test_final_setup:
@@ -113,10 +113,10 @@ rule test_final_setup:
         problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
         grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
     output:
-        GRNfiles = 'GRNfiles_fin.txt',
-        files = directory('files_fin')
+        GRNfiles = 'GRNfiles_fin.txt'
     params:
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints)
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
+        files = 'files_fin'
     resources:
         files = 1
     shell:
@@ -127,11 +127,11 @@ rule test_final_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_*_T10.dat {output.files}
+            cp -u ../Simulation_results/$grn/GRN_*_T10.dat {params.files}
         done
 
         # Create list of GRN sources
-        ls {output.files}/GRN* | grep -o "GRN.*" > {output.GRNfiles}
+        ls {params.files}/GRN* | grep -o "GRN.*" > {output.GRNfiles}
         '''
 
 rule test_compile:
