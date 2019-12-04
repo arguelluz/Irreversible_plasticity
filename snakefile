@@ -136,7 +136,7 @@ rule test_final_setup:
 
 rule test_compile:
     input:
-        GRNfiles = expand('GRNfiles_{set}.txt', set = ['all', 'fin']),
+        GRNfiles = 'GRNfiles_{set}.txt',
         problems = 'start_{problem}_test.f90'
     output:
         executable = '{problem}_test/{problem}_test.e'
