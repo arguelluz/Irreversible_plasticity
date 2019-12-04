@@ -137,7 +137,7 @@ rule test_final_setup:
 rule test_compile:
     input:
         GRNfiles = expand('GRNfiles_{set}.txt', set = ['all', 'fin']),
-        files = expand('files_{set}', set = ['all', 'fin'])
+        files = expand('files_{set}', set = ['all', 'fin']),
         problems = 'start_{problem}_test.f90'
     output:
         problem_dir = directory('{problem}_test'),
