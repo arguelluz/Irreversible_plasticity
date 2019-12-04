@@ -139,19 +139,20 @@ rule test_compile:
         GRNfiles = expand('GRNfiles_{set}.txt', set = ['all', 'fin']),
         problems = 'start_{problem}_test.f90'
     output:
-        problem_dir = directory('{problem}_test'),
         executable = '{problem}_test/{problem}_test.e'
     params:
         modules = modules,
-        files = expand('files_{set}', set = ['all', 'fin'])
+        files = expand('files_{set}', set = ['all', 'fin']),
+        problem_dir = directory('{problem}_test')
+
     resources:
         GRNfile = 1
     shell:
         '''
         cp {input.GRNfiles} GRNfiles
         gfortran -w -fexceptions -fno-underscoring -check=all -Wall -Wtabs {input.problems} {params.modules} -o {output.executable}
-        cp -R {params.files} {output.problem_dir}
-        cp files/mzadhoc.dat {output.problem_dir}/files
+        cp -R {params.files} {params.problem_dir}
+        cp files/mzadhoc.dat {params.problem_dir}/files
         '''
 
 rule test:
