@@ -54,7 +54,7 @@ p=2                                                       ! number of individual
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E2                                               ! evolutionary time
+etmax=5.0E7                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=4                                                      ! initial number of genes
@@ -64,7 +64,7 @@ ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=300                                               ! Number of replicates
+replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=10                                              ! Number of intervals for data recording.
