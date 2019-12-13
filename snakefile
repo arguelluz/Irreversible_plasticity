@@ -83,13 +83,15 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_all_timepoints)
+        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "files/problems_tested_all_timepoints"
+        "{problems, [a,b,n]}_test.e"
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_all_timepoints),
         problem_test = expand("{problems}_test", problems = problems_all_timepoints)
+    resources:
+        GRNfile = 1
     shell:
         '''
         # Clean any eventual extra GRNs in seed directory
@@ -112,14 +114,17 @@ rule test_all_setup:
         done
         '''
 
-rule test_final_setup:
+rule test_fin_setup:
     input:
-        problem_files = expand("start_{problems}_test.f90", problems = problems_final_timepoints),
-        grn_tokens = expand("../Simulation_results/{problems}_train/done", problems = problems_final_timepoints)
+        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        'GRNfiles.txt'
+        "{problems, [d,e,f]}_test.e"
     params:
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints)
+        modules = modules,
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
+        problem_test = expand("{problems}_test", problems = problems_final_timepoints)
+    resources:
+        GRNfile = 1
     shell:
         '''
         # Clean any eventual extra GRNs in seed directory
@@ -128,33 +133,25 @@ rule test_final_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN_*_T10.dat ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
         done
 
         # Create list of GRN sources
         ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+
+        # Compile executables for each problem
+        for problem in {params.problem_test}
+        do
+            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
+        done
         '''
 
-rule test_compile:
-    input:
-        GRNfiles = 'GRNfiles.txt',
-        problems = 'start_{problems}_test.f90'
-    output:
-        '{problems}_test.e'
-    params:
-        modules = modules
-    shell:
-        '''
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs {input.problems} {params.modules} -o {output}
-        '''
 
 rule test:
-# insert problem wildcard as files/done_test_{a,b,n,d,e,f}
-# use -j 6 to run all simulations in parallel
     input:
-        '{problem_test}.e'
+        '{problem}_test.e'
     output:
-        'files/done_{problem_test}'
+        'files/done_{problem}_test'
     shell:
         '''
         ./{input} &&
