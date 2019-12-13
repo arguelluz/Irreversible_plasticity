@@ -89,7 +89,7 @@ rule test_all_setup:
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_all_timepoints),
-        problem_test = expand("{problems}_test", problems = problems_all_timepoints)
+        problem_test = "{problems}_test"
     resources:
         GRNfile = 1
     shell:
@@ -122,7 +122,7 @@ rule test_fin_setup:
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_final_timepoints),
-        problem_test = expand("{problems}_test", problems = problems_final_timepoints)
+        problem_test = "{problems}_test"
     resources:
         GRNfile = 1
     shell:
