@@ -15,7 +15,7 @@ rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
         expand("../Simulation_results/{problems}/bomb/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/done", problems = problems_test)
+        expand("../Simulation_results/{problems}", problems = problems_test)
 
 # Run initial problem set on naive networks
 rule train:
@@ -50,7 +50,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        expand("../Simulation_results/{problems}/done", problems = problems_train)
+        touch(expand("../Simulation_results/{problems}/done", problems = problems_train))
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -74,10 +74,6 @@ rule train_sort:
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
-        for problem in {params.problems_train}
-        do
-        touch   ../Simulation_results/$problem/done
-        done
         '''
 
 # Run test simulations initiated from all timepoints of the test set
@@ -216,7 +212,7 @@ rule train_bomb_sort:
     input:
         "files/done_train_bomb"
     output:
-        expand("../Simulation_results/{problems}/bomb/done", problems = problems_train)
+        touch("../Simulation_results/{problems}/bomb/done")
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -236,10 +232,5 @@ rule train_bomb_sort:
         do
         find . -maxdepth 1 -name 'GRN*'${{problem_codes[$i]}}'*.dat' \
         -exec mv -t ../Simulation_results/${{problem_names[$i]}}_train/bomb/ {{}} \+
-        done
-
-        for problem in {params.problems_train}
-        do
-        touch   ../Simulation_results/$problem/bomb/done
         done
         '''
