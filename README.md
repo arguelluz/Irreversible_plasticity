@@ -1,4 +1,4 @@
-﻿# Irreversible_plasticity
+# Irreversible_plasticity
 Irreversible_plasticity project  
 A. Rago and M. Brun-Usan
 
@@ -11,6 +11,10 @@ grns.sh also includes routines to check correct syntax
 Change parameters in file start.mod.90  
 Recompile program by running grns.sh  
 Run models using program grns.e  
+
+This is the graph of the entire training and testing pipeline, implemented via snakemake.
+
+![dag](dag.png)
 
 ## Program structure
 Requires 3 main files:  
@@ -81,3 +85,6 @@ Columns are annotated as follows:
 ## File storing.
 
 The program uses/requires a folder called "files" located in the same directory. It places there automatically the generated files and takes them from there in the test set.
+I save data in a separate storage directory `../Simulation_results`. 
+Each training problem is saved in its own directory named after the training problem test. 
+The folder also includes a subfolder for the results of mutational bombs.
