@@ -158,7 +158,7 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem_test}"
+        "files/done_{problem_test, [a-z]_test}"
     output:
         directory("../Simulation_results/{problem_test}")
     params:
