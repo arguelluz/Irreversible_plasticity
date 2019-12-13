@@ -146,23 +146,21 @@ rule test_fin_setup:
         done
         '''
 
-
 rule test:
     input:
         '{problem}_test.e'
     output:
-        'files/done_{problem}_test'
+        touch('files/done_{problem}_test')
     shell:
         '''
-        ./{input} &&
-         touch {output}
+        ./{input}
         '''
 
 rule test_sort:
     input:
         "files/done_{problem_test}"
     output:
-        touch("../Simulation_results/{problem_test}/done")
+        directory("../Simulation_results/{problem_test}")
     params:
         problem_codes = problem_codes,
         problem_names = problem_names
@@ -193,7 +191,7 @@ rule train_bomb:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "files/done_train_bomb"
+        touch("files/done_train_bomb")
     params:
         problem_name = problems_train
     shell:
@@ -211,8 +209,7 @@ rule train_bomb:
 
         # Compule and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
-        ./bomb.e &&
-        touch files/done_train_bomb
+        ./bomb.e
         '''
 
 rule train_bomb_sort:
