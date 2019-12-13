@@ -14,8 +14,8 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/bomb/done", problems = problems_train),
-        expand("../Simulation_results/{problems}", problems = problems_test)
+        expand("../Simulation_results/{problems}/done", problems = problems_test),
+        expand("../Simulation_results/{problems}/bomb", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
 rule train:
@@ -156,7 +156,7 @@ rule test_sort:
     input:
         "files/done_{problem_test, [a-z]_test}"
     output:
-        directory("../Simulation_results/{problem_test}")
+        touch("../Simulation_results/{problem_test}/done")
     params:
         problem_codes = problem_codes,
         problem_names = problem_names
@@ -183,19 +183,19 @@ rule test_sort:
 
         '''
 
-rule train_bomb:
+rule bomb:
     input:
-        expand("../Simulation_results/{problems}/done", problems = problems_train)
+        "../Simulation_results/{problem}/done"
     output:
-        touch("files/done_train_bomb")
-    params:
-        problem_name = problems_train
+        touch("files/done_{problem}_bomb")
+    resources:
+        GRNfile = 1
     shell:
         '''
         # Grep all GRNs and move them into the files folder
 
         rm -f files/GRN_*
-        for problem in {params.problem_name}
+        for problem in {input}
         do
             cp -u ../Simulation_results/$problem/GRN_* files
         done
@@ -208,15 +208,14 @@ rule train_bomb:
         ./bomb.e
         '''
 
-rule train_bomb_sort:
+rule bomb_sort:
     input:
-        "files/done_train_bomb"
+        "files/done_{problem}_bomb"
     output:
-        touch("../Simulation_results/{problems}/bomb/done")
+        directory("../Simulation_results/{problem}/bomb")
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
-        problems_train = problems_train
     shell:
         '''
         # Clean up binary files and source GRNs
