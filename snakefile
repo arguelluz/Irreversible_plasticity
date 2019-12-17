@@ -185,7 +185,8 @@ rule test_sort:
 
 rule bomb:
     input:
-        "../Simulation_results/{problem}/done"
+        token = "../Simulation_results/{problem}/done",
+        directory = "../Simulation_results/{problem}"
     output:
         touch("files/done_{problem}_bomb")
     resources:
@@ -195,7 +196,7 @@ rule bomb:
         # Grep all GRNs and move them into the files folder
 
         rm -f files/GRN_*
-        for problem in {input}
+        for problem in {input.directory}
         do
             cp -u ../Simulation_results/$problem/GRN_* files
         done
