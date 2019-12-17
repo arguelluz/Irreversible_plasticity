@@ -230,7 +230,9 @@ rule bomb_sort:
 
         for i in $(seq 0 5)
         do
+        mkdir -p ../Simulation_results/${{problem_names[$i]}}_train/bomb
+
         find . -maxdepth 1 -name 'GRN*'${{problem_codes[$i]}}'*.dat' \
-        -exec mv -t ../Simulation_results/${{problem_names[$i]}}_train/bomb/ {{}} \+
+        -exec mv -t ../Simulation_results/${{problem_names[$i]}}_train/bomb {{}} \+
         done
         '''
