@@ -217,6 +217,8 @@ rule bomb_sort:
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
+    resources:
+        GRNfolder = 1
     shell:
         '''
         # Clean up binary files and source GRNs
