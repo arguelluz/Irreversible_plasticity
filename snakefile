@@ -13,16 +13,16 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 # Rule all
 rule all:
     input:
-        expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/done", problems = problems_test),
-        expand("../Simulation_results/{problems}/bomb", problems = problems_train + problems_test)
+        expand("../Simulation_results/{problems}", problems = problems_train),
+        expand("../Simulation_results/{problems}", problems = problems_test),
+        expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
 rule train:
     input:
 
     output:
-        "files/problems_trained"
+        touch("files/problems_trained")
     params:
         problem_train = problems_train,
         modules = modules
@@ -41,8 +41,6 @@ rule train:
             ./{{}}.e \
         ::: {params.problem_train}
 
-        touch files/problems_trained
-
         '''
 
 # Move results from training into dedicated results folders
@@ -50,7 +48,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        touch(expand("../Simulation_results/{problems}/done", problems = problems_train))
+        expand("../Simulation_results/{problems}", problems = problems_train)
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -79,7 +77,7 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [a,b,n]}_test.e"
     params:
@@ -112,7 +110,7 @@ rule test_all_setup:
 
 rule test_fin_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [d,e,f]}_test.e"
     params:
@@ -154,9 +152,9 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem_test, [a-z]_test}"
+        "files/done_{problem_test}"
     output:
-        touch("../Simulation_results/{problem_test}/done")
+        directory("../Simulation_results/{problem_test, [a-z]_test}")
     params:
         problem_codes = problem_codes,
         problem_names = problem_names
@@ -185,18 +183,16 @@ rule test_sort:
 
 rule bomb:
     input:
-        token = "../Simulation_results/{problem}/done",
-        directory = "../Simulation_results/{problem}"
+        "../Simulation_results/{problem}"
     output:
-        touch("files/done_{problem}_bomb")
+        touch("files/done_{problem, ([a-z]_train)|([a-z]_test)}_bomb")
     resources:
         GRNfile = 1
     shell:
         '''
         # Grep all GRNs and move them into the files folder
-
         rm -f files/GRN_*
-        for problem in {input.directory}
+        for problem in {input}
         do
             cp -u ../Simulation_results/$problem/GRN_* files
         done
@@ -209,14 +205,14 @@ rule bomb:
         ./bomb.e
         '''
 
+
 rule bomb_sort:
     input:
         "files/done_{problem}_bomb"
     output:
-        directory("../Simulation_results/{problem}/bomb")
+        directory("../Simulation_results/bomb/{problem, ([a-z]_train)|([a-z]_test)}")
     params:
-        problem_names = problem_names,
-        problem_codes = problem_codes,
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     resources:
         GRNfolder = 1
     shell:
@@ -226,15 +222,8 @@ rule bomb_sort:
         rm -f *.e
         rm -f files/GRN*
 
-        # Transfer all results in respective folders
-        problem_codes=({params.problem_codes})
-        problem_names=({problem_names})
+        # Transfer results from the source problem to respective folder
 
-        for i in $(seq 0 5)
-        do
-        mkdir -p ../Simulation_results/${{problem_names[$i]}}_train/bomb
-
-        find . -maxdepth 1 -name 'GRN*'${{problem_codes[$i]}}'*.dat' \
-        -exec mv -t ../Simulation_results/${{problem_names[$i]}}_train/bomb {{}} \+
-        done
+        find . -maxdepth 1 -name 'GRN*'{params.problem_code}'*.dat' \
+        -exec mv -t {output} {{}} \+
         '''
