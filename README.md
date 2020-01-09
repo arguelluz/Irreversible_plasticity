@@ -2,22 +2,17 @@
 Irreversible_plasticity project  
 A. Rago and M. Brun-Usan
 
-## Compiling files
-Uses f90 FORTRAN compiler, available by default on most LINUX distributions.  
-All commands for compiling are in grns.sh  
-grns.sh also includes routines to check correct syntax  
-
 ## Workflow
-Change parameters in file start.mod.90  
-Recompile program by running grns.sh  
-Run models using program grns.e  
-
 This is the graph of the entire training and testing pipeline, implemented via snakemake.
+
+Please note that in order to avoid multiple parallel processes accessing the same files and folder we need to run snakemake with the options:
+
+`snakemake --resources GRNfile=1 GRNfolder=1`
 
 ![dag](dag.png)
 
 ## Program structure
-Requires 3 main files:  
+Each individual simulation is compiled from 3 main files:  
 
 * start: Declares most variables used in simulation
 * development: Contains developmental loop for each individual
@@ -25,19 +20,25 @@ Requires 3 main files:
 
 Calls start for global parameters and development for each individual.
 
+## Compiling files
+We use the f90 FORTRAN compiler, available by default on most LINUX distributions.  
+Each simulation is compiled immediately before running via snakemake workflow.
+Check individual rules for specifics.
+
 ## Manual input options
 
 If option training = 0, loads pre-trained networks specified by name in start file (lines 92+).  
 If option mzadhoc = 1, loads manually specified hidden to phenotype matrices from /files/mzadhoc.dat  
-Matrix format is rows = genes, columns = traits. The first rows specify the continuous connection weights, followed by the discrete presence/absence connection data.  
+Matrix format is rows = genes, columns = traits.
+The first rows specify the continuous connection weights, followed by the discrete presence/absence connection data.  
 
 ## Output file format
 The program produces 2 types of files:  
-Population files contain the machine-readable simulation parameters and the matrices necessary to re-load populations.  
-Phenotype files contain the simulation results for every generation.
+Gene regulatory network files (prefix GRN) contain the machine-readable simulation parameters and the matrices necessary to re-load each individual GRN produced during the simulation.  
+Phenotype files (prefix PHE) contain the phenotypes and fitness of each individual in every generation recorded.
 
-### Population files
-Running GRN2 generates files in the following format:  
+### GRN files
+Running the pipeline generates GRN files in the following format:  
 GRN_TARGET_THRESHOLD_REPLICATE_TIME_TARGET1_REPLICATE1_TIME1.dat  
 Where GRN is the file identifier  
 TARGET is a string of integers which identifies the multivariate targets in format E1T1E1T2ENT1ENT2  
@@ -67,7 +68,7 @@ Following the header the file records, for each individual, the W (weights) and 
 At the end of the file there are written the (non-mutable) MZ and MZZ matrices, which are the same for all individuals.
 Every matrix written is tab separated.
 
-### Phenotype files
+### PHE files
 Phenotype files are tab separated annotations of the phenotype of every individual of the population, at each time step and in every environment.  
 Each row represents an individual of a population at a given time step in a given environment. NOTE: Individuals change between generations: individual IDs are only used to distinguish between individuals of the same generation.   
 Columns are annotated as follows:  
@@ -84,7 +85,8 @@ Columns are annotated as follows:
 
 ## File storing.
 
-The program uses/requires a folder called "files" located in the same directory. It places there automatically the generated files and takes them from there in the test set.
-I save data in a separate storage directory `../Simulation_results`. 
-Each training problem is saved in its own directory named after the training problem test. 
+The program uses/requires a folder called "files" located in the same directory.
+The files directory stores the manually specified output layer ('mzadhoc') and the source GRN files used to initialize testing simulations.
+The results of simulations are moved into the `../Simulation_results` directory.
+Each training problem is saved in its own directory named after the training problem test.
 The folder also includes a subfolder for the results of mutational bombs.
