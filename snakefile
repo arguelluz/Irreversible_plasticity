@@ -142,8 +142,8 @@ rule test_fin_setup:
 rule test:
     input:
         executable = '{problem}_test.e',
-        'files/test_all_setup',
-        'files/test_fin_setup'
+        setup_all = 'files/test_all_setup',
+        setup_fin = 'files/test_fin_setup'
     output:
         touch('files/done_{problem}_test')
     shell:
