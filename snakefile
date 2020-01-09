@@ -48,7 +48,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        directory(expand("../Simulation_results/{problems}", problems = problems_train))
+        touch(expand("../Simulation_results/{problems}/done", problems = problems_train))
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -77,7 +77,7 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
         "{problems, [a,b,n]}_test.e"
     params:
@@ -110,7 +110,7 @@ rule test_all_setup:
 
 rule test_fin_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
         "{problems, [d,e,f]}_test.e"
     params:
