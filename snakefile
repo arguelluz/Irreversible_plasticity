@@ -141,14 +141,14 @@ rule test_fin_setup:
 
 rule test:
     input:
-        '{problem}_test.e',
+        executable = '{problem}_test.e',
         'files/test_all_setup',
         'files/test_fin_setup'
     output:
         touch('files/done_{problem}_test')
     shell:
         '''
-        ./{input}
+        ./{input.executable}
         '''
 
 rule test_sort:
