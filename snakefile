@@ -141,10 +141,11 @@ rule test:
     input:
         '{problem}_test.e'
     output:
-        touch('files/done_{problem}_test')
+        'files/done_{problem}_test'
     shell:
         '''
-        ./{input}
+        ./{input} &&
+        touch output
         '''
 
 rule test_sort:
