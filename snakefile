@@ -207,11 +207,15 @@ rule bomb:
 
 
 rule bomb_sort:
+# This rule uses the find -exec command combination to move files because we have too many files for the input to mv
+# The use of a custom defined lambda function allows the use of the problem wildcard as an input to the param
     input:
         "files/done_{problem}_bomb"
     output:
         directory("../Simulation_results/bomb/{problem, ([a-z]_train)|([a-z]_test)}")
     params:
+    # This function matches the problem name (as set in the wildcard 'problem')
+    # to its problem code (corresponding element in the tuple problem_codes)
         problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     resources:
         GRNfolder = 1
