@@ -183,7 +183,7 @@ rule test_sort:
 
 rule bomb:
     input:
-        "../Simulation_results/{problem}"
+        "../Simulation_results/{problem}/done"
     output:
         touch("files/done_{problem, ([a-z]_train)|([a-z]_test)}_bomb")
     resources:
