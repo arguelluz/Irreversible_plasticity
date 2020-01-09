@@ -79,7 +79,7 @@ rule test_all_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "{problems, [a,b,n]}_test.e",
+        "{problems, [a,b,n]}_test.e}",
         touch("files/test_all_setup")
     params:
         modules = modules,
@@ -112,7 +112,7 @@ rule test_fin_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "{problems, [d,e,f]}_test.e",
+        "{problems, [d,e,f]}_test.e}",
         touch("files/test_fin_setup")
     params:
         modules = modules,
