@@ -3,7 +3,16 @@ Irreversible_plasticity project
 A. Rago and M. Brun-Usan
 
 ## Workflow
-This is the graph of the entire training and testing pipeline, implemented via snakemake.
+Briefly, we compile each simulation using the same development and grns2 files, but changing the start file, which specifies simulation parameters.
+Each individual simulation includes 5 steps:
+* Setup: retrieves and lists source GRNs, compiles executables
+(testing simulations only)
+* Run: executes the simulations
+* Sort: moves the results to storage directories and cleans up binaries
+* Bomb: mutates all GRNs produced by a the simulation
+* Bomb sort: moves mutated GRNs to storage directory
+
+I am currently implementing step 6: converting the output of bombs to a more compact file that only stores phenotypes at each environment (and their fitness).
 
 Please note that in order to avoid multiple parallel processes accessing the same files and folder we need to run snakemake with the options:
 
