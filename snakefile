@@ -192,7 +192,7 @@ rule bomb:
         '''
         # Grep all GRNs and move them into the files folder
         rm -f files/GRN_*
-        for problem in {input}
+        for problem in {wildcards.problem}
         do
             cp -u ../Simulation_results/$problem/GRN_* files
         done
