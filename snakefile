@@ -100,9 +100,6 @@ rule test_all_setup:
             ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
-        # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
-
         # Compile executables for each problem
         for problem in {params.problem_test}
         do
