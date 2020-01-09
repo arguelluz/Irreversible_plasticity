@@ -79,8 +79,7 @@ rule test_all_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "{problems, [a,b,n]}_test.e}",
-        touch("files/test_all_setup")
+        "{problems, [a,b,n]}_test.e",
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_all_timepoints),
@@ -112,8 +111,7 @@ rule test_fin_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
     output:
-        "{problems, [d,e,f]}_test.e}",
-        touch("files/test_fin_setup")
+        "{problems, [d,e,f]}_test.e",
     params:
         modules = modules,
         problem_train = expand("{problems}_train", problems = problems_final_timepoints),
@@ -142,8 +140,7 @@ rule test_fin_setup:
 rule test:
     input:
         executable = '{problem}_test.e',
-        setup_all = 'files/test_all_setup',
-        setup_fin = 'files/test_fin_setup'
+        setup = expand("{problem}_test.e", problem = problem_names)
     output:
         touch('files/done_{problem}_test')
     shell:
