@@ -154,7 +154,7 @@ rule test_sort:
     input:
         "files/done_{problem_test}"
     output:
-        directory("../Simulation_results/{problem_test, [a-z]_test}")
+        touch("../Simulation_results/{problem_test, [a-z]_test}/done")
     params:
         problem_codes = problem_codes,
         problem_names = problem_names
