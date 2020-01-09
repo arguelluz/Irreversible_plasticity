@@ -88,14 +88,16 @@ rule test_all_setup:
         GRNfile = 1
     shell:
         '''
-        # Clean any eventual extra GRNs in seed directory
-        rm -f files/GRN* &&
+        # remove old grnfile
+        rm -f GRNfiles.txt
 
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
             cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat ./files
             cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
+            ls ../Simulation_results/$grn/GRN*GRN*[1-9].dat | grep -o "GRN.*" >> GRNfiles.txt
+            ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
         # Create list of GRN sources
@@ -121,17 +123,15 @@ rule test_fin_setup:
         GRNfile = 1
     shell:
         '''
-        # Clean any eventual extra GRNs in seed directory
-        rm -f files/GRN* &&
+        # remove old grnfile
+        rm -f GRNfiles.txt
 
-        # Copy GRNs to use as source for testing
+        # Copy GRNs to use as source for testing and add to GRNfile
         for grn in {params.problem_train}
         do
             cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
+            ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
-
-        # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
         # Compile executables for each problem
         for problem in {params.problem_test}
