@@ -119,9 +119,10 @@ subroutine mutation(pp)
 integer :: pp,Mi,Mj,Mk
 real*4  :: Mx,My,Mz
 
-   call random_number(Mx)  ; call random_number(My)
-     Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
-     call random_number(Mx)  ; call random_number(My)          ! random new value for the mutation
+     59 call random_number(Mx) ;  if((Mx.lt.1.0).and.(Mx.gt.0.0))then ; goto 60 ; else ; goto 59 ; end if
+     60 call random_number(My) ;  if((My.lt.1.0).and.(My.gt.0.0))then ; goto 61 ; else ; goto 60 ; end if
+     61 Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
+     call random_number(Mx)  ; call random_number(My)              ! random new value for the mutation
      Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
@@ -134,13 +135,15 @@ real*4  :: Mx,My,Mz
      end if
 
      if(mzadhoc.ne.1)then                                           ! If Mz and Mzz are pre-specified they do not mutate
-       call random_number(Mx)  ; call random_number(My)
-       Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+       62 call random_number(Mx) ;  if((Mx.lt.1.0).and.(Mx.gt.0.0))then ; goto 63 ; else ; goto 62 ; end if
+       63 call random_number(My) ;  if((My.lt.1.0).and.(My.gt.0.0))then ; goto 64 ; else ; goto 63 ; end if
+       64 Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
        call random_number(Mz) ; Mz=1.0-2*Mz ; Mz=Mz*0.2
        ind(pp)%MZ(Mi,Mj)=ind(pp)%MZ(Mi,Mj)+Mz
 
-       call random_number(Mx)  ; call random_number(My)
-       Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
+       65 call random_number(Mx) ;  if((Mx.lt.1.0).and.(Mx.gt.0.0))then ; goto 66 ; else ; goto 65 ; end if
+       66 call random_number(My) ;  if((My.lt.1.0).and.(My.gt.0.0))then ; goto 67 ; else ; goto 66 ; end if
+       67 Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(PD)+1)               ! Allow multiple mutations
        if(ind(pp)%MZZ(Mi,Mj).eq.0)then ; ind(pp)%MZZ(Mi,Mj)=1 ; else ;  ind(1)%MZZ(Mi,Mj)=1 ; end if ! topological change
      end if
 end subroutine
