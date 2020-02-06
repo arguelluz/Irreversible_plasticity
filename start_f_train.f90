@@ -186,7 +186,7 @@ blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 
   do ii=1,ind(i)%ncels                                    ! setting cell topology
     ind(i)%g(ii,:)=0.0
     do iii=1,ind(i)%ngs                                   ! setting initial gene concentrations in each cell
-       call random_number(x)
+       11 call random_number(x) ; if((x.lt.1.0).and.(x.gt.0.0))then ; goto 11 ; end if
        ind(i)%g(ii,iii)=ginitial_det + ginitial_rand*(x-0.5)    ! small or small noisy initial gene expression
        prepattern(ii,iii)=ind(i)%g(ii,iii)
     end do
@@ -199,7 +199,7 @@ blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 
   if(training.eq.1)then                                                 ! creating random population in t=0 in training phase
     do iii=1,ind(i)%ngs
       do iiii=1,ind(i)%ngs
-        call random_number(x)                                           ! Random W matrix in t=0
+        39 call random_number(x) ; if((x.lt.1.0).and.(x.gt.0.0))then ; goto 39 ; end if                                           ! Random W matrix in t=0
         ind(i)%w(iii,iiii)=(x-0.5)*initialW                             ! Use small random weights centered around zero
         !call random_number(x)
         !if(x.le.conWW)then ; jjj=1 ; else ; jjj=0 ; end if
@@ -208,9 +208,9 @@ blocke(1,1:n)=(/ 0.3, 0.3, 0.8, 0.8, 0.2, 0.2/)    ! Problem F (step funciton w 
       end do
       if(i.eq.1)then
         do iiii=1,pd
-          call random_number(x)
+          89 call random_number(x) ; if((x.lt.1.0).and.(x.gt.0.0))then ; goto 89 ; end if
           ind(1)%MZ(iii,iiii)=1.0-(2.0*x)                               ! Random MZ matrix in t=0
-          call random_number(x)
+          29 call random_number(x) ; if((x.lt.1.0).and.(x.gt.0.0))then ; goto 29 ; end if
           if(x.le.conMZZ)then ; jjj=1 ; else ; jjj=0 ; end if
           ind(1)%MZZ(iii,iiii)=jjj                                      ! Random MZZ matrix in t=0
         end do
