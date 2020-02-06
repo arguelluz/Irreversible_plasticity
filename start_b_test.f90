@@ -13,7 +13,7 @@ integer :: lapso,intervals                     ! Intervals=number of intervals f
 integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (number of traits),EF=Environmental factors
 integer,allocatable :: thresholdsN(:)          ! thresholds in the N environments (for target switchings)
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
-real*4 :: a,aa,b,c,q,u,v,x,y,z,m,deg           ! Real auxiliar numbers
+real*4 :: a,aa,b,c,q,u,v,x,y,z,m           ! Real auxiliar numbers
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
 real*4, allocatable ::  prepattern(:,:),blocke(:,:)
 real*4 :: conWW,conMZZ,maxepigen               ! Connectivity parameters for binary matrices. Maximum absolute value for env. cue

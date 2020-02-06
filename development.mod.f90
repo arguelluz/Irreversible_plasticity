@@ -43,22 +43,15 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       !write(*,*)'i,t',et,i,t
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
-          x=ind(i)%g(j,k)*(1.0-deg)                        ! concentration of gene k in cell j of ind, minus degradation
-!          q=ind(i)%epigen(k,j)	                           ! baseline gene input values, set as environment
-!          call random_number(eps)                          ! sample random noise
-!          q=q+((eps-0.5)*0.02)                             ! center, scale and add random noise (-.01,.01) to environment (same noise for all interactions)
+          x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind, minus degradation
           do jjj=1,ind(i)%ngs                              ! For all interacting genes jjj
             if(ind(i)%ww(k,jjj).ne.0)then                  ! if the interaction is active
               q=ind(i)%g(j,jjj)                            ! Set concentration of interacting gene (jjj) in same cell (j)
-              q=q*(1.0-deg)                                ! Degrade interacting gene concentration
               q=(q+ind(i)%epigen(jjj,j))                   ! add and average with environmental component for interacting gene (jjj) in same cell (j)
-              !q=(q+maxepigen)*0.5                         ! add and average maximum env input (for invariable environments)
-              !if (q.lt.0.0) then ; q=0; end if            ! ensure that the concentration plus env is positive or zero
               q=q*ind(i)%w(k,jjj)                          ! gene values by activation matrix (w)
               x=x+q                                        ! add activation to gene concentration
             end if
           end do
-          !y=gen(k)%deg*x                                   ! DEGRADATION multiplied by current gene concentration (x)
           ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
           if(linear.ne.1)then
             x=tanh(x)                                        ! activation function
@@ -88,13 +81,13 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           goto 8881 !; write(*,*)'unstable'
         end if                                             ! stability criterium (Same as Dragui)
       end if
-      
+
       ind(i)%g=indt(i)%g ; indt(i)%g=0.0                   ! "valid" individuals are updated and the loop closed
 
   end do                                                   ! end loop developmental time
 
  write(462,*)supereplica,replica,i,'end of development'      ! printdebug
- 
+
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels                                    ! For each environment
     do t=1,pd                                              ! For each trait
