@@ -99,8 +99,11 @@ allocate(blocke(PD,n))                                     ! target dimensionali
 blocke=0.0
 stab=0.0
 
-if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
+if((replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
   open(462,file='n_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
+end if
+
+if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
   open(676,file='GRNfiles.txt',action='read',iostat=ios)   ! only for 1st replicate but gives always the same
   nfiles=0
   do while(ios.eq.0)
