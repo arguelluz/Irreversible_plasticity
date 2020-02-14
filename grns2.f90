@@ -55,12 +55,12 @@ fmaxabs=0.0                                                             ! absolu
 
 do et=1,etmax                                                           ! evolutionary time (Main Loop)
 
-   
+
    do pp=1,p
-        write(462,*)supereplica,replica,'prev development OK',t,pp               ! printdebug
+        write(462,*)supereplica,replica,'prev development OK',et,pp               ! printdebug
         ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do
         ind(pp)%sat=0 ; call dev(pp)
-        write(462,*)supereplica,replica,'exit development OK',t,pp               ! printdebug
+        write(462,*)supereplica,replica,'exit development OK',et,pp               ! printdebug
 
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION
         ind(pp)%fitness=0.0
@@ -125,7 +125,7 @@ do et=1,etmax                                                           ! evolut
         ind(i)=ind(whois)
       end do
     end if
-    write(462,*)supereplica,replica,'exit from SELECTION OK',t, whois! printdebug
+    write(462,*)supereplica,replica,'exit from SELECTION OK',et, whois! printdebug
    !!!!!!!!!!!!!!!!!!!!!!!!
    if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
 
@@ -140,9 +140,9 @@ do et=1,etmax                                                           ! evolut
 
      do im=1,44 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename
 
-     write(462,*)supereplica,replica,'PRE-OPEN2 OK',t,arxfin! printdebug
+     write(462,*)supereplica,replica,'PRE-OPEN2 OK',et,arxfin! printdebug
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile
-     write(462,*)supereplica,replica,'POS-OPEN2 OK',t       ! printdebug
+     write(462,*)supereplica,replica,'POS-OPEN2 OK',et       ! printdebug
 
      write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1,1:6)!, blocke(1:2,n)  ! 1
      write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2
@@ -188,7 +188,7 @@ do et=1,etmax                                                           ! evolut
    !do pp=1,p                    ! Mutation in the generative matrices for each individual
    !  call mutation(pp)          ! independent subroutine (for stability criteria)
    !end do
-   write(462,*)supereplica,replica,'End timeloop',t               ! printdebug
+   write(462,*)supereplica,replica,'End timeloop',et               ! printdebug
 end do     ! evolutionary time
 
  close(20067)                    ! closes file
