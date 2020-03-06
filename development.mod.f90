@@ -112,11 +112,14 @@ subroutine mutation(pp)
 integer :: pp,Mi,Mj,Mk
 real*4  :: Mx,My,Mz
 
-     59 call random_number(Mx) ;  if((Mx.lt.1.0).and.(Mx.gt.0.0))then ; goto 60 ; else ; goto 59 ; end if
-     60 call random_number(My) ;  if((My.lt.1.0).and.(My.gt.0.0))then ; goto 61 ; else ; goto 60 ; end if
-     61 Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
-     call random_number(Mx)  ; call random_number(My)              ! random new value for the mutation
-     Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev)
+     59 call random_number(Mx) ; call random_number(My) 
+     Mi=int(Mx*real(ng)+1) ; Mj=int(My*real(ng)+1)                 ! which element of W will mutate     
+     if((Mi.le.ng).and.(Mi.ge.1).and.(Mj.le.ng).and.(Mj.ge.1))then ; goto 60 ; else ; goto 59 ; end if
+     
+     60 call random_number(Mx) ;  call random_number(My)           ! random new value for the mutation
+     if((Mx.lt.1.0).and.(Mx.gt.0.0).and.(My.lt.1.0).and.(My.gt.0.0))then ; goto 92 ; else ; goto 60 ; end if  ! random new value for the mutation
+    
+     92 Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                      ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
      if(capped.eq.1) then                                          ! If we are using capped weights
