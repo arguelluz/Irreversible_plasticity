@@ -15,7 +15,7 @@ rule all:
     input:
         expand("../Simulation_results/{problems}/done", problems = problems_train),
         expand("../Simulation_results/{problems}/done", problems = problems_test),
-        expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
+        #expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
 rule train:
