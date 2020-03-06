@@ -8,20 +8,20 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)                                          ! it runs development for the individual i
-integer :: i,ii,j,jj,pp,k,jjj,ret
-real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
-   write(462,*)supereplica,replica,i,'enterdevelopment'    ! printdebug
-  !write(*,*)'WDEV1',ind(I)%w(1,:),ind(I)%w(2,:)
+integer :: i,ii,j,k,jj,kkk,pp                              ! local variables
+real*4  :: u,q,y,z,stable                                  ! local variables
+
+  write(462,*)supereplica,replica,i,'enterdevelopment'     ! printdebug
+   
   do jjj=1,ng
     premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
-    !WRITE(*,*)i,jjj,'indi',ind(i)%w(jjj,1:ng)
     premutWW(jjj,1:ng)=ind(i)%ww(jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
   end do
 
   8881 do jjj=1,ng                                         ! REVERSE
     ind(i)%w (jjj,1:ng)=premutW (jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
-    ind(i)%g(1:n,jjj)=prepattern(1:n,jjj)                  ! new Jan-2019
+    ind(i)%g(1:n,jjj)  =prepattern(1:n,jjj)                ! new Jan-2019
   end do
   write(462,*)supereplica,replica,i,'WDEV2',ind(i)%w(1,:),ind(i)%w(2,:) ! printdebug
 
@@ -36,11 +36,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
     end if
   end if
 
-
-  ind(i)%sat=0
   indt(i)%g=0.0
   do t=1,tmax                                              ! developmental time
-      !write(*,*)'i,t',et,i,t
       do j=1,ind(i)%ncels                                  ! for each cell of the individual
         do k=1,ind(i)%ngs                                  ! for each gene ef this cell
           x=ind(i)%g(j,k)                                  ! concentration of gene k in cell j of ind, minus degradation
@@ -54,8 +51,8 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
           end do
           ! in this loop x=concentration for the gene of interest at t-1, q=change in concentration from reactions and env, y=loss from degradation
           if(linear.ne.1)then
-            x=tanh(x)                                        ! activation function
-            x=(x+1)*0.5                                      ! rescale tanh output to logistic and store as gene value
+            x=tanh(x)                                      ! activation function
+            x=(x+1.0)*0.5                                  ! rescale tanh output to logistic and store as gene value
           end if
           indt(i)%g(j,k)=x                                 ! concentration of target gene k in cell j at t+1
           if(linear.ne.1)then                              ! gene state variables can be negatives if we use linear activation function
@@ -70,7 +67,6 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
       end do                                               ! end loop for each cell
 
       if(t.eq.tmax)then                                    ! stability criterium (Same as Dragui) (compares expression in tmax-1,tmax)
-        !write(*,*)'maxvalG=',maxval(ind(i)%g)             ! maximum values
         stable=0.0                                         ! stability criterium (Same as Dragui)
         do j=1,ind(i)%ncels                                ! for each cell of the individual
           do k=1,ind(i)%ngs                                ! for each gene ef this cell
@@ -86,7 +82,7 @@ real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
 
   end do                                                   ! end loop developmental time
 
- write(462,*)supereplica,replica,i,'end of development'      ! printdebug
+ write(462,*)supereplica,replica,i,'end of development'    ! printdebug
 
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels                                    ! For each environment
