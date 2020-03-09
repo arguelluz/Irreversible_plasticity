@@ -2,6 +2,7 @@ module start
 
 implicit none
 
+integer :: superinicial=0                      ! 9.3.20 addition. Conflict solved. It only exits initial the fist time is called from main program.
 integer :: i,j,k,ii,jj,kk,iii,iiii,jjj,n,ng,o,p! general counters
 integer :: ios,logp,t,et,tmax,etmax,nfiles     ! more general counters
 integer :: mzadhoc,capped,reco,linear          ! Some switchers
@@ -13,7 +14,7 @@ integer :: lapso,intervals                     ! Intervals=number of intervals f
 integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (number of traits),EF=Environmental factors
 integer,allocatable :: thresholdsN(:)          ! thresholds in the N environments (for target switchings)
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
-real*4 :: a,aa,b,c,q,u,v,x,y,z,m           ! Real auxiliar numbers
+real*4 :: a,b,c,q,u,v,x,y,z,m                  ! Real auxiliar numbers
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
 real*4, allocatable ::  prepattern(:,:),blocke(:,:)
 real*4 :: conWW,conMZZ,maxepigen               ! Connectivity parameters for binary matrices. Maximum absolute value for env. cue
@@ -26,7 +27,7 @@ character(len=48)   ::  arxiv,arxifin          ! for writting and reading datafi
 character(len=24)   ::  arxaux                 ! for writting and reading datafiles
 
 type,public :: inds
-  integer              :: ncels, ngs, sat      ! number of cells, number of genes and per cel and active genes, saturation time
+  integer              :: ncels, ngs           ! number of cells, number of genes and per cel and active genes, saturation time
   real*4               :: fitness(2)           ! individual fitness in t=0, absolute and normalized
   real*4 ,allocatable  :: w(:,:)               ! interaction strenghts
   real*4, allocatable  :: MZ(:,:)              ! determines importance of node for determining final trait(s), continuous (can be negative)
@@ -50,11 +51,13 @@ subroutine arxivpublic ; end subroutine arxivpublic       ! just to acess this m
 
 subroutine inicial                                        ! allocate the matrices for cells and individuals
 
+superinicial=superinicial+1                               ! 9.3.20 addition. Conflict solved. It only exits initial the fist time is called from main program.
+
 p=2                                                       ! number of individuals (must be an EVEN NUMBER !!!)
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E6                                               ! evolutionary time
+etmax=5.0E7                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=4                                                      ! initial number of genes
@@ -68,7 +71,7 @@ replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
 intervals=10                                              ! Number of intervals for data recording.
-lapso=int(etmax/intervals)  	            					      ! Lapso: Generations in an interval.
+lapso=int(etmax/intervals)  	            		      ! Lapso: Generations in an interval.
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
 ginitial_rand=0.0                                         ! Gene concentrations at the start of development, randomized value
@@ -100,7 +103,7 @@ blocke=0.0
 stab=0.0
 
 if((replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
-  open(462,file='d_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
+  open(462,file='a_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
 end if
 
 if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
@@ -113,7 +116,8 @@ if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then               
   nfiles=nfiles-1
   !write(*,*)'NFILESfinal=',nfiles
   rewind(676)
-  return
+  if(superinicial.eq.1)then ; return ; end if              ! 9.3.20 addition. Conflict solved. It only exits initial the fist time is called from main program.
+
 end if
 if(training.eq.1)then ; nfiles=1 ; endif                   ! the superloop runs just once in the training simulations.
 
