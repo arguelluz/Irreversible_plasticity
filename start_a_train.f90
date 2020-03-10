@@ -54,7 +54,7 @@ p=2                                                       ! number of individual
 if(mod(p,2).ne.0)then ; write(*,*)'p must be an EVEN NUMBER' ; end if
 logp=1+int(log(real(p))/log(2d0))
 tmax=20                                                   ! developmental time
-etmax=1.0E6                                               ! evolutionary time
+etmax=5.0E5                                               ! evolutionary time
 EF=1                                                      ! EF=Number of environmental factors (inputs)
 n=6                                                       ! number of different environments
 ng=4                                                      ! initial number of genes
