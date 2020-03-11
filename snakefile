@@ -227,6 +227,9 @@ rule bomb_sort:
         rm -f *.e
         rm -f files/GRN*
 
+        # Create target folder
+        mkdir -p {output}
+
         # Transfer results from the source problem to respective folder
 
         find . -maxdepth 1 -name 'GRN*'{params.problem_code}'*.dat' \
