@@ -11,8 +11,6 @@ subroutine dev(i)                                          ! it runs development
 integer :: i,ii,j,k,jj,kkk,pp                              ! local variables
 real*4  :: u,q,y,z,stable                                  ! local variables
 
-  write(462,*)supereplica,replica,i,'enterdevelopment'     ! printdebug
-   
   do jjj=1,ng
     premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
     premutWW(jjj,1:ng)=ind(i)%ww(jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -23,16 +21,13 @@ real*4  :: u,q,y,z,stable                                  ! local variables
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%g(1:n,jjj)  =prepattern(1:n,jjj)                ! new Jan-2019
   end do
-  write(462,*)supereplica,replica,i,'WDEV2',ind(i)%w(1,:),ind(i)%w(2,:) ! printdebug
 
   pp=i                                                     ! Mutation in the generative matrices for each individual
   if(hillclimber.ne.1)then
     call mutation(pp)                                      ! independent subroutine (for stability criteria)
-    write(462,*)supereplica,replica,i,   'mutationa'       ! printdebug
   else
     if(pp.gt.1)then
        call mutation(pp)                                   ! only one individual mutates in hill climber
-       write(462,*)supereplica,replica,i,'mutationb'       ! printdebug
     end if
   end if
 
@@ -81,8 +76,6 @@ real*4  :: u,q,y,z,stable                                  ! local variables
       ind(i)%g=indt(i)%g ; indt(i)%g=0.0                   ! "valid" individuals are updated and the loop closed
 
   end do                                                   ! end loop developmental time
-
- write(462,*)supereplica,replica,i,'end of development'    ! printdebug
 
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels                                    ! For each environment
