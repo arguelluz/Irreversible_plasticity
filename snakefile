@@ -192,11 +192,11 @@ rule bomb:
         rm -f files/GRN_*
         for problem in {wildcards.problem}
         do
-            cp -u ../Simulation_results/$problem/GRN_* files
+            cp -u ../Simulation_results/$problem/GRN*GRN*T([01][13579]|99).dat files
         done
 
-        # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        # Create list of GRN sources (grep to remove base path)
+        ls files/GRN*.dat | grep -o "GRN.*" > GRNfiles.txt
 
         # Compule and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
