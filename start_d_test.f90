@@ -103,7 +103,7 @@ blocke=0.0
 stab=0.0
 
 if((replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
-  open(462,file='a_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
+  open(462,file='d_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
 end if
 
 if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
