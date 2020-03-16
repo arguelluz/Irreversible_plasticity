@@ -140,7 +140,7 @@ rule test_fin_setup:
 rule test:
     input:
         executable = '{problem}_test.e',
-        setup = expand("{problem}_test.e", problem = problem_names)
+        setup = "{problem}_test.e"
     output:
         touch('files/done_{problem}_test')
     shell:
