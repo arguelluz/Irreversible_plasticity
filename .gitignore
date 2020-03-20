@@ -18,3 +18,10 @@
 
 # snakemake logs
 .snakemake
+.Rproj.user
+
+# Binary files
+files/
+
+# R history
+.Rhistory
