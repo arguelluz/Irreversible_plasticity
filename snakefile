@@ -156,6 +156,8 @@ rule test_sort:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
         problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
+    resources:
+        GRNfile = 1,
     shell:
         '''
         # Clean up binary files
@@ -214,7 +216,7 @@ rule bomb_sort:
     # to its problem code (corresponding element in the tuple problem_codes)
         problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     resources:
-        GRNfolder = 1
+        GRNfile = 1
     shell:
         '''
         # Clean up binary files and source GRNs
