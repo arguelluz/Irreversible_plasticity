@@ -170,7 +170,7 @@ rule test_sort:
         find . -maxdepth 1 -name 'GRN*GRN_'{params.problem_code}'*.dat' \
         -exec mv -t {output} {{}} \+
 
-        find . -maxdepth 1 -name 'PHEN_*'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -name 'PHE*PHEN_*'{params.problem_code}'*.dat' \
         -exec mv -t {output} {{}} \+
         '''
 
