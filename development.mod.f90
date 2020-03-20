@@ -8,9 +8,8 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!
 subroutine dev(i)                                          ! it runs development for the individual i
-integer :: i,ii,j,k,jj,kkk,pp                              ! local variables
-real*4  :: u,q,y,z,stable                                  ! local variables
-
+integer :: i,ii,j,jj,pp,k,jjj,ret
+real*4  :: r1,r2,u,q,y,z,fi,xx,stable,eps                  ! fi=final increment
   do jjj=1,ng
     premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
     premutWW(jjj,1:ng)=ind(i)%ww(jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -105,6 +104,11 @@ real*4  :: Mx,My,Mz
      if((Mx.lt.1.0).and.(Mx.gt.0.0).and.(My.lt.1.0).and.(My.gt.0.0))then ; goto 92 ; else ; goto 60 ; end if  ! random new value for the mutation
     
      92 Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                      ! Box-Muller algotithm. Normal distribtion N(0,sdev)
+     59 call random_number(Mx) ;  if((Mx.lt.1.0).and.(Mx.gt.0.0))then ; goto 60 ; else ; goto 59 ; end if
+     60 call random_number(My) ;  if((My.lt.1.0).and.(My.gt.0.0))then ; goto 61 ; else ; goto 60 ; end if
+     61 Mi=int(Mx*real(ng)+1) ;  Mj=int(My*real(ng)+1)                ! which element of W will mutate
+     call random_number(Mx)  ; call random_number(My)              ! random new value for the mutation
+     Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                         ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
      if(capped.eq.1) then                                          ! If we are using capped weights
        if(ind(pp)%w(Mi,Mj).gt.1.0) then                            ! and if the mutation makes weights greater than 1

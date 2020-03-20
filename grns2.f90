@@ -12,8 +12,6 @@ use development
  call random_seed(size=size)               !
  allocate(seed(size))                      !
  call random_seed(put=seed)                !
-
- lapso=10                                  ! every "lapso"
  call inicial                              ! just to get etmax
 
  call arxivpublic                          ! just to enter the inicial module and set the arxiv variable to public
@@ -54,7 +52,7 @@ do et=1,etmax                                                           ! evolut
 
    do pp=1,p
         ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do
-        call dev(pp)
+        ind(pp)%sat=0 ; call dev(pp)
 
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION
         ind(pp)%fitness=0.0
@@ -119,7 +117,7 @@ do et=1,etmax                                                           ! evolut
 
      write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I2)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
      (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&
-     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
+     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',klog!int(et/lapso)
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
      if(arxaux(15:15)==" ") arxaux(15:15)="0"                           ! composing filename replicate
      do im=19,22 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
@@ -166,6 +164,7 @@ do et=1,etmax                                                           ! evolut
        write(7000,*)ind(1)%MZZ(i,:)
      end do
      close(7000)
+     klog=klog+1                 ! specific counter for logaritmic timepoints
    end if
 end do     ! evolutionary time
 

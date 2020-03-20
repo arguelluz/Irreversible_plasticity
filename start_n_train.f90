@@ -9,9 +9,9 @@ integer :: training,replicas,supereplica       ! If training=1 -> Training set, 
 integer :: hillclimber                         ! If set to 1-> Strict hill-climber, deterministic selection.
 integer :: positivecues                        ! If set to 1 cues are in range 0:maxepigen, otherwise range -maxepigen,maxepigen
 integer :: ret,pp,im                           ! integers for calling external functions or modifyind datafiles.
-integer :: lapso,intervals                     ! Intervals=number of intervals for data recording. Lapso: Generations in an interval.
+integer :: intervals,logbase,klog              ! Intervals=number of intervals for data recording.
 integer :: ncels,replica,PD,EF                 ! PD=phenotypic dimensionality (number of traits),EF=Environmental factors
-integer,allocatable :: thresholdsN(:)          ! thresholds in the N environments (for target switchings)
+integer,allocatable :: thresholdsN(:),lapso(:) ! thresholds in the N environments (for target switchings)
 integer,allocatable :: premutWW(:,:)           ! Stores WW matrix before mutation (reversible if unstable GRN)
 real*4 :: a,aa,b,c,q,u,v,x,y,z,m           ! Real auxiliar numbers
 real*4 :: fmax,sdev,ss,fmaxval,fmaxabs         ! Real numbers variables, maximum fitness in a eneration and in simulation
@@ -67,8 +67,8 @@ training=1                                                ! If 1 -> Training set
 replicas=10                                               ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
-intervals=99                                              ! Number of intervals for data recording.
-lapso=int(etmax/intervals)  	            					      ! Lapso: Generations in an interval.
+intervals=13                                              ! Number of intervals for data recording.
+logbase=4  	            					      ! Log-base for the logarithmic timescale
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
 ginitial_rand=0.0                                         ! Gene concentrations at the start of development, randomized value
@@ -78,7 +78,20 @@ initialW=5.0E-4                                           ! Connection weights a
 mzadhoc=1                                                 ! If 0: Mz and Mzz matrices read/generated normally. If 1: Mz and Mzz matrices uploaded from external file. For all P and Training.
 linear=0                                                  ! If 1, use linear activation function. Otherwise, use logit
 
-if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
+if(allocated(lapso))then ; deallocate(lapso) ; end if
+allocate(lapso(intervals))                                ! this stablishes the intervals for the logatirmic time sampling
+j=logbase**(intervals-1)                                  ! this stablishes the intervals for the logatirmic time sampling
+do i=1,intervals ; jj=logbase**(i-1) ; lapso(i  )=int(real(etmax)*real(jj)/real(j)) ; end do
+if(lapso(1).gt.1)then ; deallocate(lapso) ; allocate(lapso(intervals+1))
+  lapso(1)=1 ; j=logbase**(intervals-1)                     ! this ensures the generation 1 is included
+  do i=1,intervals ; jj=logbase**(i-1) ; lapso(1+i)=int(real(etmax)*real(jj)/real(j)) ; end do
+  intervals=intervals+1
+end if
+if(lapso(1).eq.0)then ; write(*,*)'WARNING: Please change logbase and/or etmax and/or intervals' ; read(*,*) ; end if
+write(*,*)'lapso',lapso(1:intervals)                     ! highly recommendable to check at least once !!!
+klog=1                                                    ! klog is a specific counter
+
+!if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
 if ((hillclimber.eq.1).and.(p.gt.2))then
 write(*,*)'WARNING! You are using large (p>2) populations with a hill-climber NS !'; end if
 
@@ -104,10 +117,10 @@ if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then               
   nfiles=0
   do while(ios.eq.0)
     read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1
-  
+
   end do
   nfiles=nfiles-1
-  
+
   rewind(676)
   return
 end if
