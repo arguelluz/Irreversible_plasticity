@@ -150,13 +150,14 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem_test}"
+        "files/done_{problem}"
     output:
-        touch("../Simulation_results/{problem_test, [a-z]_test}/done")
+        outdir = directory("../Simulation_results/{problem, ([a-z]_test)}"),
+        donefile = touch("../Simulation_results/{problem, ([a-z]_test)}_test/done")
     params:
-        problem_codes = problem_codes,
-        problem_names = problem_names
-
+    # This function matches the problem name (as set in the wildcard 'problem')
+    # to its problem code (corresponding element in the tuple problem_codes)
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     shell:
         '''
         # Clean up binary files
@@ -164,19 +165,15 @@ rule test_sort:
         rm -f *.e
         rm -f files/GRN*
 
-        # Transfer all results in respective folders
-        parallel --jobs 6 --link \
-        find . -maxdepth 1 -name 'GRN*'{{1}}'*.dat' \
-        -exec mv -t ../Simulation_results/{{2}}_test/ \+ \
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        # Create target folder
+        mkdir -p {output.outdir}
 
-        parallel --jobs 6 --link \
-        find . -maxdepth 1 -name 'PHE_'{{1}}'*.dat' \
-        -exec mv -t ../Simulation_results/{{2}}_test/ \+ \
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        # Transfer results from the source problem to respective folder
+        find . -maxdepth 1 -name 'GRN*GRN_'{params.problem_code}'*.dat' \
+        -exec mv -t {output.outdir} {{}} \+
 
+        find . -maxdepth 1 -name 'PHEN_*'{params.problem_code}'*.dat' \
+        -exec mv -t {output.outdir} {{}} \+
         '''
 
 rule bomb:
