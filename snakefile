@@ -13,8 +13,8 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 # Rule all
 rule all:
     input:
-        expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/done", problems = problems_test),
+        expand("../Simulation_results/{problems}", problems = problems_train),
+        expand("../Simulation_results/{problems}", problems = problems_test),
         expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
@@ -48,7 +48,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        touch(expand("../Simulation_results/{problems}/done", problems = problems_train))
+        touch(expand("../Simulation_results/{problems}", problems = problems_train))
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -77,7 +77,7 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [a,b,n]}_test.e",
     params:
@@ -109,7 +109,7 @@ rule test_all_setup:
 
 rule test_fin_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [d,e,f]}_test.e",
     params:
@@ -151,8 +151,7 @@ rule test_sort:
     input:
         "files/done_{problem}"
     output:
-        outdir = directory("../Simulation_results/{problem, ([a-z]_test)}"),
-        donefile = touch("../Simulation_results/{problem, ([a-z]_test)}/done")
+        directory("../Simulation_results/{problem, ([a-z]_train)|([a-z]_test)}"),
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
@@ -165,19 +164,19 @@ rule test_sort:
         rm -f files/GRN*
 
         # Create target folder
-        mkdir -p {output.outdir}
+        mkdir -p {output}
 
         # Transfer results from the source problem to respective folder
         find . -maxdepth 1 -name 'GRN*GRN_'{params.problem_code}'*.dat' \
-        -exec mv -t {output.outdir} {{}} \+
+        -exec mv -t {output} {{}} \+
 
         find . -maxdepth 1 -name 'PHEN_*'{params.problem_code}'*.dat' \
-        -exec mv -t {output.outdir} {{}} \+
+        -exec mv -t {output} {{}} \+
         '''
 
 rule bomb:
     input:
-        "../Simulation_results/{problem}/done"
+        "../Simulation_results/{problem, ([a-z]_test|[a-z]_train)}"
     output:
         touch("files/done_{problem, ([a-z]_train)|([a-z]_test)}_bomb")
     resources:
