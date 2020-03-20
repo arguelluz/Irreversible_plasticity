@@ -166,13 +166,13 @@ rule test_sort:
         # Transfer all results in respective folders
         parallel --jobs 6 --link \
         find . -maxdepth 1 -name 'GRN*'{{1}}'*.dat' \
-        -exec mv -t ../Simulation_results/{{2}}_test/ \+
+        -exec mv -t ../Simulation_results/{{2}}_test/ \+ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
         parallel --jobs 6 --link \
         find . -maxdepth 1 -name 'PHE_'{{1}}'*.dat' \
-        -exec mv -t ../Simulation_results/{{2}}_test/ \+
+        -exec mv -t ../Simulation_results/{{2}}_test/ \+ \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
