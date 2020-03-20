@@ -189,10 +189,17 @@ rule bomb:
         rm -f files/GRN_*
         for problem in {wildcards.problem}
         do
-            find ../Simulation_results/$problem \\
-            -regextype posix-extended \\
-            -regex '.*/GRN.*(0[0-9]|13).dat' \\
-            -exec cp {{}} files \;
+            if grep -q 'train' ; then
+                find ../Simulation_results/$problem \\
+                -regextype posix-extended \\
+                -regex '.*/GRN.*(0[0-9]|13).dat' \\
+                -exec cp {{}} files \;
+            elif grep -q 'test' ; then
+                find ../Simulation_results/$problem \\
+                -regextype posix-extended \\
+                -regex '.*/GRN.*(0[0-9]|13).*GRN.*.dat' \\
+                -exec cp {{}} files \;
+            fi
         done
 
         # Create list of GRN sources (grep to remove base path)
