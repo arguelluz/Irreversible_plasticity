@@ -153,7 +153,7 @@ rule test_sort:
         "files/done_{problem}"
     output:
         outdir = directory("../Simulation_results/{problem, ([a-z]_test)}"),
-        donefile = touch("../Simulation_results/{problem, ([a-z]_test)}_test/done")
+        donefile = touch("../Simulation_results/{problem, ([a-z]_test)}/done")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
