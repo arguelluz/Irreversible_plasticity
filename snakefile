@@ -94,10 +94,10 @@ rule test_all_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*T[01][13579].dat ./files
-            cp -u ../Simulation_results/$grn/GRN*GRN*T99.dat ./files
-            ls ../Simulation_results/$grn/GRN*GRN*T[01][13579].dat | grep -o "GRN.*" >> GRNfiles.txt
-            ls ../Simulation_results/$grn/GRN*GRN*T99.dat | grep -o "GRN.*" >> GRNfiles.txt
+            cp -u ../Simulation_results/$grn/GRN*GRN*T0[0-9].dat ./files
+            cp -u ../Simulation_results/$grn/GRN*GRN*T13.dat ./files
+            ls ../Simulation_results/$grn/GRN*GRN*T0[0-9].dat | grep -o "GRN.*" >> GRNfiles.txt
+            ls ../Simulation_results/$grn/GRN*GRN*13.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
         # Compile executables for each problem
@@ -126,8 +126,8 @@ rule test_fin_setup:
         # Copy GRNs to use as source for testing and add to GRNfile
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*T99.dat ./files
-            ls ../Simulation_results/$grn/GRN*GRN*T99.dat | grep -o "GRN.*" >> GRNfiles.txt
+            cp -u ../Simulation_results/$grn/GRN*GRN*T13.dat ./files
+            ls ../Simulation_results/$grn/GRN*GRN*T13.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
         # Compile executables for each problem
@@ -189,7 +189,7 @@ rule bomb:
         do
             find ../Simulation_results/$problem \\
             -regextype posix-extended \\
-            -regex '.*/GRN.*([01][13579]|99).dat' \\
+            -regex '.*/GRN.*(0[0-9]|13).dat' \\
             -exec cp {{}} files \;
         done
 
