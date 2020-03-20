@@ -167,10 +167,10 @@ rule test_sort:
         mkdir -p {output}
 
         # Transfer results from the source problem to respective folder
-        find . -maxdepth 1 -name 'GRN*GRN_'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -name 'GRN_'{params.problem_code}'*.dat' \
         -exec mv -t {output} {{}} \+
 
-        find . -maxdepth 1 -name 'PHE*PHEN_*'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -name 'PHE*'{params.problem_code}'*.dat' \
         -exec mv -t {output} {{}} \+
         '''
 
