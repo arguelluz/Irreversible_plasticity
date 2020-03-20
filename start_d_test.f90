@@ -102,19 +102,15 @@ allocate(blocke(PD,n))                                     ! target dimensionali
 blocke=0.0
 stab=0.0
 
-if((replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
-  open(462,file='d_test_log.txt',action='write',iostat=ios)   ! only for 1st replicate but gives always the same
-end if
-
 if((training.eq.0).and.(replica.le.1).and.(supereplica.le.1))then                 ! gets the number of GRN files
   open(676,file='GRNfiles.txt',action='read',iostat=ios)   ! only for 1st replicate but gives always the same
   nfiles=0
   do while(ios.eq.0)
     read(676,*,iostat=ios)arxiv ; nfiles=nfiles+1
-  !write(*,*)'arxivread',arxiv
+  
   end do
   nfiles=nfiles-1
-  !write(*,*)'NFILESfinal=',nfiles
+  
   rewind(676)
   if(superinicial.eq.1)then ; return ; end if              ! 9.3.20 addition. Conflict solved. It only exits initial the fist time is called from main program.
 

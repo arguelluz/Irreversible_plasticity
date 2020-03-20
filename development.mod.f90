@@ -88,10 +88,6 @@ real*4  :: u,q,y,z,stable                                  ! local variables
     end do
   end do
 
-  !do jjj=1,ng
-  ! WRITE(*,*)i,jjj,' indiP',ind(i)%w(jjj,1:ng)
-  !end do
-
 end subroutine
 
 !!!!!!!!!!!!!!!!!! !!!! MUTATION IN THE FOUR MATRICES !!!!!!!
@@ -109,7 +105,6 @@ real*4  :: Mx,My,Mz
      if((Mx.lt.1.0).and.(Mx.gt.0.0).and.(My.lt.1.0).and.(My.gt.0.0))then ; goto 92 ; else ; goto 60 ; end if  ! random new value for the mutation
     
      92 Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                      ! Box-Muller algotithm. Normal distribtion N(0,sdev)
-     !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one
      if(capped.eq.1) then                                          ! If we are using capped weights
        if(ind(pp)%w(Mi,Mj).gt.1.0) then                            ! and if the mutation makes weights greater than 1
