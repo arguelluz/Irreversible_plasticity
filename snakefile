@@ -59,6 +59,9 @@ rule train_sort:
         rm -f development.mod start.mod
         rm -f *.e
 
+        # Create results folders
+        mkdir -p ../Simulation_results/{params.problem_names}_train/ \
+
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
         mv ./GRN*{{1}}*.dat \
