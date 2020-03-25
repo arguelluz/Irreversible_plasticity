@@ -60,7 +60,10 @@ rule train_sort:
         rm -f *.e
 
         # Create results folders
-        mkdir -p ../Simulation_results/{params.problem_names}_train/ \
+        for problem in {params.problem_names}
+        do
+        mkdir -p ../Simulation_results/${{problem}}_train
+        done
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
