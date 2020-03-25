@@ -52,7 +52,7 @@ do et=1,etmax                                                           ! evolut
 
    do pp=1,p
         ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do
-        ind(pp)%sat=0 ; call dev(pp)
+        call dev(pp)
 
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION
         ind(pp)%fitness=0.0
