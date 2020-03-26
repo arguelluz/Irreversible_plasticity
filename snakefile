@@ -106,11 +106,10 @@ rule test_all_setup:
             ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
-        done
+        # Compile problem executable
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
+        start_{params.problem_test}.f90 {params.modules} \
+        -o {params.problem_test}.e
         '''
 
 rule test_fin_setup:
@@ -136,11 +135,10 @@ rule test_fin_setup:
             ls ../Simulation_results/$grn/GRN*GRN*T10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
-        done
+        # Compile problem executable
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
+        start_{params.problem_test}.f90 {params.modules} \
+        -o {params.problem_test}.e
         '''
 
 rule test:
