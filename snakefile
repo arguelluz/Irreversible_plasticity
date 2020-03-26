@@ -96,14 +96,13 @@ rule test_all_setup:
         '''
         # remove old grnfile
         rm -f GRNfiles.txt
+        rm -f files/GRN*
 
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*T0[0-9].dat ./files
-            cp -u ../Simulation_results/$grn/GRN*GRN*T10.dat ./files
-            ls ../Simulation_results/$grn/GRN*GRN*T0[0-9].dat | grep -o "GRN.*" >> GRNfiles.txt
-            ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
+            cp -u ../Simulation_results/$grn/GRN* ./files
+            ls ../Simulation_results/$grn/GRN*GRN* | grep -o "GRN.*" > GRNfiles.txt
         done
 
         # Compile problem executable
@@ -127,6 +126,7 @@ rule test_fin_setup:
         '''
         # remove old grnfile
         rm -f GRNfiles.txt
+        rm -f files/GRN*
 
         # Copy GRNs to use as source for testing and add to GRNfile
         for grn in {params.problem_train}
