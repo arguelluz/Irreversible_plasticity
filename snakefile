@@ -175,7 +175,7 @@ rule test_sort:
         mkdir -p {output}
 
         # Transfer results from the source problem to respective folder
-        find . -maxdepth 1 -name 'GRN_'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -regextype posix-egrep -regex '\./GRN_'{params.problem_code}'.*' \
         -exec mv -t {output} {{}} \+
 
         find . -maxdepth 1 -name 'PHE*'{params.problem_code}'*.dat' \
