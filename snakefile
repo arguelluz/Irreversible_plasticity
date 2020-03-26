@@ -117,7 +117,7 @@ rule test_fin_setup:
         "{problems, [d,e,f]}_test.e",
     params:
         modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints + problems_final_timepoints),
         problem_test = "{problems}_test"
     resources:
         GRNfile = 1
