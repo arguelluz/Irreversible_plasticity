@@ -164,11 +164,6 @@ rule test_sort:
         GRNfile = 1,
     shell:
         '''
-        # Clean up binary files
-        rm -f development.mod start.mod
-        rm -f *.e
-        rm -f files/GRN*
-
         # Create target folder
         mkdir -p {output}
 
