@@ -64,10 +64,10 @@ ss=0.2                                                    ! selection strenght
 reco=0                                                    ! recombination; 1=yes, 0=no
 capped=0                                                  ! If 1, GRN (W-matrix) values are (-1,1); if 0, unconstrained values.
 training=1                                                ! If 1 -> Training set, starting from W=0. Otherwise Test set (W from file).
-replicas=10                                               ! Number of replicates
+replicas=2                                                ! Number of replicates
 conWW=1.0                                                 ! Probability of having non-zero entries in WW  matrix (0,1)
 conMZZ=0.5                                                ! Probability of having non-zero entries in MZZ matrix (0,1)
-intervals=10                                              ! Number of intervals for data recording.
+intervals=4                                               ! Number of intervals for data recording.
 logbase=1                                                 ! Log-base for the logarithmic timescale
 hillclimber=1                                             ! If set to 1-> Strict hill-climber, deterministic selection.If 0->Probabilistic NS.
 ginitial_det=0.5                                          ! Gene concentrations at the start of development, deterministic value
