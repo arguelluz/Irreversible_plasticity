@@ -101,7 +101,7 @@ rule test_all_setup:
         for grn in {params.problem_train}
         do
             cp -u ../Simulation_results/$grn/GRN* ./files
-            ls ../Simulation_results/$grn/GRN*GRN* | grep -o "GRN.*" > GRNfiles.txt
+            ls ../Simulation_results/$grn/GRN*GRN* | grep -o "GRN.*" >> GRNfiles.txt
         done
 
         # Compile problem executable
