@@ -153,26 +153,30 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem}"
+        expand("../Simulation_results/{problems}", problems = problems_test)
     output:
-        directory("../Simulation_results/{problem, ([a-z]_train)|([a-z]_test)}"),
+        directory("../Simulation_results/{problem, ([a-z]_train)|([a-z]_test)}")
     params:
-    # This function matches the problem name (as set in the wildcard 'problem')
-    # to its problem code (corresponding element in the tuple problem_codes)
-        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
-    resources:
-        GRNfile = 1,
+        problem_names = problem_names,
+        problem_codes = problem_codes
     shell:
         '''
         # Create target folder
         mkdir -p {output}
 
-        # Transfer results from the source problem to respective folder
-        find . -maxdepth 1 -regextype posix-egrep -regex '\./GRN_'{params.problem_code}'.*' \
-        -exec mv -t {output} {{}} \+
+        # Transfer all results in respective folders
+        parallel --jobs 3 --link \
+        find . -maxdepth 1 -regextype posix-egrep -regex '\./GRN_'{{1}}'.*' \
+        -exec mv -t ../Simulation_results/{{2}}_test {{}} \+
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
 
-        find . -maxdepth 1 -name 'PHE*'{params.problem_code}'*.dat' \
-        -exec mv -t {output} {{}} \+
+        parallel --jobs 3 --link \
+        find . -maxdepth 1 -regextype posix-egrep -regex '\./PHE*'{{1}}'*.dat' \
+        -exec mv -t ../Simulation_results/{{2}}_test {{}} \+
+        ::: {params.problem_codes} \
+        ::: {params.problem_names}
+
         '''
 
 rule bomb:
