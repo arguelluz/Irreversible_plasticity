@@ -96,7 +96,6 @@ rule test_all_setup:
         '''
         # remove old grnfile
         rm -f GRNfiles.txt
-        rm -f files/GRN*
 
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
@@ -126,7 +125,6 @@ rule test_fin_setup:
         '''
         # remove old grnfile
         rm -f GRNfiles.txt
-        rm -f files/GRN*
 
         # Copy GRNs to use as source for testing and add to GRNfile
         for grn in {params.problem_train}
