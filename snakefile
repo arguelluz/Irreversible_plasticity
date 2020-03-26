@@ -153,7 +153,7 @@ rule test:
 
 rule test_sort:
     input:
-        expand("../files/done_{problems}", problems = problems_test)
+        expand("files/done_{problems}", problems = problems_test)
     output:
         directory("../Simulation_results/{problem, ([a-z]_train)|([a-z]_test)}")
     params:
