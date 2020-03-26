@@ -88,7 +88,7 @@ if(lapso(1).gt.1)then ; deallocate(lapso) ; allocate(lapso(intervals+1))
   intervals=intervals+1
 end if
 if(lapso(1).eq.0)then ; write(*,*)'WARNING: Please change logbase and/or etmax and/or intervals' ; read(*,*) ; end if
-write(*,*)'lapso',lapso(1:intervals)                     ! highly recommendable to check at least once !!!
+
 klog=1                                                    ! klog is a specific counter
 
 !if(intervals.gt.etmax)then ; write(*,*)'Etmax MUST BE greater than Intervals' ; end if
