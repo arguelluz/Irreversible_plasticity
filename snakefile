@@ -151,29 +151,23 @@ rule test:
 
 rule test_sort:
     input:
-        expand("files/done_{problems}", problems = problems_test)
+        "files/done_{problem, [a-z]}_test"
     output:
-        directory("../Simulation_results/{problem, ([a-z]_train)|([a-z]_test)}")
+        directory("../Simulation_results/{problem}_test")
     params:
-        problem_names = problem_names,
-        problem_codes = problem_codes
+    # This function matches the problem name (as set in the wildcard 'problem')
+    # to its problem code (corresponding element in the tuple problem_codes)
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     shell:
         '''
         # Create target folder
         mkdir -p {output}
 
-        # Transfer all results in respective folders
-        parallel --jobs 3 --link \
-        find . -maxdepth 1 -regextype posix-egrep -regex '\./GRN_'{{1}}'.*' \
-        -exec mv -t ../Simulation_results/{{2}}_test {{}} \+
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        find . -maxdepth 1 -regextype posix-egrep -regex '.*[0-9]GRN_'{params.problem_code}'.*' \
+        -exec mv -t {output} {{}} \;
 
-        parallel --jobs 3 --link \
-        find . -maxdepth 1 -regextype posix-egrep -regex '\./PHE*'{{1}}'*.dat' \
-        -exec mv -t ../Simulation_results/{{2}}_test {{}} \+
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'*.dat' \
+        -exec mv -t {output} {{}} \;
 
         '''
 
