@@ -34,9 +34,9 @@ do replica=1,replicas!4
      phenfileL(1:3)='PHE'
    else
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&      ! PHEN_TE for test
-    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,1))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
+    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
     (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
-    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time.
+    (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time.
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
      do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
