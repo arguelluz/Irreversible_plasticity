@@ -141,7 +141,8 @@ rule test_fin_setup:
 
 rule test:
     input:
-        executable = '{problem}_test.e'
+        executable = '{problem}_test.e',
+        tokens = expand('{problems}.e', problems = problems_test)
     output:
         touch('files/done_{problem}_test')
     shell:
