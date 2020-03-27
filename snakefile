@@ -167,7 +167,7 @@ rule test_sort:
         find . -maxdepth 1 -regextype posix-egrep -regex '.*[0-9]GRN_'{params.problem_code}'.*' \
         -exec mv -t {output} {{}} \;
 
-        find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
 
         '''
