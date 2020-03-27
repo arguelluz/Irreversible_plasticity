@@ -170,6 +170,8 @@ rule test_sort:
         find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
 
+        rm {wildcards.problem}_test.e
+
         '''
 
 rule bomb:
