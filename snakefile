@@ -225,6 +225,6 @@ rule bomb_sort:
 
         # Transfer results from the source problem to respective folder
 
-        find . -maxdepth 1 -name 'GRN*'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -regextype posix-extended -regex '.*[0-9,_]GRN_{params.problem_code}.*dat' \
         -exec mv -t {output} {{}} \+
         '''
