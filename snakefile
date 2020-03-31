@@ -185,20 +185,11 @@ rule bomb:
         '''
         # Grep all GRNs and move them into the files folder
         rm -f files/GRN_*
-        for problem in {wildcards.problem}
-        do
-            if grep -q 'train' ; then
-                find ../Simulation_results/$problem \\
-                -regextype posix-extended \\
-                -regex '.*/GRN.*(0[0-9]|10).dat' \\
-                -exec cp {{}} files \;
-            elif grep -q 'test' ; then
-                find ../Simulation_results/$problem \\
-                -regextype posix-extended \\
-                -regex '.*/GRN.*(0[0-9]|10).*GRN.*.dat' \\
-                -exec cp {{}} files \;
-            fi
-        done
+
+        find ../Simulation_results/{wildcards.problem} \
+        -regextype posix-extended \
+        -regex '.*/GRN.*\.dat' \
+        -exec cp {{}} files \;
 
         # Create list of GRN sources (grep to remove base path)
         ls files/GRN*.dat | grep -o "GRN.*" > GRNfiles.txt
