@@ -11,8 +11,6 @@ subroutine dev(i)                                          ! it runs development
 integer :: i,ii,j,k,jj,kkk,pp                              ! local variables
 real*4  :: u,q,y,z,stable                                  ! local variables
 
-  write(462,*)supereplica,replica,i,'enterdevelopment'     ! printdebug
-   
   do jjj=1,ng
     premutW (jjj,1:ng)=ind(i)%w(jjj,1:ng)                  ! Stores W matrix before mutation (reversible if unstable GRN)
     premutWW(jjj,1:ng)=ind(i)%ww(jjj,1:ng)                 ! Stores W matrix before mutation (reversible if unstable GRN)
@@ -23,16 +21,13 @@ real*4  :: u,q,y,z,stable                                  ! local variables
     ind(i)%ww(jjj,1:ng)=premutWW(jjj,1:ng)                 ! Reverse if unstable GRN)
     ind(i)%g(1:n,jjj)  =prepattern(1:n,jjj)                ! new Jan-2019
   end do
-  write(462,*)supereplica,replica,i,'WDEV2',ind(i)%w(1,:),ind(i)%w(2,:) ! printdebug
 
   pp=i                                                     ! Mutation in the generative matrices for each individual
   if(hillclimber.ne.1)then
     call mutation(pp)                                      ! independent subroutine (for stability criteria)
-    write(462,*)supereplica,replica,i,   'mutationa'       ! printdebug
   else
     if(pp.gt.1)then
        call mutation(pp)                                   ! only one individual mutates in hill climber
-       write(462,*)supereplica,replica,i,'mutationb'       ! printdebug
     end if
   end if
 
@@ -82,8 +77,6 @@ real*4  :: u,q,y,z,stable                                  ! local variables
 
   end do                                                   ! end loop developmental time
 
- write(462,*)supereplica,replica,i,'end of development'    ! printdebug
-
   ind(i)%phen=0.0                                          ! phenotyping
   do jjj=1,ind(i)%ncels                                    ! For each environment
     do t=1,pd                                              ! For each trait
@@ -95,10 +88,6 @@ real*4  :: u,q,y,z,stable                                  ! local variables
     end do
   end do
 
-  !do jjj=1,ng
-  ! WRITE(*,*)i,jjj,' indiP',ind(i)%w(jjj,1:ng)
-  !end do
-
 end subroutine
 
 !!!!!!!!!!!!!!!!!! !!!! MUTATION IN THE FOUR MATRICES !!!!!!!
@@ -108,13 +97,13 @@ subroutine mutation(pp)
 integer :: pp,Mi,Mj,Mk
 real*4  :: Mx,My,Mz
 
-     59 call random_number(Mx) ; call random_number(My) 
-     Mi=int(Mx*real(ng)+1) ; Mj=int(My*real(ng)+1)                 ! which element of W will mutate     
+     59 call random_number(Mx) ; call random_number(My)
+     Mi=int(Mx*real(ng)+1) ; Mj=int(My*real(ng)+1)                 ! which element of W will mutate
      if((Mi.le.ng).and.(Mi.ge.1).and.(Mj.le.ng).and.(Mj.ge.1))then ; goto 60 ; else ; goto 59 ; end if
-     
+
      60 call random_number(Mx) ;  call random_number(My)           ! random new value for the mutation
      if((Mx.lt.1.0).and.(Mx.gt.0.0).and.(My.lt.1.0).and.(My.gt.0.0))then ; goto 92 ; else ; goto 60 ; end if  ! random new value for the mutation
-    
+
      92 Mz=sdev*sqrt(-2*log(Mx))*cos(2*pi*My)                      ! Box-Muller algotithm. Normal distribtion N(0,sdev)
      !WRITE(*,*)pp,'    PREMUTw',Mi,Mj,ind(pp)%w(Mi,Mj)
      ind(pp)%w(Mi,Mj)= ind(pp)%w(Mi,Mj)+Mz                         ! adding the new random value to the previous one

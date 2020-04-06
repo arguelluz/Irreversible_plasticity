@@ -12,8 +12,6 @@ use development
  call random_seed(size=size)               !
  allocate(seed(size))                      !
  call random_seed(put=seed)                !
-
- lapso=10                                  ! every "lapso"
  call inicial                              ! just to get etmax
 
  call arxivpublic                          ! just to enter the inicial module and set the arxiv variable to public
@@ -24,7 +22,6 @@ do supereplica=1,nfiles                                                   ! runs
 do replica=1,replicas!4
 
   call inicial                                                            ! it allocates and inicializes everything ...
-  write(462,*)supereplica,replica,'exit from initial OK'! printdebug
    if(training.eq.1)then
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TR_',&      ! PHEN_TR for training
     (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
@@ -37,37 +34,30 @@ do replica=1,replicas!4
      phenfileL(1:3)='PHE'
    else
     write(phenfile,"(A8,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2)")'PHEN_TE_',&      ! PHEN_TE for test
-    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,1))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
+    (int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
     (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time
-    (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,&
+    (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,&             ! creating datafile for phenotypes and fitnesses over time.
     '_C',thresholdsN(1),'_R',replica                                      ! creating datafile for phenotypes and fitnesses over time
      phenfile(23:26)='.dat'                                               ! creating datafile for phenotypes and fitnesses over time
      do im=1,24 ; if (phenfile(im:im)==" ") phenfile(im:im)="0" ; end do  ! composing filename
      phenfileL(23:48)=phenfile(1:26) ; phenfileL(1:22)=arxiv(23:44)
      phenfileL(1:3)='PHE'                                                 ! EASY TO GREP
    end if
-   write(462,*)supereplica,replica,'PRE-OPEN1 OK',phenfileL! printdebug
    open(20067,file=phenfileL,status='unknown',action='write')             ! composing filename
-   write(462,*)supereplica,replica,'POS-OPEN1 OK'! printdebug
 
 fmax=0                                                                  ! records maximum fitness over evol time
 fmaxabs=0.0                                                             ! absolute maximum fitness attained over simulation time (initializing)
 
 do et=1,etmax                                                           ! evolutionary time (Main Loop)
 
-
    do pp=1,p
-        write(462,*)supereplica,replica,'prev development OK',et,pp               ! printdebug
         ind(pp)%g(:,:)=0.0 ; do i=1,ind(1)%ngs ; ind(pp)%g(1:n,i)=prepattern(1:n,i) ; end do
-        !ind(pp)%sat=0 
         call dev(pp)
-        write(462,*)supereplica,replica,'exit development OK',et,pp               ! printdebug
 
 	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FITNESS CALCULATION
         ind(pp)%fitness=0.0
         do i=1,pd                                                                         ! individual absolute fitness calculation
           do jjj=1,ind(pp)%ncels
-	        !ind(pp)%fitness=ind(pp)%fitness+ind(pp)%phen(i,jjj)*blocke(i,jjj)            ! scalar product (P*S)-based fitness (from the paper)
 	        ind(pp)%fitness(1)=ind(pp)%fitness(1)+(ind(pp)%phen(i,jjj)-blocke(i,jjj))**2  ! Euclidean-distance based (Used for exponential)
 	      end do
 	    end do
@@ -75,12 +65,8 @@ do et=1,etmax                                                           ! evolut
 	    ind(pp)%fitness(1)=-1.0*ind(pp)%fitness(1)/(2.0*ss)                                ! Exponential fitness function
         ind(pp)%fitness(1)=e**(ind(pp)%fitness(1))                                         ! Exponential fitness function
 
-        !write(*,*)replica,et,'FIT',pp,ind(pp)%fitness(1),'PHEN',ind(pp)%phen(:,1),ind(pp)%phen(:,2)
-
    end do                                                                                  ! for each individual
    !!!!!!                                                                natural selection for population-based (super-optimized)
-   write(462,*)supereplica,replica,'fitness OK',ind(1:2)%fitness(1)! printdebug
-
     fmaxval=maxval(ind(:)%fitness(1))
     if(fmaxval.gt.fmaxabs)then ; fmaxabs=fmaxval ; end if               ! records absolute maximum fitness attained over simulation time
 
@@ -126,13 +112,12 @@ do et=1,etmax                                                           ! evolut
         ind(i)=ind(whois)
       end do
     end if
-    write(462,*)supereplica,replica,'exit from SELECTION OK',et, whois! printdebug
    !!!!!!!!!!!!!!!!!!!!!!!!
-   if((mod(et,lapso).eq.0).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
+   if((et.eq.lapso(klog)).or.(et.eq.1))then                            ! writting datafile with final matrix before mutation
 
      write(arxaux,"(A4,I1,I1,I1,I1,I1,I1,A2,I2,A2,I2,A2,I2)")'GRN_',(int(10.0*blocke(1,1))+1)/2,(int(10.0*blocke(1,2))+1)/2,&
      (int(10.0*blocke(1,3))+1)/2,(int(10.0*blocke(1,4))+1)/2,&
-     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',int(et/lapso)
+     (int(10.0*blocke(1,5))+1)/2,(int(10.0*blocke(1,6))+1)/2,'_C',thresholdsN(1),'_R',replica,'_T',klog!int(et/lapso)
      if(arxaux(11:11)==" ") arxaux(11:11)="0"                           ! composing filename threshold
      if(arxaux(15:15)==" ") arxaux(15:15)="0"                           ! composing filename replicate
      do im=19,22 ; if (arxaux(im:im)==" ") arxaux(im:im)="0" ; end do   ! composing filename
@@ -141,9 +126,7 @@ do et=1,etmax                                                           ! evolut
 
      do im=1,44 ; if (arxifin(im:im)==" ") arxifin(im:im)="_" ; end do  ! composing filename
 
-     write(462,*)supereplica,replica,'PRE-OPEN2 OK',et,arxfin! printdebug
      open(7000,file=arxifin,status='unknown',action='write',iostat=ios)                       ! creating datafile
-     write(462,*)supereplica,replica,'POS-OPEN2 OK',et       ! printdebug
 
      write(7000,*)'TARGETS (E1T1,E1T2,ENT1,ENT2)',blocke(1,1:6)!, blocke(1:2,n)  ! 1
      write(7000,*)'THRESHOLDS(CELL).............',thresholds(1)               ! 2
@@ -152,7 +135,7 @@ do et=1,etmax                                                           ! evolut
      write(7000,*)'RECOMBINATION; 1=YES; 0=NO   ',reco                        ! 5
      write(7000,*)'TRAINING (1) vs TEST (0) SET ',training                    ! 6
      write(7000,*)'NUMBER /  TOTAL REPLICATES...',replica,replicas            ! 7
-     write(7000,*)'CURRENT VS MAXIMUM GENERATION',et,etmax,lapso              ! 8
+     write(7000,*)'CURRENT VS MAXIMUM GENERATION',et,etmax,klog               ! 8
      write(7000,*)'ENV. FACTORS/ENVIRONMENTS....',EF,n                        ! 9
      write(7000,*)'NUMBER GENES,PHEN. DIMENSIONS',ng,PD                       ! 10
      write(7000,*)'TMAX,SDEV,SS,RECO,CAPPED.....',tmax,sdev,ss,reco,capped    ! 11
@@ -173,7 +156,6 @@ do et=1,etmax                                                           ! evolut
             end do
        end do
      end do
-     write(462,*)supereplica,replica,'FIRST WRITES OK'! printdebug
 
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZ(i,:)
@@ -181,25 +163,13 @@ do et=1,etmax                                                           ! evolut
      do i=1,ind(1)%ngs
        write(7000,*)ind(1)%MZZ(i,:)
      end do
-     write(462,*)supereplica,replica,'SECOND WRITES OK'! printdebug
      close(7000)
-
+     klog=klog+1                 ! specific counter for logaritmic timepoints
    end if
-
-   !do pp=1,p                    ! Mutation in the generative matrices for each individual
-   !  call mutation(pp)          ! independent subroutine (for stability criteria)
-   !end do
-   write(462,*)supereplica,replica,'End timeloop',et               ! printdebug
 end do     ! evolutionary time
 
  close(20067)                    ! closes file
 end do     ! replicates
 end do     ! supereplicates
-
-!ret=SYSTEM('rm fort.*')         ! removes spurious stuffs
-!ret=SYSTEM('mv GRN_* files/')    ! replaces files into a folder
-!ret=SYSTEM('mv *HE* files/')   ! replaces files into a folder
-
-close(462)
 
 end program startodo

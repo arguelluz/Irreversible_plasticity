@@ -13,9 +13,9 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 # Rule all
 rule all:
     input:
-        expand("../Simulation_results/{problems}/done", problems = problems_train),
-        expand("../Simulation_results/{problems}/done", problems = problems_test),
-        #expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
+        expand("../Simulation_results/{problems}", problems = problems_train),
+        expand("../Simulation_results/{problems}", problems = problems_test),
+        expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
 rule train:
@@ -48,7 +48,7 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        touch(expand("../Simulation_results/{problems}/done", problems = problems_train))
+        directory(expand("../Simulation_results/{problems}", problems = problems_train))
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
@@ -58,6 +58,12 @@ rule train_sort:
         # Clean up binary files
         rm -f development.mod start.mod
         rm -f *.e
+
+        # Create results folders
+        for problem in {params.problem_names}
+        do
+        mkdir -p ../Simulation_results/${{problem}}_train
+        done
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
@@ -77,7 +83,7 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_all_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [a,b,n]}_test.e",
     params:
@@ -94,27 +100,24 @@ rule test_all_setup:
         # Copy GRNs to use as source for testing
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*[1-9].dat ./files
-            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
-            ls ../Simulation_results/$grn/GRN*GRN*[1-9].dat | grep -o "GRN.*" >> GRNfiles.txt
-            ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
+            cp -u ../Simulation_results/$grn/GRN* ./files
+            ls ../Simulation_results/$grn/GRN* | grep -o "GRN.*" >> GRNfiles.txt
         done
 
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
-        done
+        # Compile problem executable
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
+        start_{params.problem_test}.f90 {params.modules} \
+        -o {params.problem_test}.e
         '''
 
 rule test_fin_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}/done", problems = problems_train)
+        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
         "{problems, [d,e,f]}_test.e",
     params:
         modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints),
+        problem_train = expand("{problems}_train", problems = problems_final_timepoints + problems_all_timepoints),
         problem_test = "{problems}_test"
     resources:
         GRNfile = 1
@@ -126,21 +129,20 @@ rule test_fin_setup:
         # Copy GRNs to use as source for testing and add to GRNfile
         for grn in {params.problem_train}
         do
-            cp -u ../Simulation_results/$grn/GRN*GRN*10.dat ./files
-            ls ../Simulation_results/$grn/GRN*GRN*10.dat | grep -o "GRN.*" >> GRNfiles.txt
+            cp -u ../Simulation_results/$grn/GRN*T10.dat ./files
+            ls ../Simulation_results/$grn/GRN*T10.dat | grep -o "GRN.*" >> GRNfiles.txt
         done
 
-        # Compile executables for each problem
-        for problem in {params.problem_test}
-        do
-            gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs start_$problem.f90 {params.modules} -o $problem.e
-        done
+        # Compile problem executable
+        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
+        start_{params.problem_test}.f90 {params.modules} \
+        -o {params.problem_test}.e
         '''
 
 rule test:
     input:
         executable = '{problem}_test.e',
-        setup = expand("{problem}_test.e", problem = problem_names)
+        tokens = expand('{problems}.e', problems = problems_test)
     output:
         touch('files/done_{problem}_test')
     shell:
@@ -150,38 +152,31 @@ rule test:
 
 rule test_sort:
     input:
-        "files/done_{problem_test}"
+        "files/done_{problem, [a-z]}_test"
     output:
-        touch("../Simulation_results/{problem_test, [a-z]_test}/done")
+        directory("../Simulation_results/{problem}_test")
     params:
-        problem_codes = problem_codes,
-        problem_names = problem_names
-
+    # This function matches the problem name (as set in the wildcard 'problem')
+    # to its problem code (corresponding element in the tuple problem_codes)
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     shell:
         '''
-        # Clean up binary files
-        rm -f development.mod start.mod
-        rm -f *.e
-        rm -f files/GRN*
+        # Create target folder
+        mkdir -p {output}
 
-        # Transfer all results in respective folders
-        parallel --jobs 6 --link \
-        mv ./GRN_{{1}}*.dat \
-        ../Simulation_results/{{2}}_test/ \
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        find . -maxdepth 1 -regextype posix-egrep -regex '.*[0-9]GRN_'{params.problem_code}'.*' \
+        -exec mv -t {output} {{}} \;
 
-        parallel --jobs 6 --link \
-        mv ./PHE_{{1}}*.dat \
-        ../Simulation_results/{{2}}_test/ \
-        ::: {params.problem_codes} \
-        ::: {params.problem_names}
+        find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
+        -exec mv -t {output} {{}} \;
+
+        rm {wildcards.problem}_test.e
 
         '''
 
 rule bomb:
     input:
-        "../Simulation_results/{problem}/done"
+        "../Simulation_results/{problem, ([a-z]_test|[a-z]_train)}"
     output:
         touch("files/done_{problem, ([a-z]_train)|([a-z]_test)}_bomb")
     resources:
@@ -190,13 +185,14 @@ rule bomb:
         '''
         # Grep all GRNs and move them into the files folder
         rm -f files/GRN_*
-        for problem in {wildcards.problem}
-        do
-            cp -u ../Simulation_results/$problem/GRN_* files
-        done
 
-        # Create list of GRN sources
-        ls files/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        find ../Simulation_results/{wildcards.problem} \
+        -regextype posix-extended \
+        -regex '.*/GRN.*\.dat' \
+        -exec cp {{}} files \;
+
+        # Create list of GRN sources (grep to remove base path)
+        ls files/GRN*.dat | grep -o "GRN.*" > GRNfiles.txt
 
         # Compule and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
@@ -216,7 +212,7 @@ rule bomb_sort:
     # to its problem code (corresponding element in the tuple problem_codes)
         problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
     resources:
-        GRNfolder = 1
+        GRNfile = 1
     shell:
         '''
         # Clean up binary files and source GRNs
@@ -224,8 +220,11 @@ rule bomb_sort:
         rm -f *.e
         rm -f files/GRN*
 
+        # Create target folder
+        mkdir -p {output}
+
         # Transfer results from the source problem to respective folder
 
-        find . -maxdepth 1 -name 'GRN*'{params.problem_code}'*.dat' \
+        find . -maxdepth 1 -regextype posix-extended -regex '.*[0-9,_]GRN_{params.problem_code}.*dat' \
         -exec mv -t {output} {{}} \+
         '''
