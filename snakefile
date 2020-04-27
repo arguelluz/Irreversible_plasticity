@@ -82,7 +82,7 @@ rule test_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
-        "{source, [a,b,n,d,e,f]}_train_{problem, [a,b,n,d,e,f]}_test.e",
+        temp("{source, [a,b,n,d,e,f]}_train_{problem, [a,b,n,d,e,f]}_test.e")
     params:
         modules = modules,
         problem_train = "{source}_train",
@@ -137,8 +137,6 @@ rule test_sort:
         find . -maxdepth 1 -regextype posix-egrep -regex \
         'PHE_'{params.source_code}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
-
-        rm {wildcards.source}_train_{wildcards.problem}_test.e
         '''
 
 rule bomb:
