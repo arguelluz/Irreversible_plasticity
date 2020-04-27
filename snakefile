@@ -11,8 +11,7 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}", problems = problems_train),
-        expand("../Simulation_results/{problem}/{source}", problem = problems_test, source = problems_train),
-        expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
+        expand("../Simulation_results/{problem}/{source}", problem = problems_test, source = problems_train)
 
 # Run initial problem set on naive networks
 rule train:
