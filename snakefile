@@ -11,7 +11,7 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}", problems = problems_train),
-        expand("../Simulation_results/{problem}_test/{source}_source", problem = problems_test, source = problems_train),
+        expand("../Simulation_results/{problem}/{source}", problem = problems_test, source = problems_train),
         expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
@@ -101,7 +101,7 @@ rule test_setup:
         # Compile problem executable
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
         start_{params.problem_test}.f90 {params.modules} \
-        -o {params.problem_train}_train_{params.problem_test}_test.e
+        -o {params.problem_train}_{params.problem_test}.e
         '''
 
 rule test_run:
@@ -119,7 +119,7 @@ rule test_sort:
     input:
         "files/done_{source, [a-z]}_train_{problem, [a-z]}_test"
     output:
-        directory("../Simulation_results/{problem}_test/{source}_source")
+        directory("../Simulation_results/{problem}_test/{source}_train")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
@@ -131,11 +131,11 @@ rule test_sort:
         mkdir -p {output}
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
-        '.*GRN_'{params.problem_source}'_.*GRN_'{params.problem_code}'.*' \
+        '.*GRN_'{params.source_code}'_.*GRN_'{params.problem_code}'.*' \
         -exec mv -t {output} {{}} \;
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
-        'PHE_'{params.problem_source}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
+        'PHE_'{params.source_code}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
 
         rm {wildcards.source}_train_{wildcards.problem}_test.e
