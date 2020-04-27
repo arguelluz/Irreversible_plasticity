@@ -11,7 +11,7 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}", problems = problems_train),
-        expand("../Simulation_results/{problems}", problems = problems_test),
+        expand("../Simulation_results/{problem}_test/{source}_source", problem = problems_test, source = problems_train),
         expand("../Simulation_results/bomb/{problems}", problems = problems_train + problems_test)
 
 # Run initial problem set on naive networks
@@ -82,11 +82,11 @@ rule test_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
-        "{problems, [a,b,n,d,e,f]}_test.e",
+        "{source, [a,b,n,d,e,f]}_train_{problem, [a,b,n,d,e,f]}_test.e",
     params:
         modules = modules,
-        problem_train = expand("{problems}_train", problems = problem_names),
-        problem_test = "{problems}_test"
+        problem_train = "{source}_train",
+        problem_test = "{problem}_test"
     resources:
         GRNfile = 1
     shell:
@@ -95,24 +95,21 @@ rule test_setup:
         rm -f GRNfiles.txt
 
         # Copy GRNs to use as source for testing
-        for grn in {params.problem_train}
-        do
-            cp -u ../Simulation_results/$grn/GRN* ./files
-            ls ../Simulation_results/$grn/GRN* | grep -o "GRN.*" >> GRNfiles.txt
-        done
+        cp -u ../Simulation_results/{params.problem_train}/GRN* ./files
+        ls ../Simulation_results/{params.problem_train}/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
         # Compile problem executable
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
         start_{params.problem_test}.f90 {params.modules} \
-        -o {params.problem_test}.e
+        -o {params.problem_train}_train_{params.problem_test}_test.e
         '''
 
 rule test_run:
     input:
-        executable = '{problem}_test.e',
-        tokens = expand('{problems}.e', problems = problems_test)
+        executable = '{problem}.e',
+        tokens = expand('{source}_{problems}.e', source = problems_train, problems = problems_test)
     output:
-        touch('files/done_{problem}_test')
+        touch('files/done_{problem}')
     shell:
         '''
         ./{input.executable}
@@ -120,26 +117,28 @@ rule test_run:
 
 rule test_sort:
     input:
-        "files/done_{problem, [a-z]}_test"
+        "files/done_{source, [a-z]}_train_{problem, [a-z]}_test"
     output:
-        directory("../Simulation_results/{problem}_test")
+        directory("../Simulation_results/{problem}_test/{source}_source")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
-        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])],
+        source_code = lambda wildcards: problem_codes[problem_names.index(wildcards.source[0])]
     shell:
         '''
         # Create target folder
         mkdir -p {output}
 
-        find . -maxdepth 1 -regextype posix-egrep -regex '.*[0-9]GRN_'{params.problem_code}'.*' \
+        find . -maxdepth 1 -regextype posix-egrep -regex \
+        '.*GRN_'{params.problem_source}'_.*GRN_'{params.problem_code}'.*' \
         -exec mv -t {output} {{}} \;
 
-        find . -maxdepth 1 -regextype posix-egrep -regex '.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
+        find . -maxdepth 1 -regextype posix-egrep -regex \
+        'PHE_'{params.problem_source}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
 
-        rm {wildcards.problem}_test.e
-
+        rm {wildcards.source}_train_{wildcards.problem}_test.e
         '''
 
 rule bomb:
