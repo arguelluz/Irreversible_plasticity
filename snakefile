@@ -4,9 +4,6 @@ modules = ("development.mod.f90", "grns2.f90")
 problems_train, = glob_wildcards("./start_{problems, [a-z]_train}.f90")
 problems_test, = glob_wildcards("./start_{problems, [a-z]_test}.f90")
 
-problems_all_timepoints = ("a", "b", "n")
-problems_final_timepoints = ("d", "e", "f")
-
 problem_names = ("n", "a", "b", "d", "e", "f")
 problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 
@@ -81,14 +78,14 @@ rule train_sort:
         '''
 
 # Run test simulations initiated from all timepoints of the test set
-rule test_all_setup:
+rule test_setup:
     input:
         grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
     output:
-        "{problems, [a,b,n]}_test.e",
+        "{problems, [a,b,n,d,e,f]}_test.e",
     params:
         modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_all_timepoints),
+        problem_train = expand("{problems}_train", problems = problem_names),
         problem_test = "{problems}_test"
     resources:
         GRNfile = 1
@@ -110,36 +107,7 @@ rule test_all_setup:
         -o {params.problem_test}.e
         '''
 
-rule test_fin_setup:
-    input:
-        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
-    output:
-        "{problems, [d,e,f]}_test.e",
-    params:
-        modules = modules,
-        problem_train = expand("{problems}_train", problems = problems_final_timepoints + problems_all_timepoints),
-        problem_test = "{problems}_test"
-    resources:
-        GRNfile = 1
-    shell:
-        '''
-        # remove old grnfile
-        rm -f GRNfiles.txt
-
-        # Copy GRNs to use as source for testing and add to GRNfile
-        for grn in {params.problem_train}
-        do
-            cp -u ../Simulation_results/$grn/GRN*T10.dat ./files
-            ls ../Simulation_results/$grn/GRN*T10.dat | grep -o "GRN.*" >> GRNfiles.txt
-        done
-
-        # Compile problem executable
-        gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
-        start_{params.problem_test}.f90 {params.modules} \
-        -o {params.problem_test}.e
-        '''
-
-rule test:
+rule test_run:
     input:
         executable = '{problem}_test.e',
         tokens = expand('{problems}.e', problems = problems_test)
