@@ -124,6 +124,8 @@ rule test_sort:
     # to its problem code (corresponding element in the tuple problem_codes)
         problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])],
         source_code = lambda wildcards: problem_codes[problem_names.index(wildcards.source[0])]
+    resources:
+        GRNfile = 1
     shell:
         '''
         # Create target folder
