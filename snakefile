@@ -130,7 +130,7 @@ rule test_sort:
         mkdir -p {output}
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
-        '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*' \
+        '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\dat.$' \
         -exec mv -t {output} {{}} \;
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
