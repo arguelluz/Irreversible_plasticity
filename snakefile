@@ -128,11 +128,11 @@ rule test_sort:
         '''
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\dat.$' \
-        -exec mv -t {output} {{}} \;
+        -exec mv -t {output} {{}} +
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*PHE_{params.source_code}_.*PHEN_TE_{params.problem_code}.*\.dat$' \
-        -exec mv -t {output} {{}} \;
+        -exec mv -t {output} {{}} +
         '''
 
 rule bomb:
