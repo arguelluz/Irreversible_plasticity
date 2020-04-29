@@ -126,9 +126,6 @@ rule test_sort:
         source_code = lambda wildcards: problem_codes[problem_names.index(wildcards.source[0])]
     shell:
         '''
-        # Create target folder
-        mkdir -p {output}
-
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\dat.$' \
         -exec mv -t {output} {{}} \;
