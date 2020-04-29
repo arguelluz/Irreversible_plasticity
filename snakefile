@@ -134,7 +134,7 @@ rule test_sort:
         -exec mv -t {output} {{}} \;
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
-        'PHE_'{params.source_code}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
+        '.*PHE_'{params.source_code}'_.*PHEN_TE_'{params.problem_code}'.*\.dat$' \
         -exec mv -t {output} {{}} \;
         '''
 
