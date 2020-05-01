@@ -122,6 +122,7 @@ rule test_backup:
         phe_results = directory("../Simulation_results/testing_backup/phen")
     shell:
         '''
+        sleep 300
         mkdir -p {output.grn_results} && cp -npt {output.grn_results} GRN_*
         mkdir -p {output.phe_results} && cp -npt {output.phe_results} PHE_*
         '''
@@ -143,6 +144,8 @@ rule test_sort:
         GRNfile = 1
     shell:
         '''
+        sleep 300
+
         # Create target folder
         mkdir -p {output}
 
