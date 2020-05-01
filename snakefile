@@ -116,14 +116,14 @@ rule test_run:
 
 rule test_backup:
     input:
-        expand('files/done_{problems}', problems = problems_test)
+        expand('files/done_{source}_{problems}', source = problems_train, problems = problems_test)
     output:
-        grn_results = "../Simulation_results/testing_backup/grns",
-        phe_results = "../Simulation_results/testing_backup/phen"
+        grn_results = directory("../Simulation_results/testing_backup/grns"),
+        phe_results = directory("../Simulation_results/testing_backup/phen")
     shell:
         '''
-        mkdir -p {output.grn_results} && cp -tp {output.grn_results} GRN*
-        mkdir -p {output.grn_results} && cp -tp {output.phe_results} PHE*
+        mkdir -p {output.grn_results} && cp -npt {output.grn_results} GRN_*
+        mkdir -p {output.phe_results} && cp -npt {output.phe_results} PHE_*
         '''
 
 rule test_sort:
