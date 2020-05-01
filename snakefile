@@ -114,9 +114,23 @@ rule test_run:
         ./{input.executable}
         '''
 
+rule test_backup:
+    input:
+        expand('files/done_{problems}', problems = problems_test)
+    output:
+        grn_results = "../Simulation_results/testing_backup/grns",
+        phe_results = "../Simulation_results/testing_backup/phen"
+    shell:
+        '''
+        mkdir -p {output.grn_results} && cp -tp {output.grn_results} GRN*
+        mkdir -p {output.grn_results} && cp -tp {output.phe_results} PHE*
+        '''
+
 rule test_sort:
     input:
-        "files/done_{source, [a-z]}_train_{problem, [a-z]}_test"
+        "files/done_{source, [a-z]}_train_{problem, [a-z]}_test",
+        grn_results = "../Simulation_results/testing_backup/grns",
+        phe_results = "../Simulation_results/testing_backup/phen"
     output:
         directory("../Simulation_results/{problem}_test/{source}_train")
     params:
@@ -133,11 +147,11 @@ rule test_sort:
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\.dat$' \
-        -exec mv -t {output} {{}} +
+        -exec cp -t {output} {{}} +
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*PHE_{params.source_code}_.*PHEN_TE_{params.problem_code}.*\.dat$' \
-        -exec mv -t {output} {{}} +
+        -exec cp -t {output} {{}} +
         '''
 
 rule bomb:
