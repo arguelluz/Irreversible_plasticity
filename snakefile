@@ -11,7 +11,7 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 rule all:
     input:
         expand("../Simulation_results/{problems}", problems = problems_train),
-        expand("../Simulation_results/{problem}/{source}", problem = problems_test, source = problems_train)
+        expand("../Simulation_results/{source}/{problem}", source = problems_train, problem = problems_test)
 
 # Run initial problem set on naive networks
 rule train:
@@ -58,19 +58,19 @@ rule train_sort:
         # Create results folders
         for problem in {params.problem_names}
         do
-        mkdir -p ../Simulation_results/${{problem}}_train
+        mkdir -p ../Simulation_results/${{problem}}_train/${{problem}}_train
         done
 
         # Transfer all results in respective folders
         parallel --jobs 3 --link \
         mv ./GRN*{{1}}*.dat \
-        ../Simulation_results/{{2}}_train/ \
+        ../Simulation_results/{{2}}_train/{{2}}_train \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
         parallel --jobs 3 --link \
         mv ./PHE*{{1}}*.dat \
-        ../Simulation_results/{{2}}_train/ \
+        ../Simulation_results/{{2}}_train/{{2}}_train \
         ::: {params.problem_codes} \
         ::: {params.problem_names}
 
@@ -94,8 +94,8 @@ rule test_setup:
         rm -f GRNfiles.txt
 
         # Copy GRNs to use as source for testing
-        cp -u ../Simulation_results/{params.problem_train}/GRN* ./files
-        ls ../Simulation_results/{params.problem_train}/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        cp -u ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN* ./files
+        ls ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN* | grep -o "GRN.*" > GRNfiles.txt
 
         # Compile problem executable
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
@@ -134,7 +134,7 @@ rule test_sort:
         grn_results = "../Simulation_results/testing_backup/grns",
         phe_results = "../Simulation_results/testing_backup/phen"
     output:
-        directory("../Simulation_results/{problem}_test/{source}_train")
+        directory("../Simulation_results/{source}_train/{problem}_test")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
