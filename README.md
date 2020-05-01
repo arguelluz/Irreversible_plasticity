@@ -16,7 +16,7 @@ I am currently implementing step 6: converting the output of bombs to a more com
 
 Please note that in order to avoid multiple parallel processes accessing the same files and folder we need to run snakemake with the options:
 
-`snakemake --resources GRNfile=1 GRNfolder=1`
+`snakemake --resources GRNfile=1 -w 600`
 
 ![dag](dag.png)
 
