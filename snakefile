@@ -129,6 +129,7 @@ rule test_backup:
 rule test_sort:
     input:
         "files/done_{source, [a-z]}_train_{problem, [a-z]}_test",
+        expand('files/done_{source}_{problems}', source = problems_train, problems = problems_test),
         grn_results = "../Simulation_results/testing_backup/grns",
         phe_results = "../Simulation_results/testing_backup/phen"
     output:
