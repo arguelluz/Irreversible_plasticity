@@ -94,8 +94,8 @@ rule test_setup:
         rm -f GRNfiles.txt
 
         # Copy GRNs to use as source for testing
-        cp -u ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN* ./files
-        ls ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN* | grep -o "GRN.*" > GRNfiles.txt
+        cp -u ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN*T10.dat ./files
+        ls ../Simulation_results/{params.problem_train}/{params.problem_train}/GRN*T10.dat | grep -o "GRN.*" > GRNfiles.txt
 
         # Compile problem executable
         gfortran -w -fexceptions -fno-underscoring -Wall -Wtabs \
