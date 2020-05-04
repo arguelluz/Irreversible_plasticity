@@ -124,12 +124,12 @@ rule test_backup:
         '''
         sleep 300
         mkdir -p {output.grn_results} &&  \
-            find . -maxdepth 1 -regextype posix-extended -regex 'GRN_.*' \
+            find . -maxdepth 1 -regextype posix-extended -regex '\./GRN_.*' \
             -exec cp -npt {output.grn_results} {{}} +
 
-        mkdir -p {output.grn_results} &&  \
-            find . -maxdepth 1 -regextype posix-extended -regex 'PHE_.*' \
-            -exec cp -npt {output.grn_results} {{}} +
+        mkdir -p {output.phe_results} &&  \
+            find . -maxdepth 1 -regextype posix-extended -regex '\./PHE_.*' \
+            -exec cp -npt {output.phe_results} {{}} +
         '''
 
 rule test_sort:
