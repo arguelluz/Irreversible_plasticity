@@ -88,8 +88,11 @@ rule test_setup:
         problem_test = "{problem}_test"
     resources:
         GRNfile = 1
+    priority: 10
     shell:
         '''
+        sleep 10
+
         # remove old grnfile
         rm -f GRNfiles.txt
 
@@ -105,10 +108,10 @@ rule test_setup:
 
 rule test_run:
     input:
-        executable = '{problem}.e',
-        tokens = expand('{source}_{problems}.e', source = problems_train, problems = problems_test)
+        executable = '{problem}.e'
     output:
         touch('files/done_{problem}')
+    priority: 50
     shell:
         '''
         ./{input.executable}
