@@ -10,8 +10,16 @@ problem_codes = ("122345", "312452", "254213", "223344", "443322", "224411")
 # Rule all
 rule all:
     input:
-        expand("../Simulation_results/{problems}", problems = problems_train),
-        expand("../Simulation_results/{source}/{problem}", source = problems_train, problem = problems_test)
+        expand(
+            "../Simulation_results/{problems}/{problems}",
+            zip,
+            problems = problems_train
+            ),
+        expand(
+            "../Simulation_results/{source}/{problem}",
+            source = problems_train,
+            problem = problems_test
+            )
 
 # Run initial problem set on naive networks
 rule train:
@@ -44,7 +52,13 @@ rule train_sort:
     input:
         "files/problems_trained"
     output:
-        directory(expand("../Simulation_results/{problems}", problems = problems_train))
+        directory(
+            expand(
+                "../Simulation_results/{problems}/{problems}",
+                zip,
+                problems = problems_train
+            )
+        )
     params:
         problem_names = problem_names,
         problem_codes = problem_codes,
