@@ -25,7 +25,7 @@ use development
  call arxivpublic                          ! just to enter the inicial module and set the arxiv variable to public
  ret=SYSTEM('pkill gnuplot')               ! ret=SYSTEM('rm dynamic.dat')
 
- wlen=etmax/100                            ! (moving) window leght=tmax/100. This should be enough.
+ wlen=etmax/500                            ! (moving) window leght=tmax/100. This should be enough.
  wpnt=50                                   ! (moving) window points. They must be few (calculating variance is time-consuming)
  if(wlen.lt.wpnt)then ; wlen=wpnt ; end if ! Number of points must be smaller than window lenght
  wlap=wlen/wpnt                            ! (moving) window lapse. That is the lenght of the intervals to recods fitness.
