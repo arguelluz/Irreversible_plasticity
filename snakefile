@@ -151,8 +151,6 @@ rule test_backup:
 
 rule test_sort:
     input:
-        "files/done_{source, [a-z]}_train_{problem, [a-z]}_test",
-        expand('files/done_{source}_{problems}', source = problems_train, problems = problems_test),
         grn_results = "../Simulation_results/testing_backup/grns",
         phe_results = "../Simulation_results/testing_backup/phen"
     output:
@@ -173,11 +171,11 @@ rule test_sort:
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\.dat$' \
-        -exec cp -t {output} {{}} +
+        -exec mv -t {output} {{}} +
 
         find . -maxdepth 1 -regextype posix-egrep -regex \
         '.*PHE_{params.source_code}_.*PHEN_TE_{params.problem_code}.*\.dat$' \
-        -exec cp -t {output} {{}} +
+        -exec mv -t {output} {{}} +
         '''
 
 rule bomb:
