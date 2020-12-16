@@ -93,7 +93,10 @@ rule train_sort:
 # Run test simulations initiated from all timepoints of the test set
 rule test_setup:
     input:
-        grn_tokens = expand("../Simulation_results/{problems}", problems = problems_train)
+        grn_tokens = expand(
+          "../Simulation_results/{problems}/{problems}",
+          problems = problems_train
+          )
     output:
         temp("{source, [a,b,n,d,e,f]}_train_{problem, [a,b,n,d,e,f]}_test.e")
     params:
