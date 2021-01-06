@@ -135,7 +135,7 @@ rule test_run:
     input:
         executable = '{problem}.e'
     output:
-        touch('files/done_{problem}')
+        touch('files/done_{problem, [a-z]}_test')
     priority: 50
     shell:
         '''
@@ -189,15 +189,14 @@ rule test_sort:
         -exec mv -t {output} {{}} +
         '''
 
-rule bomb:
+rule bomb_setup:
     input:
         "../Simulation_results/{train_problem}/{test_problem}"
     output:
-        touch(
-          "files/done_{train_problem, [a-z]_train}_{test_problem, ([a-z]_train|[a-z]_test)}_bomb")
+          "{train_problem, [a-z]_train}_{test_problem, ([a-z]_train|[a-z]_test)}_bomb.e"
     resources:
         GRNfile = 1
-    priority: 50
+    priority: 10
     shell:
         '''
         sleep 10
@@ -214,9 +213,20 @@ rule bomb:
         ls files/GRN*.dat | grep -o "GRN.*" > GRNfiles.txt
 
         # Compile and run bomb script on all GRNs
-        gfortran bomb.f90 -o bomb.e
-        ./bomb.e
+        gfortran bomb.f90 -o {output}
         '''
+
+rule bomb_run:
+  input:
+    "{train_problem}_{test_problem}_bomb.e"
+  output:
+    touch(
+      "files/done_{train_problem, [a-z]_train}_{test_problem, ([a-z]_train|[a-z]_test)}_bomb")
+  resources:
+    GRNfile = 1
+  priority: 50
+  run:
+    "./{input}"
 
 rule bomb_backup:
     input:
