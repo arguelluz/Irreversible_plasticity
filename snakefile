@@ -12,11 +12,19 @@ rule all:
     input:
         expand(
             "../Simulation_results/{problems}/{problems}",
-            zip,
             problems = problems_train
             ),
         expand(
             "../Simulation_results/{source}/{problem}",
+            source = problems_train,
+            problem = problems_test
+            ),
+        expand(
+            "../Simulation_results/bomb/{problems}/{problems}",
+            problems = problems_train
+            ),
+        expand(
+            "../Simulation_results/bomb/{source}/{problem}",
             source = problems_train,
             problem = problems_test
             )
@@ -157,7 +165,7 @@ rule test_sort:
         grn_results = "../Simulation_results/testing_backup/grns",
         phe_results = "../Simulation_results/testing_backup/phen"
     output:
-        directory("../Simulation_results/{source}_train/{problem}_test")
+        directory("../Simulation_results/{source, [a-z]}_train/{problem}_test")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
@@ -183,17 +191,21 @@ rule test_sort:
 
 rule bomb:
     input:
-        "../Simulation_results/{problem, ([a-z]_test|[a-z]_train)}"
+        "../Simulation_results/{train_problem}/{test_problem}"
     output:
-        touch("files/done_{problem, ([a-z]_train)|([a-z]_test)}_bomb")
+        touch(
+          "files/done_{train_problem, [a-z]_train}_{test_problem, ([a-z]_train|[a-z]_test)}_bomb")
     resources:
         GRNfile = 1
+    priority: 50
     shell:
         '''
+        sleep 10
+
         # Grep all GRNs and move them into the files folder
         rm -f files/GRN_*
 
-        find ../Simulation_results/{wildcards.problem} \
+        find ../Simulation_results/{wildcards.train_problem}/{wildcards.test_problem} \
         -regextype posix-extended \
         -regex '.*/GRN.*\.dat' \
         -exec cp {{}} files \;
@@ -201,37 +213,56 @@ rule bomb:
         # Create list of GRN sources (grep to remove base path)
         ls files/GRN*.dat | grep -o "GRN.*" > GRNfiles.txt
 
-        # Compule and run bomb script on all GRNs
+        # Compile and run bomb script on all GRNs
         gfortran bomb.f90 -o bomb.e
         ./bomb.e
         '''
 
+rule bomb_backup:
+    input:
+        expand(
+          'files/done_{source}_{problems}_bomb',
+          source = problems_train,
+          problems = problems_test
+          ) +
+          expand(
+            'files/done_{source}_{source}_bomb',
+            source = problems_train
+          )
+    output:
+        directory("../Simulation_results/bomb_backup")
+    shell:
+        '''
+        sleep 300
+        mkdir -p {output} &&  \
+            find . -maxdepth 1 -regextype posix-extended -regex '\./GRN_.*' \
+            -exec cp -npt {output} {{}} +
+        '''
 
 rule bomb_sort:
 # This rule uses the find -exec command combination to move files because we have too many files for the input to mv
 # The use of a custom defined lambda function allows the use of the problem wildcard as an input to the param
     input:
-        "files/done_{problem}_bomb"
+        "files/done_{source}_train_{problem}_{p2}_bomb",
+        "../Simulation_results/bomb_backup"
     output:
-        directory("../Simulation_results/bomb/{problem, ([a-z]_train)|([a-z]_test)}")
+        directory("../Simulation_results/bomb/{source}_train/{problem}_{p2}")
     params:
     # This function matches the problem name (as set in the wildcard 'problem')
     # to its problem code (corresponding element in the tuple problem_codes)
-        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])]
+        problem_code = lambda wildcards: problem_codes[problem_names.index(wildcards.problem[0])],
+        source_code = lambda wildcards: problem_codes[problem_names.index(wildcards.source[0])]
     resources:
         GRNfile = 1
     shell:
         '''
-        # Clean up binary files and source GRNs
-        rm -f development.mod start.mod
-        rm -f *.e
-        rm -f files/GRN*
+        sleep 300
 
         # Create target folder
         mkdir -p {output}
 
-        # Transfer results from the source problem to respective folder
+        find . -maxdepth 1 -regextype posix-egrep -regex \
+        '.*GRN_{params.source_code}_.*GRN_{params.problem_code}.*\.dat$' \
+        -exec mv -t {output} {{}} +
 
-        find . -maxdepth 1 -regextype posix-extended -regex '.*[0-9,_]GRN_{params.problem_code}.*dat' \
-        -exec mv -t {output} {{}} \+
         '''
