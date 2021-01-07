@@ -225,7 +225,7 @@ rule bomb_run:
   resources:
     GRNfile = 1
   priority: 50
-  run:
+  shell:
     "./{input}"
 
 rule bomb_backup:
