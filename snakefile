@@ -133,9 +133,9 @@ rule test_setup:
 
 rule test_run:
     input:
-        executable = '{problem}.e'
+        executable = '{source}_train_{problem}_test.e'
     output:
-        touch('files/done_{problem, [a-z]}_test')
+        touch('files/done_{source, [a-z]}_train_{problem, [a-z]}_test')
     priority: 50
     shell:
         '''
